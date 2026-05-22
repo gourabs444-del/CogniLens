@@ -441,6 +441,7 @@
     .test-choice {
       border: 1px solid rgba(226, 232, 240, 0.92);
       background: rgba(248, 250, 252, 0.82);
+      min-height: 9.25rem;
       transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
     }
 
@@ -460,6 +461,21 @@
       justify-content: center;
       color: #ffffff;
       box-shadow: 0 14px 30px rgba(79, 70, 229, 0.18);
+    }
+
+    .test-picker-status {
+      display: none;
+      border-radius: 1rem;
+      border: 1px solid rgba(56, 189, 248, 0.24);
+      background: rgba(240, 249, 255, 0.9);
+      padding: 0.75rem 0.9rem;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #0369a1;
+    }
+
+    .test-picker-status.is-visible {
+      display: block;
     }
 
     @media (min-width: 1024px) {
@@ -1166,36 +1182,30 @@ Sign out
       <div>
         <p class="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-600">Choose Assessment</p>
         <h2 id="test-picker-title" class="mt-1 text-2xl font-black tracking-tight text-slate-950">Start your CogniLens test</h2>
-        <p class="mt-2 max-w-xl text-sm leading-relaxed text-slate-500">Pick the test you want to begin. MBTI is ready now; IQ and EQ shells are prepared for upcoming question sets.</p>
       </div>
       <button class="rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-500 hover:bg-slate-50 hover:text-slate-900" data-test-picker-close type="button" aria-label="Close test picker">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       </button>
     </div>
+    <p class="test-picker-status mt-4" data-test-picker-status>IQ Test coming soon.</p>
     <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-      <button class="test-choice rounded-3xl p-4 text-left" data-test-choice="../Assets/question.html" type="button">
+      <button class="test-choice flex flex-col items-start justify-center rounded-3xl p-4 text-left" data-test-choice="../Assets/question.html" type="button">
         <span class="test-choice-icon bg-gradient-to-br from-indigo-500 to-blue-600">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path></svg>
         </span>
         <span class="mt-4 block text-base font-black text-slate-950">MBTI Test</span>
-        <span class="mt-1 block text-xs font-semibold leading-relaxed text-slate-500">6 phases, personality result, traits, potential map.</span>
-        <span class="mt-4 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-emerald-600">Ready</span>
       </button>
-      <button class="test-choice rounded-3xl p-4 text-left" data-test-choice="../Assets/iq.html" type="button">
+      <button class="test-choice flex flex-col items-start justify-center rounded-3xl p-4 text-left" data-test-choice="coming-soon" data-coming-soon="IQ Test coming soon." type="button">
         <span class="test-choice-icon bg-gradient-to-br from-sky-500 to-cyan-500">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         </span>
         <span class="mt-4 block text-base font-black text-slate-950">IQ Test</span>
-        <span class="mt-1 block text-xs font-semibold leading-relaxed text-slate-500">Logic and reasoning module prepared for questions.</span>
-        <span class="mt-4 inline-flex rounded-full bg-sky-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-sky-600">Shell ready</span>
       </button>
-      <button class="test-choice rounded-3xl p-4 text-left" data-test-choice="../Assets/eq.html" type="button">
+      <button class="test-choice flex flex-col items-start justify-center rounded-3xl p-4 text-left" data-test-choice="../Assets/eq.html" type="button">
         <span class="test-choice-icon bg-gradient-to-br from-rose-500 to-orange-500">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         </span>
         <span class="mt-4 block text-base font-black text-slate-950">EQ Test</span>
-        <span class="mt-1 block text-xs font-semibold leading-relaxed text-slate-500">Story-based emotion and relationship assessment.</span>
-        <span class="mt-4 inline-flex rounded-full bg-orange-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-orange-600">Ready</span>
       </button>
     </div>
   </section>
@@ -1231,6 +1241,7 @@ const clearLocalDataButton = document.querySelector("[data-clear-local-data]");
 const clearLocalDataStatus = document.querySelector("[data-clear-local-status]");
 const testPickerModal = document.getElementById("test-picker-modal");
 const testPickerClose = document.querySelector("[data-test-picker-close]");
+const testPickerStatus = document.querySelector("[data-test-picker-status]");
 let user = getCogniLensUser();
 const savedDashboardResult = getCogniLensResult();
 const hasCompletedAssessment = Boolean(savedDashboardResult);
@@ -1297,6 +1308,7 @@ function openTestPicker() {
   if (!testPickerModal) return;
   testPickerModal.classList.add("is-open");
   testPickerModal.setAttribute("aria-hidden", "false");
+  testPickerStatus?.classList.remove("is-visible");
   document.body.classList.add("sidebar-lock");
   setSettingsPanel(false);
   toggleProfile(false);
@@ -1892,7 +1904,15 @@ testPickerClose?.addEventListener("click", closeTestPicker);
 testPickerModal?.addEventListener("click", (event) => {
   if (event.target === testPickerModal) closeTestPicker();
   const choice = event.target.closest("[data-test-choice]");
-  if (choice) openAssessmentTarget(choice.dataset.testChoice);
+  if (!choice) return;
+  if (choice.dataset.testChoice === "coming-soon") {
+    if (testPickerStatus) {
+      testPickerStatus.textContent = choice.dataset.comingSoon || "Coming soon.";
+      testPickerStatus.classList.add("is-visible");
+    }
+    return;
+  }
+  openAssessmentTarget(choice.dataset.testChoice);
 });
 document.querySelector("[data-login-link]").addEventListener("click", function() {
   window.location.href = "../../auth/signup.html?mode=login";

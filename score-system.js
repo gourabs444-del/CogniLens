@@ -31,25 +31,25 @@ const COGNILENS_ASSESSMENT_TYPES = {
     resultKey: "personality",
     path: "pages/Assets/question.html",
     scoring: "mbti-dimensions",
-    description: "Six-phase personality assessment with trait balance, result dashboard, and potential map."
+    description: ""
   },
   iq: {
     id: "iq",
     name: "IQ Test",
-    status: "question-shell",
+    status: "coming-soon",
     resultKey: "iq",
     path: "pages/Assets/iq.html",
     scoring: "pending-question-set",
-    description: "Logic and reasoning assessment shell. Questions and scoring weights can be added later."
+    description: ""
   },
   eq: {
     id: "eq",
     name: "EQ Test",
-    status: "question-shell",
+    status: "ready",
     resultKey: "eq",
     path: "pages/Assets/eq.html",
     scoring: "pending-question-set",
-    description: "Emotional intelligence assessment shell. Questions and scoring weights can be added later."
+    description: ""
   }
 };
 
