@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CogniLens Personality Dashboard</title>
+<!-- Tailwind CSS v3 CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Inter Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style data-purpose="custom-styles">
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F8FAFC;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus,
+    input:focus,
+    a:focus {
+      outline: none;
+      box-shadow: none !important;
+    }
+    .text-cogni-purple { color: #6366f1; }
+    .bg-cogni-purple { background-color: #6366f1; }
+    .border-cogni-purple { border-color: #6366f1; }
+    .bg-cogni-dark { background-color: #0F172A; }
+
+    .brand-logo-mark {
+      border-radius: 0.55rem;
+      background: linear-gradient(135deg, #7c6ef5, #6c5ce7) !important;
+      box-shadow: 0 8px 18px rgba(108, 92, 231, 0.3);
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+
+    #app-sidebar {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    #app-sidebar::-webkit-scrollbar {
+      display: none;
+    }
+
+    #sidebar-overlay {
+      background: rgba(2, 6, 23, 0.58) !important;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      opacity: 0;
+    }
+
+    /* Radar Chart Simulation */
+    .radar-container {
+      position: relative;
+      width: 120px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .radar-poly {
+      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.5);
+    }
+
+    main,
+    .dashboard-shell,
+    .dashboard-grid > *,
+    .insight-card,
+    .preview-card {
+      min-width: 0;
+    }
+
+    main {
+      overflow-x: hidden;
+    }
+
+    .insight-card {
+      border-radius: 24px;
+    }
+
+    .insight-card p {
+      font-size: 11px;
+      line-height: 1.58;
+    }
+
+    .insight-card .metric-label {
+      font-size: 11px;
+    }
+
+    body.compact-dashboard .dashboard-shell {
+      max-width: 1080px !important;
+      padding-top: 1rem !important;
+      padding-bottom: 1.25rem !important;
+    }
+
+    body.compact-dashboard .dashboard-shell > :not([hidden]) ~ :not([hidden]) {
+      margin-top: 1.35rem !important;
+    }
+
+    body.compact-dashboard .dashboard-grid {
+      gap: 1rem !important;
+    }
+
+    body.compact-dashboard .preview-card,
+    body.compact-dashboard .insight-card,
+    body.compact-dashboard .dashboard-shell section > .bg-white {
+      border-radius: 18px !important;
+    }
+
+    body.compact-dashboard .preview-card {
+      padding: 1rem !important;
+    }
+
+    body.compact-dashboard .insight-card {
+      min-height: 220px !important;
+      padding: 1rem !important;
+    }
+
+    body.compact-dashboard .insight-card p {
+      margin-bottom: 0.85rem !important;
+    }
+
+    body.compact-dashboard h1 {
+      font-size: clamp(1.85rem, 3vw, 2.35rem) !important;
+    }
+
+    body.focus-dashboard [data-dashboard-extra],
+    body.focus-dashboard [data-sidebar-upgrade],
+    body.focus-dashboard [data-preview-quote-row],
+    body.focus-dashboard [data-preview-supporting-points] {
+      display: none !important;
+    }
+
+    body.large-dashboard-text .dashboard-shell p,
+    body.large-dashboard-text .dashboard-shell span,
+    body.large-dashboard-text .dashboard-shell button,
+    body.large-dashboard-text .dashboard-shell a {
+      font-size: 1.05em;
+    }
+
+    .settings-action-row {
+      border: 1px solid rgba(99, 102, 241, 0.12);
+      background: rgba(248, 250, 252, 0.86);
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .settings-action-row:hover {
+      transform: translateY(-1px);
+      border-color: rgba(99, 102, 241, 0.28);
+      box-shadow: 0 12px 24px rgba(79, 70, 229, 0.08);
+    }
+
+    .score-ring svg {
+      display: block;
+    }
+
+    .score-ring__value {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: 0;
+    }
+
+    .preview-swipe {
+      touch-action: pan-y;
+      cursor: grab;
+    }
+
+    .preview-swipe:active {
+      cursor: grabbing;
+    }
+
+    .preview-card [data-preview-slide] {
+      transition: opacity 0.34s ease, transform 0.42s cubic-bezier(.2,.8,.2,1), filter 0.34s ease;
+      will-change: opacity, transform;
+    }
+
+    .preview-card.is-switching [data-preview-slide] {
+      opacity: 0;
+      transform: translateX(18px) scale(0.985);
+      filter: blur(2px);
+    }
+
+    .preview-card [data-preview-bar] {
+      transition: width 0.7s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .preview-dots-track {
+      --dot-index: 0;
+      --dot-step: 0.95rem;
+      position: relative;
+      display: inline-grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 0.95rem;
+      gap: 0;
+      align-items: center;
+      min-height: 0.72rem;
+      padding: 0.12rem;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(241,245,249,0.92), rgba(226,232,240,0.76));
+      border: 1px solid rgba(148,163,184,0.18);
+      box-shadow: inset 0 1px 2px rgba(15,23,42,0.04);
+    }
+
+    .preview-dot {
+      position: relative;
+      z-index: 2;
+      width: 0.95rem;
+      height: 0.5rem;
+      border-radius: 999px;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .preview-dot::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0.28rem;
+      height: 0.28rem;
+      border-radius: 999px;
+      background: rgba(100,116,139,0.34);
+      transform: translate(-50%, -50%);
+      transition: opacity 0.24s ease, transform 0.24s ease, background 0.24s ease;
+    }
+
+    .preview-dot.is-active::before {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.45);
+    }
+
+    .preview-dot-indicator {
+      position: absolute;
+      left: 0.12rem;
+      top: 50%;
+      width: 0.95rem;
+      height: 0.5rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      box-shadow: 0 6px 14px rgba(37,99,235,0.24), inset 0 1px 0 rgba(255,255,255,0.34);
+      transform: translate3d(calc(var(--dot-index) * var(--dot-step)), -50%, 0);
+      transition: transform 0.48s cubic-bezier(.16,1,.3,1), box-shadow 0.28s ease;
+      will-change: transform;
+    }
+
+    .progress-step {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      transition: none;
+    }
+
+    .progress-step:disabled {
+      cursor: not-allowed;
+    }
+
+    .progress-step.is-ready {
+      opacity: 1;
+    }
+
+    .progress-step.is-pending {
+      opacity: 0.56;
+    }
+
+    .progress-step.is-active .progress-step-icon {
+      background: #10b981;
+      color: #ffffff;
+      border-color: #10b981;
+    }
+
+    .progress-step-icon {
+      border: 2px solid #e2e8f0;
+      background: #ffffff;
+      color: transparent;
+      transition: none;
+    }
+
+    .progress-value-stack {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .progress-value-stack [data-progress-value] {
+      display: block;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .continue-action:disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    @keyframes gearSpin {
+      0% { transform: rotate(0deg) scale(1); }
+      60% { transform: rotate(120deg) scale(1.08); }
+      100% { transform: rotate(90deg) scale(1); }
+    }
+    .settings-gear.is-spinning {
+      animation: gearSpin 0.45s ease;
+      transform-origin: center;
+    }
+    .settings-trigger.is-settings-active {
+      background: #fff7ed;
+      color: #f97316 !important;
+    }
+    .settings-trigger.is-settings-active .settings-gear {
+      color: #f97316 !important;
+      stroke: #f97316 !important;
+    }
+    #app-sidebar.is-open {
+      transform: translateX(0);
+    }
+
+    .sidebar-popover {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transform: translateY(-6px) scale(0.98);
+      transition: max-height 0.35s ease, opacity 0.22s ease, transform 0.28s ease, margin 0.28s ease;
+    }
+
+    .sidebar-popover.is-open {
+      max-height: 620px;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    body.sidebar-lock {
+      overflow: hidden;
+    }
+
+    .top-profile {
+      position: relative;
+    }
+
+    .top-profile-trigger {
+      border: 0;
+      background: transparent;
+    }
+
+    .profile-switch-panel {
+      position: absolute;
+      top: calc(100% + 0.75rem);
+      right: 0;
+      width: 17rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px) scale(0.96);
+      transform-origin: top right;
+      transition: opacity 0.22s ease, transform 0.28s cubic-bezier(.2,.8,.2,1);
+      z-index: 60;
+    }
+
+    .profile-switch-panel.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .profile-switch-option {
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .profile-switch-option:hover {
+      transform: translateY(-1px);
+      border-color: rgba(99,102,241,0.28);
+      background: rgba(99,102,241,0.08);
+    }
+
+    .test-picker-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, 0.42);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.24s ease;
+    }
+
+    .test-picker-overlay.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .test-picker-card {
+      width: min(100%, 42rem);
+      border-radius: 1.8rem;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(226, 232, 240, 0.92);
+      box-shadow: 0 34px 90px rgba(15, 23, 42, 0.22);
+      transform: translateY(14px) scale(0.96);
+      transition: transform 0.34s cubic-bezier(.16,1,.3,1);
+    }
+
+    .test-picker-overlay.is-open .test-picker-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .test-choice {
+      border: 1px solid rgba(226, 232, 240, 0.92);
+      background: rgba(248, 250, 252, 0.82);
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .test-choice:hover {
+      transform: translateY(-2px);
+      border-color: rgba(99, 102, 241, 0.32);
+      background: #ffffff;
+      box-shadow: 0 18px 36px rgba(79, 70, 229, 0.1);
+    }
+
+    .test-choice-icon {
+      width: 2.8rem;
+      height: 2.8rem;
+      border-radius: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 14px 30px rgba(79, 70, 229, 0.18);
+    }
+
+    @media (min-width: 1024px) {
+      #app-sidebar {
+        width: 14.5rem !important;
+      }
+
+      #app-sidebar > .p-6 {
+        padding: 1.15rem 1rem !important;
+      }
+
+      #app-sidebar nav {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+
+      #app-sidebar nav a,
+      #app-sidebar nav button.settings-trigger {
+        padding: 0.66rem 0.78rem !important;
+        font-size: 13px !important;
+        border-radius: 0.95rem !important;
+      }
+
+      #app-sidebar nav svg {
+        width: 1rem !important;
+        height: 1rem !important;
+      }
+
+      #app-sidebar .px-4.mb-6 {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        margin-bottom: 1rem !important;
+      }
+
+      #app-sidebar .px-4.mb-6 > div,
+      #app-sidebar [data-profile-open] {
+        padding: 0.85rem !important;
+        border-radius: 1rem !important;
+      }
+
+      #app-sidebar .mt-auto {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      #app-sidebar {
+        box-shadow: 24px 0 60px rgba(15,23,42,0.18);
+        transform: translate3d(-108%, 0, 0) scale(0.985) !important;
+        transition: transform 0.68s cubic-bezier(.16,1,.3,1), box-shadow 0.68s ease !important;
+        will-change: transform;
+        backface-visibility: hidden;
+      }
+
+      #app-sidebar.is-open {
+        transform: translate3d(0, 0, 0) scale(1) !important;
+      }
+
+      #sidebar-overlay:not(.hidden) {
+        left: 0;
+        animation: sidebarOverlayFade 0.5s ease both;
+      }
+    }
+
+    @keyframes sidebarOverlayFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    body.theme-dark {
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    body.theme-dark main,
+    body.theme-dark header {
+      background: #0f172a !important;
+    }
+
+    body.theme-dark aside,
+    body.theme-dark .bg-white {
+      background-color: #121c2e !important;
+      color: #edf4ff !important;
+      border-color: #29384f !important;
+    }
+
+    body.theme-dark .bg-slate-50 {
+      background-color: #1b2638 !important;
+    }
+
+    body.theme-dark .bg-indigo-50,
+    body.theme-dark .bg-indigo-100 {
+      background-color: #22245c !important;
+      color: #aeb8ff !important;
+    }
+
+    body.theme-dark .bg-emerald-50,
+    body.theme-dark .bg-emerald-100 {
+      background-color: #12352f !important;
+      color: #6ee7b7 !important;
+    }
+
+    body.theme-dark .bg-orange-50 {
+      background-color: #3a2617 !important;
+      color: #fdba74 !important;
+    }
+
+    body.theme-dark #settings-panel > div,
+    body.theme-dark #profile-panel > div,
+    body.theme-dark #profile-switch-panel > div,
+    body.theme-dark .bg-gradient-to-br {
+      background: #121c2e !important;
+      border-color: #31425c !important;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.25) !important;
+    }
+
+    body.theme-dark .text-slate-900,
+    body.theme-dark .text-slate-800,
+    body.theme-dark .text-slate-700 {
+      color: #ffffff !important;
+    }
+
+    body.theme-dark .text-slate-600 {
+      color: #cbd8ea !important;
+    }
+
+    body.theme-dark .text-slate-500 {
+      color: #b7c6dc !important;
+    }
+
+    body.theme-dark .text-slate-400 {
+      color: #aebcd1 !important;
+    }
+
+    body.theme-dark .border-slate-50,
+    body.theme-dark .border-slate-100,
+    body.theme-dark .border-slate-200 {
+      border-color: #29384f !important;
+    }
+
+    body.theme-dark input {
+      background-color: #0f172a !important;
+      border-color: #31425c !important;
+      color: #edf4ff !important;
+    }
+
+    body.theme-dark input::placeholder {
+      color: #7f8da3 !important;
+    }
+
+    body.theme-dark .score-ring__value {
+      color: #fff7ed;
+    }
+
+    body.theme-dark .theme-choice[data-theme-choice="light"] {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    body.theme-dark .theme-choice[data-theme-choice="dark"],
+    body.theme-dark .theme-choice[data-theme-choice="system"] {
+      color: #ffffff !important;
+    }
+
+    @media (min-width: 1024px) {
+      #app-sidebar {
+        position: fixed !important;
+        inset: 0 auto 0 0 !important;
+        width: 14.5rem !important;
+        max-width: 14.5rem !important;
+        transform: none !important;
+        z-index: 60 !important;
+      }
+
+      body > main {
+        margin-left: 14.5rem !important;
+        width: calc(100% - 14.5rem) !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-700 antialiased min-h-screen lg:h-screen lg:overflow-hidden flex flex-col lg:flex-row">
+<button id="sidebar-overlay" class="fixed inset-0 z-30 hidden bg-slate-950/35 lg:hidden" type="button" aria-label="Close navigation"></button>
+<!-- BEGIN: LeftSidebar -->
+<aside id="app-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 flex-shrink-0 bg-white border-r border-slate-200 flex flex-col h-full overflow-y-auto transform -translate-x-full transition-transform duration-300 lg:static lg:translate-x-0">
+<!-- Logo -->
+<div class="p-6 flex items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="brand-logo-mark w-8 h-8 flex items-center justify-center text-white">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path></svg>
+</div>
+<span class="text-xl font-bold text-slate-800">CogniLens</span>
+</div>
+<button class="lg:hidden rounded-xl border border-slate-200 p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50" data-sidebar-close type="button" aria-label="Close navigation">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+<!-- Navigation -->
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-sm font-medium bg-indigo-50 text-indigo-600 rounded-xl" href="homepage.html">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        Dashboard
+      </a>
+<a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-500 hover:bg-slate-50 rounded-xl transition-colors" href="insights.html">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        Insights
+      </a>
+<a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-500 hover:bg-slate-50 rounded-xl transition-colors" href="traits.html">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 11a2 2 0 0 0-2 2c0 3.2 1.1 5.4 3.5 7" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8 13a4 4 0 1 1 8 0c0 1.1-.12 2.18-.36 3.22" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5.3 17A8.8 8.8 0 0 1 5 13a7 7 0 0 1 14 0c0 2.1-.28 4.02-.84 5.76" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 13a9 9 0 0 1 15.3-6.4M12 3.5A9.5 9.5 0 0 1 21.5 13" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        Traits
+      </a>
+<a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-500 hover:bg-slate-50 rounded-xl transition-colors" href="reports.html">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        Reports
+      </a>
+<a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-500 hover:bg-slate-50 rounded-xl transition-colors" href="history.html">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        History
+      </a>
+<button class="settings-trigger w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-500 hover:bg-slate-50 rounded-xl transition-colors" data-settings-open type="button">
+<svg class="settings-gear w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        Settings
+      </button>
+<div id="settings-panel" class="sidebar-popover px-2" aria-hidden="true">
+<div class="rounded-2xl border border-indigo-100 bg-white/80 backdrop-blur-xl p-3 shadow-lg shadow-indigo-100/60">
+<p class="text-[10px] font-bold uppercase tracking-widest text-indigo-600 mb-3">Settings</p>
+<div class="space-y-3">
+<div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Assessment</p>
+<div class="space-y-2">
+<label class="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-2">
+<span>
+<span class="block text-xs font-semibold text-slate-700">Autosave progress</span>
+<span class="block text-[10px] font-semibold text-slate-400">Resume unfinished tests</span>
+</span>
+<input class="rounded text-indigo-600 focus:ring-indigo-500" data-autosave-toggle type="checkbox" checked>
+</label>
+<label class="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-2">
+<span>
+<span class="block text-xs font-semibold text-slate-700">Save result history</span>
+<span class="block text-[10px] font-semibold text-slate-400">Keep past results on this device</span>
+</span>
+<input class="rounded text-indigo-600 focus:ring-indigo-500" data-history-toggle type="checkbox" checked>
+</label>
+</div>
+</div>
+<div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Theme</p>
+<div class="grid grid-cols-3 gap-2">
+<button class="theme-choice rounded-xl bg-slate-900 py-2 text-[11px] font-bold text-white" data-theme-choice="dark" type="button">Dark</button>
+<button class="theme-choice rounded-xl bg-slate-100 py-2 text-[11px] font-bold text-slate-700" data-theme-choice="light" type="button">Light</button>
+<button class="theme-choice rounded-xl bg-indigo-100 py-2 text-[11px] font-bold text-indigo-700" data-theme-choice="system" type="button">Auto</button>
+</div>
+</div>
+<div class="border-t border-slate-200/80 pt-3">
+<p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Privacy</p>
+<button class="settings-action-row w-full rounded-xl px-3 py-2.5 text-left flex items-center justify-between gap-3" data-clear-local-data type="button">
+<span>
+<span class="block text-xs font-bold text-slate-800">Clear local test data</span>
+<span class="block text-[10px] font-semibold text-slate-400">Results, progress, links, and history</span>
+</span>
+<span class="text-[10px] font-bold text-slate-400" data-clear-local-status>Local</span>
+</button>
+</div>
+<div class="border-t border-slate-200/80 pt-3" data-auth-account-section hidden>
+<p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Account</p>
+<button class="w-full rounded-xl border border-rose-100 bg-rose-50 px-3 py-2.5 text-left text-xs font-bold text-rose-600 hover:border-rose-200 hover:bg-rose-100 transition-colors flex items-center justify-start gap-3" data-logout-button type="button">
+<span class="flex items-center gap-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15" stroke-linecap="round" stroke-linejoin="round"></path><path d="M18 12H9m9 0l-3-3m3 3l-3 3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+Sign out
+</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<!-- Upgrade Card -->
+<div class="px-4 mb-6" data-sidebar-upgrade>
+<div class="p-5 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl border border-blue-100">
+<div class="flex items-center gap-2 mb-2">
+<svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span class="text-xs font-bold text-slate-800">Upgrade to Premium</span>
+</div>
+<p class="text-[11px] text-slate-500 leading-relaxed mb-4">
+          Unlock deeper AI insights, advanced reports and personalized recommendations.
+        </p>
+<button class="w-full py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-colors">
+          Upgrade Now
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+</div>
+<!-- User Profile & Theme Toggle -->
+<div class="mt-auto px-4 pb-6 space-y-4">
+<button class="w-full p-3 bg-white border border-slate-100 rounded-2xl flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-200 transition-all text-left" data-profile-open type="button">
+<span class="flex items-center gap-3">
+<span class="relative w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" data-profile-avatar src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9WfxpyjZrurjeTb0uXWVvK9tMj_KIix0Xj3Xv36tUOmCj90_NH6VS-szFzUaHwd7UNpb-MSJZpnLyY0-mhKojUrPUKOVqAZcAVProEdFNPKfCOoFD5N53_gbsnrH39ReYa2kA6DtSS--555GKg7vDKp_2WDkifkwhmhJ1V2D_1_5Lipw2FmjhJPM7sTuxNQDr4B-LxnT4982CHjs-_bcqLRhgg2RfUI04090XmPHvT77Ysa_QXmBj3wjvIwGurObSDlkXQV_PAUk"/>
+</span>
+<span>
+<span class="block text-xs font-bold text-slate-800" data-profile-name>Explorer</span>
+<span class="text-[10px] px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded-full font-semibold">Premium</span>
+</span>
+</span>
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<div id="profile-panel" class="sidebar-popover" aria-hidden="true">
+<div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-lg">
+<div class="flex items-center justify-between mb-3">
+<div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-indigo-600">Profile</p>
+<h3 class="text-sm font-bold text-slate-900">Edit profile</h3>
+</div>
+<button class="text-slate-400 hover:text-slate-700" data-profile-close type="button" aria-label="Close profile editor">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+<div class="flex items-center gap-3 rounded-2xl bg-slate-50 p-3 mb-4">
+<span class="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center overflow-hidden text-sm font-bold" data-profile-preview>E</span>
+<span class="min-w-0 flex-1">
+<span class="block text-[11px] font-bold text-slate-800">Profile photo</span>
+<span class="block text-[10px] text-slate-500">Use your sign-in image or upload a new one.</span>
+</span>
+</div>
+<input id="profile-photo-input" class="hidden" type="file" accept="image/*">
+<div class="grid grid-cols-2 gap-2 mb-4">
+<button class="rounded-xl border border-slate-200 bg-white py-2 text-[11px] font-bold text-slate-700 hover:border-indigo-200 hover:text-indigo-600" data-profile-upload type="button">Upload from Gallery</button>
+<button class="rounded-xl border border-slate-200 bg-white py-2 text-[11px] font-bold text-slate-500 hover:border-rose-200 hover:text-rose-600" data-profile-remove-photo type="button">Remove</button>
+</div>
+<label class="block text-[11px] font-bold text-slate-500 mb-1" for="profile-name">Name</label>
+<input id="profile-name" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-indigo-500 focus:ring-indigo-500" type="text" placeholder="Your name">
+<label class="block text-[11px] font-bold text-slate-500 mt-3 mb-1" for="profile-email">Email</label>
+<input id="profile-email" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-indigo-500 focus:ring-indigo-500" type="email" placeholder="you@example.com">
+<button class="mt-3 w-full rounded-xl bg-indigo-600 py-2 text-xs font-bold text-white hover:bg-indigo-700" data-profile-save type="button">Save Profile</button>
+</div>
+</div>
+<div class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-xl">
+<div class="flex items-center gap-2 text-xs font-medium text-slate-600">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span data-theme-label>Light</span>
+        </div>
+<div class="w-2 h-2 bg-indigo-600 rounded-full" data-theme-dot></div>
+</div>
+<div class="text-[10px] text-center text-slate-400 font-medium">
+        © 2024 CogniLens
+      </div>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+<!-- BEGIN: MainContent -->
+<main class="flex-1 w-full overflow-y-auto bg-[#F8FAFC]">
+<!-- BEGIN: TopBar -->
+<header class="min-h-16 px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3 sticky top-0 bg-[#F8FAFC]/80 backdrop-blur-md z-10">
+<button id="mobile-menu-button" class="p-2 text-slate-600 bg-white border border-slate-200 rounded-xl shadow-sm lg:hidden" type="button" aria-label="Open navigation" aria-expanded="false">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<div class="relative flex-1 max-w-md min-w-0">
+<svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<input class="w-full pl-11 pr-4 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" placeholder="Search insights, reports..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-white rounded-full transition-colors relative">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 border-2 border-[#F8FAFC] rounded-full"></span>
+</button>
+<div class="top-profile">
+<button class="top-profile-trigger flex items-center gap-1 cursor-pointer rounded-full px-1 py-1 hover:bg-white transition-colors" data-profile-switch-open type="button" aria-label="Switch profile" aria-expanded="false">
+<span class="w-8 h-8 rounded-full bg-indigo-900 text-white flex items-center justify-center text-xs font-bold overflow-hidden" data-top-profile-initial>E</span>
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<div id="profile-switch-panel" class="profile-switch-panel" aria-hidden="true">
+<div class="rounded-3xl border border-slate-100 bg-white/95 backdrop-blur-xl p-3 shadow-2xl shadow-slate-200/70">
+<div class="flex items-center justify-between px-1 pb-3">
+<div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-indigo-600">Profiles</p>
+<h3 class="text-sm font-bold text-slate-900">Switch profile</h3>
+</div>
+<span class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold overflow-hidden" data-switch-current-initial>E</span>
+</div>
+<div class="space-y-2" data-profile-switch-list></div>
+<button class="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 py-2.5 text-xs font-bold text-slate-700 hover:border-indigo-200 hover:text-indigo-600 transition-colors" data-profile-manage type="button">Account control</button>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- END: TopBar -->
+<div class="dashboard-shell p-4 sm:p-6 lg:p-8 max-w-[1180px] mx-auto space-y-10">
+<!-- BEGIN: HeroSection -->
+<section class="dashboard-grid grid grid-cols-1 2xl:grid-cols-12 gap-6 lg:gap-8 items-start">
+<div class="2xl:col-span-6 flex flex-col items-start gap-4 pt-4 min-w-0">
+<span class="px-3 py-1 bg-indigo-100 text-indigo-600 text-[10px] font-bold tracking-wider rounded-full uppercase">Cognitive Intelligence Engine</span>
+<h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight max-w-2xl">
+            Understand yourself before the world tries to <span class="text-cogni-purple">define you.</span>
+</h1>
+<p class="text-sm text-slate-500 max-w-sm leading-relaxed">
+            CogniLens turns your answers into a focused personality dashboard with trait balance, behavioral signals, and a shareable result.
+          </p>
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-2 w-full sm:w-auto">
+<button class="bg-cogni-purple text-white px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 w-full sm:w-auto" data-start-test type="button">
+  Start Test
+</button>
+<button class="px-6 py-3 border border-slate-200 bg-white text-slate-700 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-slate-50 transition-all w-full sm:w-auto" data-login-link type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              Secure Login
+            </button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-8 w-full" data-dashboard-extra>
+<!-- Stat 1 -->
+<div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm w-full">
+<div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">?</div>
+<div>
+<div class="text-sm font-bold text-slate-800">20</div>
+<div class="text-[10px] text-slate-400 font-medium uppercase tracking-tight">Assessment Prompts</div>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm w-full">
+<div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<div>
+<div class="text-sm font-bold text-slate-800">16</div>
+<div class="text-[10px] text-slate-400 font-medium uppercase tracking-tight">Profile Patterns</div>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm w-full">
+<div class="w-10 h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center">
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"></path></svg>
+</div>
+<div>
+<div class="text-sm font-bold text-slate-800">4</div>
+<div class="text-[10px] text-slate-400 font-medium uppercase tracking-tight">Cognitive Axes</div>
+</div>
+</div>
+</div>
+</div>
+<div class="2xl:col-span-6 min-w-0">
+<!-- BEGIN: PreviewCard -->
+<div class="preview-card preview-swipe bg-white rounded-3xl p-6 shadow-xl shadow-slate-200 border border-slate-100 overflow-hidden" data-preview-carousel aria-live="polite">
+<div class="flex items-center justify-between mb-4">
+<div>
+<span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Live Preview</span>
+<h3 class="text-lg font-bold text-slate-800">Trait Dashboard</h3>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 rounded-full">
+<span class="text-[10px] font-bold text-emerald-600" data-preview-status>Sample</span>
+<span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+</div>
+</div>
+<!-- Card Visual Area -->
+<div class="bg-cogni-dark rounded-2xl p-6 flex flex-col md:flex-row gap-6 text-white relative overflow-hidden mb-4" data-preview-slide>
+<div class="flex-1 space-y-4 relative z-10">
+<p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Your Top Trait</p>
+<h4 class="text-5xl font-black tracking-tight text-indigo-400" data-preview-type>INTJ</h4>
+<p class="text-[11px] text-slate-300 leading-relaxed max-w-[180px]" data-preview-summary>
+                  Systems thinker with long-range clarity and calm decision pressure.
+                </p>
+</div>
+<div class="flex-1 space-y-4 relative z-10">
+<p class="text-[10px] font-medium text-slate-400 uppercase text-right mb-4">Trait Balance</p>
+<div class="space-y-3">
+<!-- Progress Item -->
+<div class="space-y-1" data-preview-metric="I">
+<div class="flex justify-between text-[10px] font-bold">
+<span class="text-slate-300" data-preview-label>Introversion</span>
+<span data-preview-value>76%</span>
+</div>
+<div class="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-400 w-[76%]" data-preview-bar></div>
+</div>
+</div>
+<!-- Progress Item -->
+<div class="space-y-1" data-preview-metric="N">
+<div class="flex justify-between text-[10px] font-bold">
+<span class="text-slate-300" data-preview-label>Intuition</span>
+<span data-preview-value>82%</span>
+</div>
+<div class="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-indigo-500 w-[82%]" data-preview-bar></div>
+</div>
+</div>
+<!-- Progress Item -->
+<div class="space-y-1" data-preview-metric="T">
+<div class="flex justify-between text-[10px] font-bold">
+<span class="text-slate-300" data-preview-label>Thinking</span>
+<span data-preview-value>71%</span>
+</div>
+<div class="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-blue-500 w-[71%]" data-preview-bar></div>
+</div>
+</div>
+<!-- Progress Item -->
+<div class="space-y-1" data-preview-metric="J">
+<div class="flex justify-between text-[10px] font-bold">
+<span class="text-slate-300" data-preview-label>Judging</span>
+<span data-preview-value>78%</span>
+</div>
+<div class="h-1 w-full bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-orange-400 w-[78%]" data-preview-bar></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Visual brain decoration -->
+<div class="absolute -right-4 top-4 opacity-50 pointer-events-none">
+<svg fill="none" height="150" viewbox="0 0 200 150" width="200" xmlns="http://www.w3.org/2000/svg">
+<path d="M100 75C100 40 130 10 170 10C170 10 190 30 190 75C190 120 170 140 170 140C130 140 100 110 100 75Z" fill="url(#paint0_linear)" fill-opacity="0.2"></path>
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="paint0_linear" x1="100" x2="190" y1="75" y2="75">
+<stop stop-color="#818CF8"></stop>
+<stop offset="1" stop-color="#4338CA"></stop>
+</lineargradient>
+</defs>
+<!-- Simulating brain map with lines -->
+<path d="M120 40Q150 20 180 50" stroke="#818CF8" stroke-dasharray="2 2" stroke-width="0.5"></path>
+<path d="M110 80Q140 60 170 100" stroke="#818CF8" stroke-dasharray="2 2" stroke-width="0.5"></path>
+</svg>
+</div>
+</div>
+<div class="flex items-center justify-between gap-4 mb-5" data-preview-quote-row>
+<p class="text-[11px] leading-relaxed text-slate-500 font-medium" data-preview-quote>
+                  Swipe to preview how different result stories can look after the assessment.
+                </p>
+<div class="flex items-center gap-1.5" data-preview-dots aria-label="Preview slides"></div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4" data-preview-supporting-points>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4m0-4h.01"></path></svg>
+</div>
+<div>
+<div class="text-[10px] font-bold text-slate-800">High Analytical Depth</div>
+<div class="text-[10px] text-slate-500 leading-snug">You excel at complex problem solving.</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+</div>
+<div>
+<div class="text-[10px] font-bold text-slate-800">Independent Thinker</div>
+<div class="text-[10px] text-slate-500 leading-snug">You value logic over emotions.</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+</div>
+<div>
+<div class="text-[10px] font-bold text-slate-800">Strategic Mindset</div>
+<div class="text-[10px] text-slate-500 leading-snug">You plan, predict, and execute.</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: PreviewCard -->
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: ContentArea -->
+<section class="dashboard-grid grid grid-cols-1 2xl:grid-cols-12 gap-6 lg:gap-8 items-start">
+<div class="2xl:col-span-9 space-y-6 min-w-0">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 text-indigo-600 mb-1">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<h2 class="text-xl font-bold text-slate-800">Core Insights</h2>
+</div>
+<p class="text-sm text-slate-500 leading-relaxed">The assessment maps behavior across practical dimensions that are easy to understand and act on.</p>
+</div>
+<a class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 bg-white rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all" href="insights.html">
+              View All Insights
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Card 1: Behavioral Patterns -->
+<div class="insight-card bg-white p-6 border border-slate-100 shadow-sm flex flex-col min-h-[280px]">
+<div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center text-xs font-bold mb-4">1</div>
+<h4 class="text-sm font-bold text-slate-800 mb-1">Behavioral Patterns</h4>
+<p class="text-slate-500 mb-6">See how you act under pressure, make choices, and move through uncertainty.</p>
+<!-- Mini Chart Simulation -->
+<div class="flex-1 flex items-end gap-1 mb-4">
+<svg height="40" viewbox="0 0 100 40" width="100%">
+<path d="M0 30 Q10 20 20 35 T40 25 T60 15 T80 20 T100 10" fill="none" stroke="#10B981" stroke-width="2"></path>
+<circle cx="100" cy="10" fill="#10B981" r="3"></circle>
+</svg>
+</div>
+<div class="flex items-center justify-between border-t border-slate-50 pt-4 mt-auto">
+<span class="metric-label text-slate-500 font-medium">Patterns Detected</span>
+<span class="text-lg font-bold text-emerald-500">12</span>
+</div>
+</div>
+<!-- Card 2: Trait Balance -->
+<div class="insight-card bg-white p-6 border border-slate-100 shadow-sm flex flex-col min-h-[280px]">
+<div class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center text-xs font-bold mb-4">2</div>
+<h4 class="text-sm font-bold text-slate-800 mb-1">Trait Balance</h4>
+<p class="text-slate-500 mb-4">Compare introversion, intuition, thinking, and structure with clean visual scoring.</p>
+<!-- Radar Simulation -->
+<div class="flex-1 flex items-center justify-center">
+<div class="radar-container">
+<div class="absolute inset-0 border border-slate-100 radar-poly opacity-20 scale-100"></div>
+<div class="absolute inset-0 border border-slate-100 radar-poly opacity-20 scale-75"></div>
+<div class="absolute inset-0 border border-indigo-400 radar-poly scale-90 bg-indigo-500/10"></div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-50 pt-4 mt-auto">
+<span class="metric-label text-slate-500 font-medium">Balance Score</span>
+<span class="text-lg font-bold text-indigo-600">78%</span>
+</div>
+</div>
+<!-- Card 3: Result Dashboard -->
+<div class="insight-card bg-white p-6 border border-slate-100 shadow-sm flex flex-col min-h-[280px]">
+<div class="w-8 h-8 bg-orange-50 text-orange-500 rounded-lg flex items-center justify-center text-xs font-bold mb-4">3</div>
+<h4 class="text-sm font-bold text-slate-800 mb-1">Result Dashboard</h4>
+<p class="text-slate-500 mb-4">Finish with a polished result page, profile summary, graph, and social share tools.</p>
+<div class="flex-1 flex items-center justify-center">
+<div class="score-ring relative w-20 h-20">
+<svg class="w-full h-full" viewbox="0 0 36 36">
+<path class="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-orange-400" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="92, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<span class="score-ring__value">92%</span>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-50 pt-4 mt-auto">
+<span class="metric-label text-slate-500 font-medium">Shareable Report</span>
+<button class="p-1.5 bg-slate-50 rounded-lg text-slate-500 hover:text-indigo-600">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="2xl:col-span-3 min-w-0">
+<!-- BEGIN: ProgressTracker -->
+<div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+<h3 class="text-sm font-bold text-slate-800 mb-6">Your Progress</h3>
+<!-- Circular Gauge -->
+<div class="flex justify-center mb-8">
+<div class="relative w-28 h-28">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path class="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="2.5"></path>
+<path class="text-emerald-400 transition-all duration-500" data-progress-ring d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="0, 100" stroke-linecap="round" stroke-width="2.5"></path>
+</svg>
+<div class="progress-value-stack">
+<span class="text-xl font-bold text-slate-800" data-progress-value>0%</span>
+<span class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter mt-1">Completed</span>
+</div>
+</div>
+</div>
+<!-- Checklist -->
+<div class="space-y-4 mb-8">
+<div class="progress-step flex items-center gap-3" data-progress-step="profile">
+<div class="progress-step-icon w-5 h-5 rounded-full flex items-center justify-center">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<span class="text-xs font-semibold text-slate-600">Personal Information</span>
+</div>
+<div class="progress-step flex items-center gap-3" data-progress-step="assessment">
+<div class="progress-step-icon w-5 h-5 rounded-full flex items-center justify-center">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<span class="text-xs font-semibold text-slate-600">Assessment</span>
+</div>
+<div class="progress-step flex items-center gap-3" data-progress-step="review">
+<div class="progress-step-icon w-5 h-5 rounded-full flex items-center justify-center">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<span class="text-xs font-semibold text-slate-600">Review Answers</span>
+</div>
+<div class="progress-step flex items-center gap-3" data-progress-step="result">
+<div class="progress-step-icon w-5 h-5 rounded-full flex items-center justify-center">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<span class="text-xs font-semibold text-slate-600">Results Generated</span>
+</div>
+<button class="progress-step flex items-center gap-3 is-pending" data-share-results-step data-progress-step="share" type="button">
+<div class="progress-step-icon w-5 h-5 rounded-full flex items-center justify-center">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+<span class="text-xs font-semibold text-slate-500">Share Your Results</span>
+</button>
+</div>
+<button class="continue-action w-full py-3 bg-indigo-950 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-black transition-all" data-progress-continue type="button">
+              Continue
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+<!-- END: ProgressTracker -->
+</div>
+</section>
+<!-- END: ContentArea -->
+</div>
+</main>
+<!-- END: MainContent -->
+<div id="test-picker-modal" class="test-picker-overlay" aria-hidden="true">
+  <section class="test-picker-card p-5 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="test-picker-title">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-600">Choose Assessment</p>
+        <h2 id="test-picker-title" class="mt-1 text-2xl font-black tracking-tight text-slate-950">Start your CogniLens test</h2>
+        <p class="mt-2 max-w-xl text-sm leading-relaxed text-slate-500">Pick the test you want to begin. MBTI is ready now; IQ and EQ shells are prepared for upcoming question sets.</p>
+      </div>
+      <button class="rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-500 hover:bg-slate-50 hover:text-slate-900" data-test-picker-close type="button" aria-label="Close test picker">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </button>
+    </div>
+    <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <button class="test-choice rounded-3xl p-4 text-left" data-test-choice="../Assets/question.html" type="button">
+        <span class="test-choice-icon bg-gradient-to-br from-indigo-500 to-blue-600">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path></svg>
+        </span>
+        <span class="mt-4 block text-base font-black text-slate-950">MBTI Test</span>
+        <span class="mt-1 block text-xs font-semibold leading-relaxed text-slate-500">6 phases, personality result, traits, potential map.</span>
+        <span class="mt-4 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-emerald-600">Ready</span>
+      </button>
+      <button class="test-choice rounded-3xl p-4 text-left" data-test-choice="../Assets/iq.html" type="button">
+        <span class="test-choice-icon bg-gradient-to-br from-sky-500 to-cyan-500">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </span>
+        <span class="mt-4 block text-base font-black text-slate-950">IQ Test</span>
+        <span class="mt-1 block text-xs font-semibold leading-relaxed text-slate-500">Logic and reasoning module prepared for questions.</span>
+        <span class="mt-4 inline-flex rounded-full bg-sky-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-sky-600">Shell ready</span>
+      </button>
+      <button class="test-choice rounded-3xl p-4 text-left" data-test-choice="../Assets/eq.html" type="button">
+        <span class="test-choice-icon bg-gradient-to-br from-rose-500 to-orange-500">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </span>
+        <span class="mt-4 block text-base font-black text-slate-950">EQ Test</span>
+        <span class="mt-1 block text-xs font-semibold leading-relaxed text-slate-500">Story-based emotion and relationship assessment.</span>
+        <span class="mt-4 inline-flex rounded-full bg-orange-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-orange-600">Ready</span>
+      </button>
+    </div>
+  </section>
+</div>
+ <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+ <script src="../../firebase-config.js"></script>
+ <script src="../../score-system.js"></script>
+ <script src="../../script.js"></script>
+ <script>
+const sidebar = document.getElementById("app-sidebar");
+const sidebarOverlay = document.getElementById("sidebar-overlay");
+const mobileMenuButton = document.getElementById("mobile-menu-button");
+const settingsPanel = document.getElementById("settings-panel");
+const settingsGears = document.querySelectorAll(".settings-gear");
+const profilePanel = document.getElementById("profile-panel");
+const profileNameText = document.querySelector("[data-profile-name]");
+const profileNameInput = document.getElementById("profile-name");
+const profileEmailInput = document.getElementById("profile-email");
+const profileAvatar = document.querySelector("[data-profile-avatar]");
+const profilePreview = document.querySelector("[data-profile-preview]");
+const profilePhotoInput = document.getElementById("profile-photo-input");
+const topProfileInitial = document.querySelector("[data-top-profile-initial]");
+const switchCurrentInitial = document.querySelector("[data-switch-current-initial]");
+const profileSwitchButton = document.querySelector("[data-profile-switch-open]");
+const profileSwitchPanel = document.getElementById("profile-switch-panel");
+const profileSwitchList = document.querySelector("[data-profile-switch-list]");
+const themeLabel = document.querySelector("[data-theme-label]");
+const themeButtons = document.querySelectorAll("[data-theme-choice]");
+const autosaveToggle = document.querySelector("[data-autosave-toggle]");
+const historyToggle = document.querySelector("[data-history-toggle]");
+const clearLocalDataButton = document.querySelector("[data-clear-local-data]");
+const clearLocalDataStatus = document.querySelector("[data-clear-local-status]");
+const testPickerModal = document.getElementById("test-picker-modal");
+const testPickerClose = document.querySelector("[data-test-picker-close]");
+let user = getCogniLensUser();
+const savedDashboardResult = getCogniLensResult();
+const hasCompletedAssessment = Boolean(savedDashboardResult);
+let progressShareSelected = hasCompletedAssessment && localStorage.getItem("cognilensShareReady") === "true";
+const dashboardResult = savedDashboardResult || {
+  type: "INTJ",
+  title: "Strategic Systems Thinker",
+  summary: "Systems thinker with long-range clarity and calm decision pressure.",
+  metrics: { I: 76, N: 82, T: 71, J: 78 }
+};
+const previewMetricMeta = {
+  I: { label: "Introversion", opposite: "E", oppositeLabel: "Extraversion" },
+  N: { label: "Intuition", opposite: "S", oppositeLabel: "Sensing" },
+  T: { label: "Thinking", opposite: "F", oppositeLabel: "Feeling" },
+  J: { label: "Judging", opposite: "P", oppositeLabel: "Perceiving" }
+};
+const previewSamples = [
+  {
+    type: "INTJ",
+    title: "Strategic Systems Thinker",
+    summary: "A focused sample profile with strong planning, analytical depth, and calm decision pressure.",
+    quote: "Sample story: structured thinkers use the dashboard to explain their decision style clearly.",
+    metrics: { I: 94, N: 68, T: 100, J: 61 }
+  },
+  {
+    type: "ENFP",
+    title: "Adaptive Idea Connector",
+    summary: "A sample profile that highlights social energy, creative intuition, and flexible problem framing.",
+    quote: "Sample story: idea-driven users can present their pattern without making it feel like a label.",
+    metrics: { I: 28, N: 86, T: 42, J: 36 }
+  },
+  {
+    type: "ISTP",
+    title: "Practical Tactical Solver",
+    summary: "A sample profile built around quiet observation, hands-on logic, and fast situational decisions.",
+    quote: "Sample story: practical users get a clean trait balance that is easy to share and review.",
+    metrics: { I: 72, N: 38, T: 84, J: 44 }
+  }
+];
+let previewSlides = previewSamples;
+let previewSlideIndex = 0;
+let previewTimer = null;
+const defaultAvatarUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuA9WfxpyjZrurjeTb0uXWVvK9tMj_KIix0Xj3Xv36tUOmCj90_NH6VS-szFzUaHwd7UNpb-MSJZpnLyY0-mhKojUrPUKOVqAZcAVProEdFNPKfCOoFD5N53_gbsnrH39ReYa2kA6DtSS--555GKg7vDKp_2WDkifkwhmhJ1V2D_1_5Lipw2FmjhJPM7sTuxNQDr4B-LxnT4982CHjs-_bcqLRhgg2RfUI04090XmPHvT77Ysa_QXmBj3wjvIwGurObSDlkXQV_PAUk";
+
+function renderAvatarSlot(element, name, photoURL, sizeClass = "w-full h-full") {
+  if (!element) return;
+  const initial = getProfileInitial(name);
+  if (photoURL) {
+    element.innerHTML = `<img alt="${escapeProfileText(name)}" class="${sizeClass} rounded-full object-cover" src="${escapeProfileText(photoURL)}">`;
+    return;
+  }
+  element.textContent = initial;
+}
+
+function closeSidebar() {
+  sidebar.classList.remove("is-open");
+  sidebarOverlay.classList.add("hidden");
+  document.body.classList.remove("sidebar-lock");
+  mobileMenuButton.setAttribute("aria-expanded", "false");
+  setSettingsPanel(false);
+}
+
+function openTestPicker() {
+  if (!testPickerModal) return;
+  testPickerModal.classList.add("is-open");
+  testPickerModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("sidebar-lock");
+  setSettingsPanel(false);
+  toggleProfile(false);
+  toggleProfileSwitch(false);
+}
+
+function closeTestPicker() {
+  if (!testPickerModal) return;
+  testPickerModal.classList.remove("is-open");
+  testPickerModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("sidebar-lock");
+}
+
+function openAssessmentTarget(target) {
+  if (!target) return;
+  if (!hasCogniLensSignedUp()) {
+    sessionStorage.setItem("cognilensPendingAssessment", target);
+    window.location.href = "../../auth/signup.html";
+    return;
+  }
+  window.location.href = target;
+}
+
+function openSidebar() {
+  sidebar.classList.add("is-open");
+  sidebarOverlay.classList.remove("hidden");
+  document.body.classList.add("sidebar-lock");
+  mobileMenuButton.setAttribute("aria-expanded", "true");
+}
+
+mobileMenuButton.addEventListener("click", () => {
+  openSidebar();
+});
+sidebarOverlay.addEventListener("click", closeSidebar);
+document.querySelector("[data-sidebar-close]").addEventListener("click", closeSidebar);
+
+let sidebarTouchStart = null;
+let sidebarPointerStart = null;
+
+sidebar.addEventListener("touchstart", (event) => {
+  const touch = event.touches?.[0];
+  if (!touch) return;
+  sidebarTouchStart = { x: touch.clientX, y: touch.clientY };
+}, { passive: true });
+
+sidebar.addEventListener("touchend", (event) => {
+  if (!sidebarTouchStart || !sidebar.classList.contains("is-open")) return;
+  const touch = event.changedTouches?.[0];
+  if (!touch) return;
+  const deltaX = touch.clientX - sidebarTouchStart.x;
+  const deltaY = touch.clientY - sidebarTouchStart.y;
+  sidebarTouchStart = null;
+  if (deltaX < -54 && Math.abs(deltaY) < 80) closeSidebar();
+}, { passive: true });
+
+sidebar.addEventListener("pointerdown", (event) => {
+  sidebarPointerStart = { x: event.clientX, y: event.clientY };
+});
+
+sidebar.addEventListener("pointerup", (event) => {
+  if (!sidebarPointerStart || !sidebar.classList.contains("is-open")) return;
+  const deltaX = event.clientX - sidebarPointerStart.x;
+  const deltaY = event.clientY - sidebarPointerStart.y;
+  sidebarPointerStart = null;
+  if (deltaX < -54 && Math.abs(deltaY) < 80) closeSidebar();
+});
+
+sidebar.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", () => {
+    if (window.innerWidth < 1024) closeSidebar();
+  });
+});
+
+window.addEventListener("resize", () => {
+  if (window.innerWidth >= 1024) closeSidebar();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeSidebar();
+    closeTestPicker();
+    toggleProfile(false);
+    toggleProfileSwitch(false);
+  }
+});
+
+function pulseSettingsGear() {
+  settingsGears.forEach((gear) => gear.classList.add("is-spinning"));
+  setTimeout(() => settingsGears.forEach((gear) => gear.classList.remove("is-spinning")), 460);
+}
+
+function setSettingsPanel(open, animate = false) {
+  settingsPanel.classList.toggle("is-open", open);
+  settingsPanel.setAttribute("aria-hidden", open ? "false" : "true");
+  document.querySelectorAll("[data-settings-open]").forEach((button) => {
+    button.classList.toggle("is-settings-active", open);
+    if (open) button.style.setProperty("color", "#f97316", "important");
+    else button.style.removeProperty("color");
+  });
+  if (animate) pulseSettingsGear();
+}
+
+function toggleSettings() {
+  const isOpen = !settingsPanel.classList.contains("is-open");
+  setSettingsPanel(isOpen, true);
+  if (isOpen) toggleProfile(false);
+  if (isOpen) toggleProfileSwitch(false);
+}
+
+document.querySelectorAll("[data-settings-open]").forEach((button) => {
+  button.addEventListener("click", toggleSettings);
+});
+
+function resolveTheme(choice) {
+  if (choice === "system") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return choice;
+}
+
+function applyTheme(choice) {
+  const resolved = resolveTheme(choice);
+  document.body.classList.toggle("theme-dark", resolved === "dark");
+  localStorage.setItem("cognilensTheme", choice);
+  themeLabel.textContent = choice === "system" ? "Auto" : choice.charAt(0).toUpperCase() + choice.slice(1);
+  themeButtons.forEach((button) => {
+    button.classList.toggle("ring-2", button.dataset.themeChoice === choice);
+    button.classList.toggle("ring-indigo-400", button.dataset.themeChoice === choice);
+  });
+}
+
+themeButtons.forEach((button) => {
+  button.addEventListener("click", () => applyTheme(button.dataset.themeChoice));
+});
+
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if ((localStorage.getItem("cognilensTheme") || "light") === "system") applyTheme("system");
+});
+
+function hydrateDashboardSettings() {
+  document.body.classList.remove("compact-dashboard", "focus-dashboard", "large-dashboard-text");
+  if (autosaveToggle) autosaveToggle.checked = getCogniLensSetting("autosaveProgress", true);
+  if (historyToggle) historyToggle.checked = getCogniLensSetting("saveHistory", true);
+}
+
+function setupDashboardSettings() {
+  [
+    [autosaveToggle, "autosaveProgress"],
+    [historyToggle, "saveHistory"]
+  ].forEach(([toggle, key]) => {
+    toggle?.addEventListener("change", () => setCogniLensSetting(key, toggle.checked));
+  });
+  clearLocalDataButton?.addEventListener("click", () => {
+    localStorage.removeItem("cognilensResult");
+    localStorage.removeItem("cognilensResultHistory");
+    localStorage.removeItem("cognilensAssessmentProgress");
+    localStorage.removeItem("cognilensShareReady");
+    localStorage.removeItem("cognilensProfileLink");
+    if (clearLocalDataStatus) {
+      clearLocalDataStatus.textContent = "Cleared";
+      setTimeout(() => {
+        clearLocalDataStatus.textContent = "Local";
+      }, 1400);
+    }
+    hydrateProgressTracker();
+  });
+}
+
+function hydrateProfile() {
+  const name = user.name || "Explorer";
+  const photoURL = user.photoURL || "";
+  profileNameText.textContent = name;
+  profileNameInput.value = name;
+  profileEmailInput.value = user.email || "";
+  if (profileAvatar) profileAvatar.src = photoURL || defaultAvatarUrl;
+  renderAvatarSlot(topProfileInitial, name, photoURL, "w-8 h-8");
+  renderAvatarSlot(switchCurrentInitial, name, photoURL, "w-8 h-8");
+  renderAvatarSlot(profilePreview, name, photoURL, "w-12 h-12");
+  renderProfileSwitch();
+}
+
+function escapeProfileText(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function getProfileInitial(name) {
+  return (String(name || "Explorer").trim()[0] || "E").toUpperCase();
+}
+
+function getProfileChoices() {
+  const currentName = user.name || "Explorer";
+  const currentEmail = user.email || "Current workspace";
+  const profiles = [
+    {
+      id: "current",
+      name: currentName,
+      email: currentEmail,
+      provider: user.provider || "profile",
+      photoURL: user.photoURL || "",
+      badge: "Active"
+    }
+  ];
+  [
+    {
+      id: "focus",
+      name: "Focus Profile",
+      email: "Deep work mode",
+      provider: "switcher",
+      photoURL: "",
+      badge: "Work"
+    },
+    {
+      id: "guest",
+      name: "Guest Explorer",
+      email: "Temporary profile",
+      provider: "guest",
+      photoURL: "",
+      badge: "Guest"
+    }
+  ].forEach((profile) => {
+    if (profile.name !== currentName) profiles.push(profile);
+  });
+  return profiles;
+}
+
+function renderProfileSwitch() {
+  profileSwitchList.innerHTML = getProfileChoices().map((profile) => {
+    const initial = getProfileInitial(profile.name);
+    const isActive = profile.name === (user.name || "Explorer");
+    const avatar = profile.photoURL
+      ? `<img alt="${escapeProfileText(profile.name)}" class="w-9 h-9 rounded-full object-cover" src="${escapeProfileText(profile.photoURL)}">`
+      : `<span class="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">${initial}</span>`;
+    return `<button class="profile-switch-option w-full rounded-2xl border ${isActive ? "border-indigo-200 bg-indigo-50" : "border-slate-100 bg-white"} px-3 py-3 text-left flex items-center gap-3" data-switch-profile="${profile.id}" type="button">
+      ${avatar}
+      <span class="min-w-0 flex-1">
+        <span class="block text-xs font-bold text-slate-800 truncate">${escapeProfileText(profile.name)}</span>
+        <span class="block text-[10px] font-semibold text-slate-400 truncate">${escapeProfileText(profile.email)}</span>
+      </span>
+      <span class="text-[9px] font-bold uppercase tracking-wider ${isActive ? "text-indigo-600" : "text-slate-400"}">${profile.badge}</span>
+    </button>`;
+  }).join("");
+}
+
+function toggleProfileSwitch(open) {
+  const shouldOpen = typeof open === "boolean" ? open : !profileSwitchPanel.classList.contains("is-open");
+  profileSwitchPanel.classList.toggle("is-open", shouldOpen);
+  profileSwitchPanel.setAttribute("aria-hidden", shouldOpen ? "false" : "true");
+  profileSwitchButton.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+  if (shouldOpen) {
+    toggleProfile(false);
+    setSettingsPanel(false);
+  }
+}
+
+function switchProfile(profileId) {
+  const selected = getProfileChoices().find((profile) => profile.id === profileId);
+  if (!selected) return;
+  user = {
+    name: selected.name,
+    email: selected.id === "current" ? (user.email || "") : selected.email,
+    uid: selected.id === "current" ? (user.uid || "") : "",
+    provider: selected.provider,
+    photoURL: selected.id === "current" ? (user.photoURL || "") : (selected.photoURL || "")
+  };
+  markCogniLensSignedUp(user);
+  hydrateProfile();
+  toggleProfileSwitch(false);
+}
+
+function clampPreviewMetric(value, fallback) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return fallback;
+  return Math.max(0, Math.min(100, Math.round(numeric)));
+}
+
+function buildPreviewType(metrics) {
+  if (typeof getPersonalityTypeFromMetrics === "function") {
+    return getPersonalityTypeFromMetrics({
+      I: metrics.I,
+      N: metrics.N,
+      T: metrics.T,
+      J: metrics.J
+    });
+  }
+  return `${metrics.I >= 50 ? "I" : "E"}${metrics.N >= 50 ? "N" : "S"}${metrics.T >= 50 ? "T" : "F"}${metrics.J >= 50 ? "J" : "P"}`;
+}
+
+function getPreviewPreference(key, metrics) {
+  const meta = previewMetricMeta[key];
+  const leftValue = metrics[key];
+  const rightValue = 100 - leftValue;
+  const leftWins = leftValue >= 50;
+  return {
+    key,
+    label: leftWins ? meta.label : meta.oppositeLabel,
+    letter: leftWins ? key : meta.opposite,
+    value: leftWins ? leftValue : rightValue
+  };
+}
+
+function buildUserPreviewSlide() {
+  if (!hasCompletedAssessment) return null;
+  const resolvedMetrics = savedDashboardResult.totals && typeof getPersonalityMetrics === "function"
+    ? getPersonalityMetrics(savedDashboardResult.totals)
+    : savedDashboardResult.metrics;
+  const metrics = {
+    I: clampPreviewMetric(resolvedMetrics?.I, 0),
+    N: clampPreviewMetric(resolvedMetrics?.N, 0),
+    T: clampPreviewMetric(resolvedMetrics?.T, 0),
+    J: clampPreviewMetric(resolvedMetrics?.J, 0)
+  };
+  const type = savedDashboardResult.type || buildPreviewType(metrics);
+  return {
+    type,
+    title: savedDashboardResult.title || "Your Cognitive Profile",
+    summary: savedDashboardResult.summary || `${type} profile built from your latest assessment balance.`,
+    quote: "Your completed assessment is ready as a shareable story card.",
+    metrics
+  };
+}
+
+function preparePreviewSlides() {
+  const userSlide = buildUserPreviewSlide();
+  previewSlides = userSlide ? [userSlide, ...previewSamples] : previewSamples;
+}
+
+function renderPreviewDots() {
+  const dots = document.querySelector("[data-preview-dots]");
+  if (!dots) return;
+  const count = String(previewSlides.length);
+  if (dots.dataset.dotCount !== count) {
+    dots.dataset.dotCount = count;
+    dots.innerHTML = `
+      <div class="preview-dots-track" data-preview-dot-track>
+        <span class="preview-dot-indicator" aria-hidden="true"></span>
+        ${previewSlides.map((_, index) =>
+          `<button class="preview-dot" data-preview-dot="${index}" type="button" aria-label="Show preview ${index + 1}"></button>`
+        ).join("")}
+      </div>
+    `;
+  }
+  const track = dots.querySelector("[data-preview-dot-track]");
+  if (track) track.style.setProperty("--dot-index", previewSlideIndex);
+  dots.querySelectorAll("[data-preview-dot]").forEach((dot) => {
+    const active = Number(dot.dataset.previewDot) === previewSlideIndex;
+    dot.classList.toggle("is-active", active);
+    dot.setAttribute("aria-current", active ? "true" : "false");
+  });
+}
+
+function hydrateDashboardPreview(index = previewSlideIndex) {
+  const slide = previewSlides[index] || previewSlides[0];
+  if (!slide) return;
+  const metrics = {
+    I: clampPreviewMetric(slide.metrics?.I, 0),
+    N: clampPreviewMetric(slide.metrics?.N, 0),
+    T: clampPreviewMetric(slide.metrics?.T, 0),
+    J: clampPreviewMetric(slide.metrics?.J, 0)
+  };
+  const type = slide.type || buildPreviewType(metrics);
+  const preferences = ["I", "N", "T", "J"].map((key) => getPreviewPreference(key, metrics));
+  const previewType = document.querySelector("[data-preview-type]");
+  const previewSummary = document.querySelector("[data-preview-summary]");
+  const previewQuote = document.querySelector("[data-preview-quote]");
+  const previewStatus = document.querySelector("[data-preview-status]");
+
+  if (previewType) previewType.textContent = type;
+  if (previewSummary) {
+    previewSummary.textContent = slide.summary || `${type} profile built from a sample assessment balance.`;
+  }
+  if (previewQuote) previewQuote.textContent = slide.quote || "Swipe to preview another result story.";
+  if (previewStatus) previewStatus.textContent = hasCompletedAssessment && index === 0 ? "Your Result" : "Sample";
+
+  preferences.forEach((pref) => {
+    const row = document.querySelector(`[data-preview-metric="${pref.key}"]`);
+    if (!row) return;
+    row.querySelector("[data-preview-label]").textContent = pref.label;
+    row.querySelector("[data-preview-value]").textContent = `${pref.value}%`;
+    row.querySelector("[data-preview-bar]").style.width = `${pref.value}%`;
+  });
+  renderPreviewDots();
+}
+
+function showPreviewSlide(nextIndex) {
+  const card = document.querySelector("[data-preview-carousel]");
+  previewSlideIndex = (nextIndex + previewSlides.length) % previewSlides.length;
+  if (!card) {
+    hydrateDashboardPreview();
+    return;
+  }
+  card.classList.add("is-switching");
+  setTimeout(() => {
+    hydrateDashboardPreview();
+    card.classList.remove("is-switching");
+  }, 170);
+}
+
+function startPreviewCarousel() {
+  clearInterval(previewTimer);
+  previewTimer = setInterval(() => showPreviewSlide(previewSlideIndex + 1), 4200);
+}
+
+function setupPreviewCarousel() {
+  const card = document.querySelector("[data-preview-carousel]");
+  const dots = document.querySelector("[data-preview-dots]");
+  if (!card) return;
+
+  let dragStartX = null;
+
+  card.addEventListener("pointerdown", (event) => {
+    dragStartX = event.clientX;
+  });
+
+  card.addEventListener("pointerup", (event) => {
+    if (dragStartX === null) return;
+    const delta = event.clientX - dragStartX;
+    dragStartX = null;
+    if (Math.abs(delta) < 36) return;
+    showPreviewSlide(previewSlideIndex + (delta < 0 ? 1 : -1));
+    startPreviewCarousel();
+  });
+
+  dots?.addEventListener("click", (event) => {
+    const dot = event.target.closest("[data-preview-dot]");
+    if (!dot) return;
+    showPreviewSlide(Number(dot.dataset.previewDot));
+    startPreviewCarousel();
+  });
+
+  startPreviewCarousel();
+}
+
+function setProgressValue(value) {
+  const normalized = Math.max(0, Math.min(100, Math.round(value)));
+  const ring = document.querySelector("[data-progress-ring]");
+  const valueLabel = document.querySelector("[data-progress-value]");
+  if (ring) ring.setAttribute("stroke-dasharray", `${normalized}, 100`);
+  if (valueLabel) valueLabel.textContent = `${normalized}%`;
+}
+
+function setProgressStep(key, active, ready = true) {
+  const step = document.querySelector(`[data-progress-step="${key}"]`);
+  if (!step) return;
+  step.classList.toggle("is-active", active);
+  step.classList.toggle("is-ready", ready);
+  step.classList.toggle("is-pending", !active);
+}
+
+function hydrateProgressTracker() {
+  const continueButton = document.querySelector("[data-progress-continue]");
+  const shareStep = document.querySelector("[data-share-results-step]");
+  const signedIn = hasCogniLensSignedUp();
+
+  if (!hasCompletedAssessment) {
+    setProgressValue(0);
+    ["profile", "assessment", "review", "result", "share"].forEach((key) => setProgressStep(key, false, key === "profile" && signedIn));
+    shareStep.disabled = true;
+    shareStep.querySelector("span:last-child").textContent = "Share Your Results";
+    continueButton.disabled = false;
+    continueButton.innerHTML = `Start Test
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+    return;
+  }
+
+  setProgressStep("profile", true);
+  setProgressStep("assessment", true);
+  setProgressStep("review", true);
+  setProgressStep("result", true);
+  setProgressStep("share", progressShareSelected);
+  setProgressValue(progressShareSelected ? 100 : 80);
+
+  shareStep.disabled = false;
+  shareStep.classList.toggle("is-ready", true);
+  shareStep.querySelector("span:last-child").textContent = progressShareSelected ? "Story Share Ready" : "Share Your Results";
+  continueButton.disabled = !progressShareSelected;
+  continueButton.innerHTML = `Continue
+    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+}
+
+function setupProgressActions() {
+  const shareStep = document.querySelector("[data-share-results-step]");
+  const continueButton = document.querySelector("[data-progress-continue]");
+
+  shareStep?.addEventListener("click", () => {
+    if (!hasCompletedAssessment) return;
+    progressShareSelected = !progressShareSelected;
+    if (progressShareSelected) {
+      localStorage.setItem("cognilensShareReady", "true");
+    } else {
+      localStorage.removeItem("cognilensShareReady");
+    }
+    hydrateProgressTracker();
+  });
+
+  continueButton?.addEventListener("click", () => {
+    if (!hasCompletedAssessment) {
+      openTestPicker();
+      return;
+    }
+    if (!progressShareSelected) return;
+    window.location.href = "result.html?share=story";
+  });
+}
+
+function setupLogoutActions() {
+  document.querySelectorAll("[data-logout-button]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      button.classList.add("opacity-70", "cursor-wait");
+      await logoutCogniLens("../../auth/signup.html?mode=login");
+    });
+  });
+}
+
+function toggleProfile(open) {
+  const shouldOpen = typeof open === "boolean" ? open : !profilePanel.classList.contains("is-open");
+  profilePanel.classList.toggle("is-open", shouldOpen);
+  profilePanel.setAttribute("aria-hidden", shouldOpen ? "false" : "true");
+  if (shouldOpen) {
+    setSettingsPanel(false);
+    toggleProfileSwitch(false);
+  }
+}
+
+document.querySelectorAll("[data-profile-open]").forEach((button) => {
+  button.addEventListener("click", () => toggleProfile());
+});
+profileSwitchButton.addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleProfileSwitch();
+});
+profileSwitchPanel.addEventListener("click", (event) => {
+  event.stopPropagation();
+  const profileButton = event.target.closest("[data-switch-profile]");
+  if (profileButton) switchProfile(profileButton.dataset.switchProfile);
+  if (event.target.closest("[data-profile-manage]")) {
+    toggleProfileSwitch(false);
+    toggleProfile(true);
+  }
+});
+document.addEventListener("click", (event) => {
+  if (!profileSwitchPanel.contains(event.target) && !profileSwitchButton.contains(event.target)) {
+    toggleProfileSwitch(false);
+  }
+});
+document.querySelector("[data-profile-close]").addEventListener("click", () => toggleProfile(false));
+document.querySelector("[data-profile-upload]")?.addEventListener("click", () => {
+  profilePhotoInput?.click();
+});
+document.querySelector("[data-profile-remove-photo]")?.addEventListener("click", () => {
+  user = { ...user, photoURL: "" };
+  markCogniLensSignedUp(user);
+  user = getCogniLensUser();
+  hydrateProfile();
+});
+profilePhotoInput?.addEventListener("change", () => {
+  const file = profilePhotoInput.files?.[0];
+  if (!file || !file.type.startsWith("image/")) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    user = { ...user, photoURL: String(reader.result || "") };
+    markCogniLensSignedUp(user);
+    user = getCogniLensUser();
+    hydrateProfile();
+    profilePhotoInput.value = "";
+  };
+  reader.readAsDataURL(file);
+});
+document.querySelector("[data-profile-save]").addEventListener("click", () => {
+  markCogniLensSignedUp({
+    uid: user.uid || "",
+    name: profileNameInput.value.trim() || "Explorer",
+    email: profileEmailInput.value.trim(),
+    provider: user.provider || "profile",
+    photoURL: user.photoURL || ""
+  });
+  user = getCogniLensUser();
+  hydrateProfile();
+  toggleProfile(false);
+});
+
+document.querySelectorAll("[data-start-test]").forEach((button) => {
+  button.addEventListener("click", function() {
+    openTestPicker();
+  });
+});
+testPickerClose?.addEventListener("click", closeTestPicker);
+testPickerModal?.addEventListener("click", (event) => {
+  if (event.target === testPickerModal) closeTestPicker();
+  const choice = event.target.closest("[data-test-choice]");
+  if (choice) openAssessmentTarget(choice.dataset.testChoice);
+});
+document.querySelector("[data-login-link]").addEventListener("click", function() {
+  window.location.href = "../../auth/signup.html?mode=login";
+});
+
+hydrateProfile();
+preparePreviewSlides();
+hydrateDashboardPreview();
+setupPreviewCarousel();
+hydrateProgressTracker();
+setupProgressActions();
+setupLogoutActions();
+hydrateDashboardSettings();
+setupDashboardSettings();
+applyTheme(localStorage.getItem("cognilensTheme") || "light");
+if (new URLSearchParams(window.location.search).get("settings") === "open") {
+  setSettingsPanel(true, true);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+.homepage-edge-panel {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .homepage-edge-panel {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 60;
+    width: 14.5rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    color: #334155;
+  }
+
+  body.has-fixed-panel > header.fixed,
+  body.has-fixed-panel > header.support-topbar {
+    left: 14.5rem;
+    width: calc(100% - 14.5rem);
+  }
+
+  body.has-fixed-panel [data-share-capture],
+  body.has-fixed-panel > div.flex.pt-12 {
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  body.has-fixed-panel [data-share-capture] > aside:not(.homepage-edge-panel),
+  body.has-fixed-panel > div.flex.pt-12 > aside:not(.homepage-edge-panel) {
+    left: 14.5rem;
+  }
+
+  body.has-fixed-panel [data-share-capture] > main,
+  body.has-fixed-panel > div.flex.pt-12 > main {
+    width: min(1392px, calc(100vw - 27.5rem));
+    max-width: 1392px;
+    flex: 0 1 1392px;
+    margin-left: calc(27.5rem + max(0px, (100vw - 27.5rem - 1392px) / 2)) !important;
+    margin-right: auto !important;
+  }
+}
+
+.homepage-edge-panel__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.15rem 1rem 1rem;
+  color: #0f172a;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.homepage-edge-panel__logo {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #7c6ef5, #6c5ce7);
+  box-shadow: 0 8px 18px rgba(108, 92, 231, 0.3);
+  flex: 0 0 auto;
+}
+
+.homepage-edge-panel__nav {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0 0.75rem;
+}
+
+.homepage-edge-panel__nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.95rem;
+  padding: 0.66rem 0.78rem;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 650;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.homepage-edge-panel__nav a:hover,
+.homepage-edge-panel__nav a.is-active {
+  color: #4f46e5;
+  background: #eef2ff;
+}
+
+.homepage-edge-panel__nav .material-symbols-outlined {
+  width: 1rem;
+  height: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+}

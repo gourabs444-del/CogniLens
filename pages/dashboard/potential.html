@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CogniLens | Potential Map</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="../../dashboard-edge-panel.css" rel="stylesheet"/>
+<style>
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
+  body {
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at 0% 0%, #f0f7ff 0%, #ffffff 50%, #f9f0ff 100%);
+    background-attachment: fixed;
+    color: #111827;
+  }
+  .material-symbols-outlined {
+    font-family: "Material Symbols Outlined";
+    font-variation-settings: "FILL" 0, "wght" 240, "GRAD" 0, "opsz" 20;
+    font-size: 20px;
+  }
+  .glass-card {
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(15,23,42,0.06);
+    box-shadow: 0 22px 60px rgba(15,23,42,0.05);
+    backdrop-filter: blur(18px);
+  }
+  .brand-logo-mark {
+    width: 1.65rem;
+    height: 1.65rem;
+    border-radius: 0.55rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: linear-gradient(135deg, #7c6ef5, #6c5ce7);
+    box-shadow: 0 8px 18px rgba(108,92,231,0.3);
+  }
+  .sidebar-item-active {
+    background: rgba(0,113,227,0.06);
+    color: #0071e3;
+  }
+  .scope-card {
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    color: white;
+    box-shadow: 0 28px 70px rgba(37,99,235,0.2);
+  }
+  .scope-ring {
+    background: conic-gradient(var(--scope-color, #7c3aed) calc(var(--score, 0) * 1%), rgba(255,255,255,0.16) 0);
+  }
+  .field-card {
+    border: 1px solid rgba(15,23,42,0.06);
+    background: rgba(255,255,255,0.76);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+  .field-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37,99,235,0.18);
+    box-shadow: 0 18px 38px rgba(15,23,42,0.07);
+  }
+  .scope-row {
+    display: grid;
+    grid-template-columns: minmax(7rem, 1fr) minmax(8rem, 1.5fr) 3.2rem;
+    gap: 0.8rem;
+    align-items: center;
+  }
+  .scope-track {
+    height: 0.52rem;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.07);
+    overflow: hidden;
+  }
+  .scope-fill {
+    height: 100%;
+    border-radius: inherit;
+  }
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1);
+    border-radius: 10px;
+  }
+  @media (max-width: 768px) {
+    main { padding: 1.25rem !important; }
+    .scope-row { grid-template-columns: 1fr; gap: 0.35rem; }
+  }
+</style>
+</head>
+<body class="has-fixed-panel min-h-screen selection:bg-blue-100">
+<aside class="homepage-edge-panel" aria-label="Homepage navigation">
+  <a class="homepage-edge-panel__brand" href="homepage.html" aria-label="CogniLens homepage">
+    <span class="homepage-edge-panel__logo" aria-hidden="true">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path>
+        <path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path>
+      </svg>
+    </span>
+    <span>CogniLens</span>
+  </a>
+  <nav class="homepage-edge-panel__nav">
+    <a class="is-active" href="homepage.html"><span class="material-symbols-outlined">home</span><span>Dashboard</span></a>
+    <a href="insights.html"><span class="material-symbols-outlined">insights</span><span>Insights</span></a>
+    <a href="traits.html"><span class="material-symbols-outlined">fingerprint</span><span>Traits</span></a>
+    <a href="reports.html"><span class="material-symbols-outlined">article</span><span>Reports</span></a>
+    <a href="history.html"><span class="material-symbols-outlined">history</span><span>History</span></a>
+    <a href="homepage.html?settings=open"><span class="material-symbols-outlined">settings</span><span>Settings</span></a>
+  </nav>
+</aside>
+<header class="fixed top-0 w-full z-50 border-b border-black/5 bg-white/75 backdrop-blur-xl">
+  <div class="mx-auto max-w-[1600px] h-12 px-6 flex items-center justify-between gap-4">
+    <a class="flex items-center gap-2 text-black/90 no-underline" href="homepage.html">
+      <span class="brand-logo-mark">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path></svg>
+      </span>
+      <span class="font-semibold text-[17px] tracking-tight">CogniLens</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8 text-[12px] font-medium text-black/40">
+      <a class="hover:text-black no-underline" href="help.html">Help</a>
+      <a class="hover:text-black no-underline" href="contact.html">Contact</a>
+      <a class="hover:text-black no-underline" href="about.html">About Us</a>
+    </nav>
+    <a class="rounded-full bg-black/5 px-4 py-1.5 text-[11px] font-bold text-black/60 no-underline hover:bg-black/10" href="result.html">Back to result</a>
+  </div>
+</header>
+
+<div class="flex pt-12 max-w-[1600px] mx-auto min-h-screen">
+  <aside class="w-52 fixed h-[calc(100vh-3rem)] hidden md:flex flex-col p-3 space-y-1 border-r border-white/20">
+    <div class="px-3 py-4 mb-2">
+      <h3 class="text-[10px] font-bold text-black/20 uppercase tracking-widest">Workspace</h3>
+    </div>
+    <a class="flex items-center gap-3 px-3 py-2 rounded-xl text-black/50 hover:bg-black/5 transition-all no-underline" href="result.html"><span class="material-symbols-outlined">psychology</span><span class="text-[13px] font-medium">Result</span></a>
+    <a class="flex items-center gap-3 px-3 py-2 rounded-xl sidebar-item-active transition-all no-underline" href="potential.html"><span class="material-symbols-outlined">rocket_launch</span><span class="text-[13px] font-medium">Potential</span></a>
+  </aside>
+
+  <main class="flex-1 md:ml-52 p-10">
+    <section class="grid grid-cols-1 xl:grid-cols-[0.78fr_1.22fr] gap-8 items-start">
+      <div class="space-y-6">
+        <div class="glass-card rounded-[2rem] p-8">
+          <div class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-blue-600 mb-5">
+            <span class="material-symbols-outlined !text-[16px]">auto_awesome</span>
+            Potential Engine
+          </div>
+          <h1 class="text-4xl font-black tracking-tight text-black/90 leading-tight" data-potential-title>Potential map</h1>
+          <p class="mt-4 text-[15px] leading-relaxed text-black/55" data-potential-copy>Your detailed potential breakdown is loading.</p>
+          <div class="mt-6 grid grid-cols-2 gap-3">
+            <div class="rounded-2xl bg-white/70 border border-black/5 p-4">
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-black/30">Top fit</p>
+              <div class="mt-2 text-2xl font-black text-black/90"><span data-scope-score>0</span>%</div>
+            </div>
+            <div class="rounded-2xl bg-white/70 border border-black/5 p-4">
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-black/30">Best field</p>
+              <div class="mt-2 text-sm font-black leading-tight text-black/80" data-scope-focus>Field loading</div>
+            </div>
+          </div>
+        </div>
+        <div class="glass-card rounded-[2rem] p-6">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-[0.22em] text-black/30">Scope Graph</p>
+              <h3 class="text-lg font-extrabold text-black/85">All field percentages</h3>
+            </div>
+            <span class="rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-black/35" data-field-count>0 fields</span>
+          </div>
+          <div class="space-y-3" data-scope-graph></div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-[0.24em] text-black/30 mb-2">Best-fit fields</p>
+          <h2 class="text-2xl font-black text-black/90">Where effort can compound fastest</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" data-field-grid></div>
+      </div>
+    </section>
+
+    <section class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="glass-card rounded-[1.7rem] p-5">
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 mb-4">Your advantage</p>
+        <div class="space-y-3" data-strength-list></div>
+      </div>
+      <div class="glass-card rounded-[1.7rem] p-5">
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 mb-4">Growth risks</p>
+        <div class="space-y-3" data-risk-list></div>
+      </div>
+      <div class="glass-card rounded-[1.7rem] p-5">
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 mb-4">Next 30 days</p>
+        <div class="space-y-3" data-plan-list></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../../score-system.js"></script>
+<script src="../../potential-system.js?v=4"></script>
+<script src="../../script.js"></script>
+<script>
+const fallbackResult = {
+  type: "INTJ",
+  title: "Strategic Systems Thinker",
+  metrics: { I: 76, N: 82, T: 71, J: 78 },
+  confidence: 84
+};
+
+function clampMetric(value, fallback) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? Math.max(0, Math.min(100, Math.round(numeric))) : fallback;
+}
+
+function buildTypeFromMetrics(metrics) {
+  if (typeof getPersonalityTypeFromMetrics === "function") return getPersonalityTypeFromMetrics(metrics);
+  return `${metrics.I >= 50 ? "I" : "E"}${metrics.N >= 50 ? "N" : "S"}${metrics.T >= 50 ? "T" : "F"}${metrics.J >= 50 ? "J" : "P"}`;
+}
+
+function normalizeResult(data) {
+  const rawMetrics = data?.totals && typeof getPersonalityMetrics === "function" ? getPersonalityMetrics(data.totals) : data?.metrics;
+  const metrics = {
+    I: clampMetric(rawMetrics?.I, fallbackResult.metrics.I),
+    N: clampMetric(rawMetrics?.N, fallbackResult.metrics.N),
+    T: clampMetric(rawMetrics?.T, fallbackResult.metrics.T),
+    J: clampMetric(rawMetrics?.J, fallbackResult.metrics.J)
+  };
+  const score = data?.totals && typeof getPersonalityResult === "function" ? getPersonalityResult(data.totals) : null;
+  const type = score?.type || data?.type || buildTypeFromMetrics(metrics);
+  return {
+    ...fallbackResult,
+    ...data,
+    metrics,
+    type,
+    confidence: score?.confidence ?? data?.confidence ?? fallbackResult.confidence,
+    title: typeof getPersonalityTitle === "function" ? getPersonalityTitle(type) : (data?.title || fallbackResult.title)
+  };
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function setText(selector, value) {
+  const element = document.querySelector(selector);
+  if (element) element.textContent = value;
+}
+
+function renderList(selector, items, icon) {
+  const container = document.querySelector(selector);
+  if (!container) return;
+  container.innerHTML = items.map((item) => `
+    <div class="flex items-start gap-2">
+      <span class="material-symbols-outlined !text-[16px] mt-0.5 text-black/35">${icon}</span>
+      <span class="text-[13px] font-semibold leading-relaxed text-black/60">${escapeHtml(item)}</span>
+    </div>
+  `).join("");
+}
+
+const rawResult = typeof getCogniLensResult === "function" ? getCogniLensResult() : null;
+const result = normalizeResult(rawResult || fallbackResult);
+const potential = typeof getCogniLensPotential === "function" ? getCogniLensPotential(result) : null;
+
+function renderPotential() {
+  if (!potential) return;
+  const top = potential.topFields[0];
+  setText("[data-potential-title]", `${potential.type} potential map`);
+  setText("[data-potential-copy]", potential.connectiveCopy || potential.userLine);
+  setText("[data-scope-score]", top.score);
+  setText("[data-scope-focus]", top.title);
+  setText("[data-field-count]", `${potential.topFields.length} fields`);
+  document.querySelector("[data-scope-ring]")?.style.setProperty("--score", top.score);
+  document.querySelector("[data-scope-ring]")?.style.setProperty("--scope-color", top.color);
+
+  document.querySelector("[data-scope-graph]").innerHTML = potential.topFields.map((field) => `
+    <div class="scope-row">
+      <span class="truncate text-[12px] font-extrabold text-black/65">${escapeHtml(field.shortTitle || field.title)}</span>
+      <div class="scope-track"><div class="scope-fill" style="width:${field.score}%;background:${field.color}"></div></div>
+      <span class="text-right text-[12px] font-black text-black/60">${field.score}%</span>
+    </div>
+  `).join("");
+
+  document.querySelector("[data-field-grid]").innerHTML = potential.topFields.map((field, index) => `
+    <article class="field-card rounded-[1.6rem] p-5">
+      <div class="flex items-start justify-between gap-4 mb-4">
+        <div class="min-w-0">
+          <span class="text-[10px] font-black uppercase tracking-[0.18em]" style="color:${field.color}">${String(index + 1).padStart(2, "0")}</span>
+          <h3 class="mt-2 text-[16px] font-black leading-tight text-black/90">${escapeHtml(field.title)}</h3>
+        </div>
+        <span class="text-xl font-black text-black/80">${field.score}%</span>
+      </div>
+      <div class="h-2.5 rounded-full bg-black/5 overflow-hidden mb-4">
+        <div class="h-full rounded-full" style="width:${field.score}%;background:${field.color}"></div>
+      </div>
+      <p class="text-[13px] leading-relaxed text-black/50 mb-4">${escapeHtml(field.reason)}</p>
+      <div class="flex flex-wrap gap-2">
+        ${field.roles.map((role) => `<span class="rounded-full bg-black/5 px-2.5 py-1.5 text-[10px] font-bold text-black/45">${escapeHtml(role)}</span>`).join("")}
+      </div>
+    </article>
+  `).join("");
+
+  renderList("[data-strength-list]", potential.strengths, "bolt");
+  renderList("[data-risk-list]", potential.risks, "warning");
+  renderList("[data-plan-list]", potential.growthPlan, "check_circle");
+}
+
+renderPotential();
+</script>
+</body>
+</html>

@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CogniLens – Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  button,
+  input,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:focus,
+  input:focus,
+  a:focus {
+    outline: none;
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid rgba(108,92,231,0.35);
+    outline-offset: 3px;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9ff;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* Google-style abstract SVG background */
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Blob decorations — repurposed as subtle white overlays on abstract bg */
+  .blob-top { display: none; }
+  .blob-bottom { display: none; }
+
+  /* Card */
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    display: flex;
+    width: 100%;
+    max-width: 820px;
+    min-height: min(820px, calc(100vh - 40px));
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 20px 60px rgba(66,133,244,0.12), 0 4px 16px rgba(0,0,0,0.07);
+  }
+
+  /* Top bar */
+  .topbar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 28px;
+    z-index: 10;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 17px;
+    letter-spacing: -0.3px;
+    background: linear-gradient(90deg, #4285F4 0%, #EA4335 33%, #FBBC05 66%, #34A853 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo-icon {
+    width: 22px; height: 22px;
+  }
+
+  .signin-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+    color: #888;
+  }
+
+  .signin-btn {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1.5px solid #ccc;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #555;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .signin-btn:hover { border-color: #6c5ce7; color: #6c5ce7; }
+  .signin-btn:focus,
+  .signin-btn:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  /* Left illustration panel */
+  .illustration-panel {
+    flex: 0 0 42%;
+    background: linear-gradient(160deg, #f8f7ff 0%, #ede9ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .illustration-panel::before {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: 50%;
+    transform: translateX(-50%);
+    width: 280px; height: 50px;
+    background: rgba(108,92,231,0.06);
+    border-radius: 50%;
+    filter: blur(10px);
+  }
+
+  /* Isometric illustration via CSS/SVG */
+  .iso-scene {
+    width: 100%;
+    max-width: 240px;
+  }
+
+  /* Right form panel */
+.form-panel {
+  flex: 1;
+  padding: 96px 42px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.form-panel::-webkit-scrollbar { display: none; }
+  .form-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+  }
+
+  .form-subtitle {
+    font-size: 13.5px;
+    color: #aaa;
+    margin-bottom: 24px;
+  }
+
+  .field {
+    margin-bottom: 16px;
+  }
+
+  #auth-form,
+  .helper-note {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .social-row,
+  .security-note {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 7px;
+  }
+
+  .field input {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #e0e0e0;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13.5px;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fff;
+  }
+  .field input::placeholder { color: #bbb; }
+  .field input:focus {
+    border-color: #7c6ef5;
+    box-shadow: 0 0 0 3px rgba(124,110,245,0.12);
+  }
+
+  .password-wrap {
+    position: relative;
+  }
+  .password-wrap input { padding-right: 42px; }
+  .eye-btn {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #bbb;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+  }
+  .eye-btn:hover { color: #6c5ce7; }
+  .eye-btn:focus,
+  .eye-btn:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .password-strength {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    margin-top: 9px;
+  }
+
+  .password-strength span {
+    height: 4px;
+    border-radius: 999px;
+    background: #eceaf8;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .password-strength[data-score="1"] span:nth-child(-n+1) { background: #fb7185; }
+  .password-strength[data-score="2"] span:nth-child(-n+2) { background: #f59e0b; }
+  .password-strength[data-score="3"] span:nth-child(-n+3) { background: #6366f1; }
+  .password-strength[data-score="4"] span { background: #10b981; box-shadow: 0 0 12px rgba(16,185,129,0.18); }
+
+  .password-policy {
+    margin-top: 8px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #8d8aa3;
+  }
+
+  /* Login button */
+  .login-btn {
+  width: 100%;              /* full width */
+  padding: 14px;
+  border-radius: 12px;      /* clean shape */
+  border: none;
+  background: linear-gradient(135deg, #7c6ef5, #6c5ce7);
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 6px 20px rgba(108,92,231,0.35);
+}  .login-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 28px rgba(108,92,231,0.45);
+  }
+  .login-btn:active { transform: scale(0.98); }
+  .login-btn:focus,
+  .login-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 6px 20px rgba(108,92,231,0.35);
+  }
+
+  /* Social login */
+  .social-row {
+    display: flex;
+    flex-direction: column;
+  gap: 7px;
+  margin-top: 4px;
+    align-items: flex-start;
+  }
+
+  .social-label {
+    font-size: 12px;
+    color: #9c98b3;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    align-self: flex-start;
+  }
+
+.social-btn {
+  width: auto;
+  min-width: 216px;
+  height: 38px;
+  border-radius: 9px;
+  border: 1.5px solid #e5e5e5;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+  .social-btn:hover {
+    border-color: #6c5ce7;
+    transform: translateY(-2px);
+    box-shadow: 0 14px 26px rgba(108,92,231,0.12);
+  }
+  .social-btn:focus,
+  .social-btn:focus-visible {
+    outline: none;
+    border-color: #e5e5e5;
+    box-shadow: none;
+  }
+  .social-btn:active {
+    transform: translateY(0) scale(0.99);
+  }
+  .social-btn svg { display: block; flex: none; }
+  .social-btn span { line-height: 1; }
+
+  .auth-tabs {
+    --auth-tab-index: 0;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 6px;
+    border-radius: 999px;
+    background: #f4f3ff;
+    margin-bottom: 20px;
+    width: 238px;
+    isolation: isolate;
+  }
+
+  .auth-tabs::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    top: 6px;
+    left: 6px;
+    width: calc((100% - 12px) / 2);
+    height: calc(100% - 12px);
+    border-radius: 999px;
+    background: linear-gradient(135deg, #7c6ef5, #6c5ce7);
+    box-shadow: 0 10px 20px rgba(108,92,231,0.22);
+    transform: translateX(calc(var(--auth-tab-index) * 100%));
+    transition: transform 0.32s cubic-bezier(.2,.8,.2,1), box-shadow 0.2s ease;
+    pointer-events: none;
+  }
+
+  .auth-tab {
+    position: relative;
+    z-index: 1;
+    border: none;
+    background: transparent;
+    color: #6f6b86;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    line-height: 1;
+    white-space: nowrap;
+    transition: color 0.22s ease, transform 0.22s ease;
+  }
+
+  .auth-tab.active {
+    color: #fff;
+    transform: translateY(0);
+  }
+  .auth-tab:focus,
+  .auth-tab:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .status-message {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fff1f1;
+    color: #b3261e;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.45;
+  }
+
+  .status-message[data-tone="success"],
+  .status-message[data-tone="info"] {
+    background: #eefbf3;
+    color: #0f766e;
+  }
+
+  .status-message[data-tone="warning"] {
+    background: #fff7ed;
+    color: #9a3412;
+  }
+
+  .helper-note {
+    display: none;
+  }
+
+  .security-note {
+    margin-top: 8px;
+    padding: 10px 13px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fbfbff 0%, #f7f6ff 100%);
+    border: 1px solid #e7e3ff;
+    font-size: 10.5px;
+    line-height: 1.38;
+    color: #625f7d;
+    max-width: 252px;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @media (max-height: 760px) and (min-width: 641px) {
+    body {
+      padding: 12px;
+    }
+
+    .card {
+      min-height: calc(100vh - 24px);
+    }
+
+    .form-panel {
+      padding-top: 76px;
+      padding-bottom: 16px;
+    }
+
+    .form-title {
+      font-size: 24px;
+    }
+
+    .form-subtitle {
+      margin-bottom: 16px;
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
+    .login-btn {
+      padding: 11px;
+      margin-top: 6px;
+      margin-bottom: 10px;
+    }
+
+    .auth-tabs {
+      margin-bottom: 14px;
+    }
+
+    .password-strength {
+      margin-top: 6px;
+    }
+
+    .password-policy {
+      margin-top: 5px;
+      font-size: 10.5px;
+      line-height: 1.3;
+    }
+
+    .social-row {
+      gap: 6px;
+    }
+
+    .social-label {
+      font-size: 11px;
+    }
+
+    .social-btn {
+      height: 36px;
+    }
+
+    .security-note {
+      font-size: 10px;
+      line-height: 1.3;
+      padding: 8px 12px;
+    }
+  }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 640px) {
+    body { padding: 16px; align-items: center; padding-top: 30px; }
+    .card { flex-direction: column; height: auto; min-height: unset; border-radius: 18px; }
+
+    .topbar { padding: 16px 18px; }
+    .signin-area .signin-label { display: none; }
+
+    .illustration-panel {
+      flex: none;
+      height: 200px;
+      padding: 60px 16px 16px;
+      border-radius: 0;
+    }
+    .iso-scene { max-width: 160px; }
+
+    .form-panel {
+      padding: 24px 22px 28px;
+    }
+
+    .form-title { font-size: 21px; }
+
+    .login-btn { width: 100%; }
+
+    .social-row { flex-wrap: wrap; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob-top"></div>
+<div class="blob-bottom"></div>
+
+<!-- Google-style abstract background -->
+<svg class="bg-canvas" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="900" fill="#f0f4ff"/>
+
+  <!-- Large soft color blobs -->
+  <circle cx="1320" cy="80" r="180" fill="#4285F4" opacity="0.07"/>
+  <circle cx="80" cy="820" r="200" fill="#34A853" opacity="0.07"/>
+  <circle cx="200" cy="120" r="140" fill="#EA4335" opacity="0.06"/>
+  <circle cx="1380" cy="820" r="160" fill="#FBBC05" opacity="0.08"/>
+  <circle cx="720" cy="450" r="300" fill="#4285F4" opacity="0.03"/>
+
+  <!-- Google-color geometric shapes - scattered -->
+  <!-- Blue shapes -->
+  <rect x="60" y="60" width="48" height="48" rx="10" fill="#4285F4" opacity="0.12" transform="rotate(20,84,84)"/>
+  <circle cx="1340" cy="200" r="28" fill="#4285F4" opacity="0.14"/>
+  <rect x="900" y="30" width="22" height="22" rx="4" fill="#4285F4" opacity="0.18" transform="rotate(35,911,41)"/>
+  <circle cx="480" cy="820" r="18" fill="#4285F4" opacity="0.15"/>
+  <rect x="1100" y="700" width="36" height="36" rx="7" fill="#4285F4" opacity="0.1" transform="rotate(-15,1118,718)"/>
+
+  <!-- Red shapes -->
+  <circle cx="300" cy="200" r="20" fill="#EA4335" opacity="0.13"/>
+  <rect x="1200" y="440" width="30" height="30" rx="6" fill="#EA4335" opacity="0.12" transform="rotate(25,1215,455)"/>
+  <polygon points="140,700 160,660 180,700" fill="#EA4335" opacity="0.12"/>
+  <circle cx="1060" cy="860" r="16" fill="#EA4335" opacity="0.14"/>
+  <rect x="600" y="840" width="20" height="20" rx="4" fill="#EA4335" opacity="0.16" transform="rotate(40,610,850)"/>
+
+  <!-- Yellow shapes -->
+  <polygon points="1260,340 1290,290 1320,340" fill="#FBBC05" opacity="0.18"/>
+  <circle cx="420" cy="60" r="22" fill="#FBBC05" opacity="0.16"/>
+  <rect x="80" y="440" width="28" height="28" rx="5" fill="#FBBC05" opacity="0.14" transform="rotate(-20,94,454)"/>
+  <circle cx="780" cy="870" r="20" fill="#FBBC05" opacity="0.15"/>
+  <polygon points="1000,120 1020,80 1040,120" fill="#FBBC05" opacity="0.15"/>
+
+  <!-- Green shapes -->
+  <rect x="1340" y="500" width="40" height="40" rx="8" fill="#34A853" opacity="0.12" transform="rotate(15,1360,520)"/>
+  <circle cx="160" cy="500" r="24" fill="#34A853" opacity="0.12"/>
+  <polygon points="680,30 700,0 720,30" fill="#34A853" opacity="0.15"/>
+  <circle cx="1180" cy="100" r="14" fill="#34A853" opacity="0.18"/>
+  <rect x="360" y="760" width="24" height="24" rx="5" fill="#34A853" opacity="0.14" transform="rotate(30,372,772)"/>
+
+  <!-- Dot grid accent - top right -->
+  <g opacity="0.18">
+    <circle cx="1260" cy="40" r="3" fill="#4285F4"/>
+    <circle cx="1280" cy="40" r="3" fill="#4285F4"/>
+    <circle cx="1300" cy="40" r="3" fill="#4285F4"/>
+    <circle cx="1260" cy="60" r="3" fill="#4285F4"/>
+    <circle cx="1280" cy="60" r="3" fill="#4285F4"/>
+    <circle cx="1300" cy="60" r="3" fill="#4285F4"/>
+    <circle cx="1260" cy="80" r="3" fill="#4285F4"/>
+    <circle cx="1280" cy="80" r="3" fill="#4285F4"/>
+    <circle cx="1300" cy="80" r="3" fill="#4285F4"/>
+  </g>
+
+  <!-- Dot grid accent - bottom left -->
+  <g opacity="0.15">
+    <circle cx="40" cy="820" r="3" fill="#34A853"/>
+    <circle cx="60" cy="820" r="3" fill="#34A853"/>
+    <circle cx="80" cy="820" r="3" fill="#34A853"/>
+    <circle cx="40" cy="840" r="3" fill="#34A853"/>
+    <circle cx="60" cy="840" r="3" fill="#34A853"/>
+    <circle cx="80" cy="840" r="3" fill="#34A853"/>
+    <circle cx="40" cy="860" r="3" fill="#34A853"/>
+    <circle cx="60" cy="860" r="3" fill="#34A853"/>
+    <circle cx="80" cy="860" r="3" fill="#34A853"/>
+  </g>
+
+  <!-- Thin lines / crosshairs -->
+  <line x1="1140" y1="0" x2="1140" y2="60" stroke="#EA4335" stroke-width="1.5" opacity="0.15"/>
+  <line x1="1110" y1="30" x2="1170" y2="30" stroke="#EA4335" stroke-width="1.5" opacity="0.15"/>
+  <line x1="300" y1="870" x2="300" y2="930" stroke="#FBBC05" stroke-width="1.5" opacity="0.2"/>
+  <line x1="270" y1="900" x2="330" y2="900" stroke="#FBBC05" stroke-width="1.5" opacity="0.2"/>
+
+  <!-- Wavy path accent -->
+  <path d="M0,450 Q200,380 400,460 T800,430 T1200,470 T1440,440" stroke="#4285F4" stroke-width="1" fill="none" opacity="0.08"/>
+  <path d="M0,480 Q200,420 400,490 T800,460 T1200,500 T1440,470" stroke="#34A853" stroke-width="1" fill="none" opacity="0.07"/>
+</svg>
+
+<div class="card">
+
+  <!-- Top navigation bar -->
+  <div class="topbar">
+<div class="logo" style="display:flex;align-items:center;gap:9px;background:none;-webkit-text-fill-color:initial;">
+
+  <!-- Icon -->
+  <div style="
+    width:26px;
+    height:26px;
+    border-radius:8px;
+    background:linear-gradient(135deg,#7c6ef5,#6c5ce7);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 6px 16px rgba(108,92,231,0.35);
+  ">
+    <svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"/>
+      <path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"/>
+    </svg>
+  </div>
+
+  <!-- Text -->
+  <span style="
+    font-family:'Outfit',sans-serif;
+    font-weight:700;
+    font-size:17px;
+    letter-spacing:-0.3px;
+    color:#2d2a4a;
+  ">
+    CogniLens
+  </span>
+
+</div>    <div class="signin-area">
+      <span class="signin-label" id="auth-topbar-copy">Already have an account?</span>
+      <button class="signin-btn" data-auth-toggle type="button">Sign In</button>
+    </div>
+  </div>
+
+  <!-- Left: Illustration -->
+  <div class="illustration-panel">
+    <svg class="iso-scene" viewBox="0 0 240 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Shadow ellipse -->
+      <ellipse cx="120" cy="200" rx="90" ry="12" fill="#c8bdfa" opacity="0.3"/>
+
+      <!-- Base platform -->
+      <polygon points="60,160 120,185 180,160 120,135" fill="#e0daff"/>
+      <polygon points="60,160 60,168 120,193 120,185" fill="#c5bcf5"/>
+      <polygon points="180,160 180,168 120,193 120,185" fill="#d4cefc"/>
+
+      <!-- Monitor back panel -->
+      <rect x="80" y="75" width="80" height="60" rx="4" fill="#b8b0f8" transform="skewY(-8) translate(0,8)"/>
+      <!-- Monitor screen -->
+      <rect x="83" y="72" width="74" height="54" rx="3" fill="#f0eeff"/>
+      <!-- Screen content lines -->
+      <rect x="90" y="82" width="40" height="4" rx="2" fill="#c5bcf5"/>
+      <rect x="90" y="91" width="55" height="3" rx="1.5" fill="#ddd9fc"/>
+      <rect x="90" y="99" width="45" height="3" rx="1.5" fill="#ddd9fc"/>
+      <rect x="90" y="107" width="50" height="3" rx="1.5" fill="#ddd9fc"/>
+
+      <!-- Monitor stand -->
+      <rect x="113" y="126" width="14" height="12" rx="2" fill="#c5bcf5"/>
+      <rect x="107" y="136" width="26" height="5" rx="2.5" fill="#b8b0f8"/>
+
+      <!-- Checkmark badge -->
+      <circle cx="92" cy="78" r="12" fill="#00cec9"/>
+      <polyline points="87,78 91,82 98,73" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Lock icon -->
+      <rect x="140" y="115" width="30" height="24" rx="4" fill="#fd79a8"/>
+      <path d="M148,115 C148,109 162,109 162,115" stroke="#fd79a8" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <circle cx="155" cy="124" r="3" fill="#fff" opacity="0.8"/>
+      <rect x="153.5" y="124" width="3" height="6" rx="1.5" fill="#fff" opacity="0.8"/>
+
+      <!-- User avatar card -->
+      <rect x="62" y="118" width="36" height="44" rx="4" fill="#fff" opacity="0.95"/>
+      <circle cx="80" cy="133" r="8" fill="#b8b0f8"/>
+      <ellipse cx="80" cy="148" rx="10" ry="5" fill="#d4cefc"/>
+
+      <!-- Floating diamonds -->
+      <polygon points="55,105 60,110 55,115 50,110" fill="#b8b0f8" opacity="0.6"/>
+      <polygon points="178,88 183,93 178,98 173,93" fill="#b8b0f8" opacity="0.5"/>
+      <polygon points="130,58 134,62 130,66 126,62" fill="#a89cf5" opacity="0.7"/>
+      <polygon points="60,148 65,153 60,158 55,153" fill="#c5bcf5" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <!-- Right: Form -->
+  <div class="form-panel">
+    <div class="auth-tabs" aria-label="Authentication mode">
+      <button aria-pressed="true" class="auth-tab active" data-auth-mode="register" type="button">Create Account</button>
+      <button aria-pressed="false" class="auth-tab" data-auth-mode="login" type="button">Log In</button>
+    </div>
+
+    <h1 class="form-title" id="auth-title">Welcome to CogniLens!</h1>
+    <p class="form-subtitle" id="auth-subtitle">Create your account to begin the test</p>
+
+    <form id="auth-form" novalidate>
+      <div class="field" data-name-field>
+        <label for="auth-name">Name</label>
+        <input type="text" id="auth-name" placeholder="Your full name" autocomplete="name" required/>
+      </div>
+
+      <div class="field">
+        <label for="auth-email">Email</label>
+        <input type="email" id="auth-email" placeholder="cognilens001@gmail.com" autocomplete="email" required/>
+      </div>
+
+      <div class="field">
+        <label for="auth-password">Password</label>
+        <div class="password-wrap">
+          <input type="password" id="auth-password" placeholder="8+ characters" autocomplete="new-password" minlength="8" required/>
+          <button aria-label="Toggle password visibility" class="eye-btn" data-password-toggle="auth-password" type="button">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <div class="password-strength" id="password-strength" data-score="0" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <p class="password-policy" id="password-policy">Use 8+ characters with uppercase, lowercase, number, and symbol.</p>
+      </div>
+
+      <button class="login-btn" id="auth-submit" type="submit">Create Account</button>
+      <p class="status-message hidden" id="auth-error"></p>
+    </form>
+
+    <div class="social-row">
+      <span class="social-label" id="social-label">Continue securely with</span>
+
+      <button class="social-btn" data-social-auth="google" title="Continue with Google" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        <span>Continue with Google</span>
+      </button>
+
+      <button class="social-btn" data-social-auth="facebook" title="Continue with Facebook" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+        <span>Continue with Facebook</span>
+      </button>
+    </div>
+    <div class="security-note">
+      Protected with Firebase Authentication, provider-based sign-in, and policy-level password validation. Session access is routed through a secure app connection.
+    </div>
+  </div>
+
+</div>
+
+<script src="../script.js"></script>
+  <!-- Firebase Scripts START -->
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="../firebase-config.js"></script>
+
+<!-- Firebase Init -->
+<script>
+const firebaseConfig = window.COGNILENS_APP_CONFIG.firebase;
+window.cogniAuthConfig = window.COGNILENS_APP_CONFIG.auth || {};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.warn);
+</script>
+
+<!-- 👇 YAHA PASTE KAR -->
+<script>
+let authMode = new URLSearchParams(window.location.search).get("mode") === "login" ? "login" : "register";
+let isAuthSubmitting = false;
+
+const authForm = document.getElementById("auth-form");
+const authName = document.getElementById("auth-name");
+const authEmail = document.getElementById("auth-email");
+const authPassword = document.getElementById("auth-password");
+const authSubmit = document.getElementById("auth-submit");
+const authTitle = document.getElementById("auth-title");
+const authSubtitle = document.getElementById("auth-subtitle");
+const authTopbarCopy = document.getElementById("auth-topbar-copy");
+const authToggle = document.querySelector("[data-auth-toggle]");
+const nameField = document.querySelector("[data-name-field]");
+const authTabsWrap = document.querySelector(".auth-tabs");
+const authTabs = document.querySelectorAll("[data-auth-mode]");
+const authError = document.getElementById("auth-error");
+const passwordStrength = document.getElementById("password-strength");
+const passwordPolicy = document.getElementById("password-policy");
+
+function getHomepageUrl() {
+  return new URL("../pages/dashboard/homepage.html", window.location.href).href;
+}
+
+function getPendingAssessmentUrl() {
+  const pending = sessionStorage.getItem("cognilensPendingAssessment");
+  if (!pending) return null;
+
+  try {
+    const target = new URL(pending, getHomepageUrl());
+    const allowed = target.origin === window.location.origin && target.pathname.includes("/pages/Assets/");
+    return allowed ? target.href : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function goToHomepage() {
+  const homepageUrl = getPendingAssessmentUrl() || getHomepageUrl();
+  sessionStorage.removeItem("cognilensPendingAssessment");
+  window.location.replace(homepageUrl);
+  setTimeout(() => {
+    if (window.location.href !== homepageUrl) window.location.href = homepageUrl;
+  }, 350);
+}
+
+function showAuthMessage(message, tone = "warning") {
+  authError.textContent = message;
+  authError.dataset.tone = tone;
+  authError.classList.remove("hidden");
+}
+
+function hideAuthMessage() {
+  authError.classList.add("hidden");
+  authError.textContent = "";
+}
+
+function getPasswordScore(password) {
+  return [
+    password.length >= 8,
+    /[A-Z]/.test(password),
+    /[a-z]/.test(password),
+    /\d/.test(password),
+    /[^A-Za-z0-9]/.test(password)
+  ].filter(Boolean).length;
+}
+
+function updatePasswordStrength() {
+  const score = Math.min(getPasswordScore(authPassword.value), 4);
+  passwordStrength.dataset.score = String(score);
+  passwordPolicy.textContent = score >= 4
+    ? "Strong password ready."
+    : "Use 8+ characters with uppercase, lowercase, number, and symbol.";
+}
+
+function isSecureAppConnection() {
+  return window.isSecureContext || ["localhost", "127.0.0.1"].includes(window.location.hostname);
+}
+
+function getFriendlyFirebaseError(error) {
+  const code = error?.code || "";
+  if (code === "auth/user-not-found" || code === "auth/wrong-password" || code === "auth/invalid-credential") {
+    return "No matching account was found for this email and password. Create an account first, or use the correct sign-in method.";
+  }
+  if (code === "auth/email-already-in-use") {
+    return "An account already exists with this email. Switch to Log In or use a different email.";
+  }
+  if (code === "auth/too-many-requests") {
+    return "Too many failed attempts. Please wait a few minutes before trying again.";
+  }
+  if (code === "auth/unauthorized-domain") {
+    return `Provider sign-in is waiting for domain approval. Add ${window.location.hostname} to Firebase Authentication authorized domains, then try again.`;
+  }
+  if (code === "auth/popup-blocked") {
+    return "The sign-in popup was blocked. Redirect sign-in is starting instead.";
+  }
+  if (code === "auth/popup-closed-by-user") {
+    return "Sign-in was cancelled before it finished.";
+  }
+  if (code === "auth/account-exists-with-different-credential") {
+    return "This email is already linked to another sign-in method. Use the original method, then connect this provider from your account.";
+  }
+  if (code === "auth/operation-not-supported-in-this-environment") {
+    return "This browser does not support popup sign-in here. Redirect sign-in is starting instead.";
+  }
+  return error?.message || "Sign-in could not be completed. Please try again.";
+}
+
+function clearLocalAuthState() {
+  clearCogniLensSession();
+  localStorage.removeItem("cognilensShareReady");
+}
+
+function commitFirebaseSession(user, provider, fallbackName = "Explorer") {
+  if (!user || !user.uid) {
+    throw new Error("Firebase did not return a verified user session.");
+  }
+
+  markCogniLensSignedUp({
+    uid: user.uid,
+    name: user.displayName || fallbackName,
+    email: user.email || "",
+    provider,
+    photoURL: user.photoURL || ""
+  });
+}
+
+function setAuthMode(mode) {
+  authMode = mode;
+  const isLogin = authMode === "login";
+  authTabsWrap.style.setProperty("--auth-tab-index", isLogin ? "1" : "0");
+
+  authTabs.forEach((tab) => {
+    const active = tab.dataset.authMode === authMode;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+
+  nameField.classList.toggle("hidden", isLogin);
+  authTitle.textContent = isLogin ? "Welcome back!" : "Welcome to CogniLens!";
+  authSubtitle.textContent = isLogin ? "Log in to continue your test" : "Create your account to begin the test";
+  authSubmit.textContent = isLogin ? "Log In" : "Create Account";
+  authTopbarCopy.textContent = isLogin ? "New to CogniLens?" : "Already have an account?";
+  authToggle.textContent = isLogin ? "Sign Up" : "Sign In";
+  authPassword.setAttribute("autocomplete", isLogin ? "current-password" : "new-password");
+  passwordStrength.style.display = isLogin ? "none" : "grid";
+  passwordPolicy.hidden = isLogin;
+  hideAuthMessage();
+}
+
+authTabs.forEach((tab) => {
+  tab.addEventListener("click", () => setAuthMode(tab.dataset.authMode));
+});
+
+authToggle.addEventListener("click", () => {
+  setAuthMode(authMode === "login" ? "register" : "login");
+});
+
+document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const input = document.getElementById(button.dataset.passwordToggle);
+    input.type = input.type === "password" ? "text" : "password";
+  });
+});
+
+authPassword.addEventListener("input", updatePasswordStrength);
+
+setAuthMode(authMode);
+updatePasswordStrength();
+
+authForm.addEventListener("submit", function(e) {
+  e.preventDefault();
+  hideAuthMessage();
+  if (isAuthSubmitting) return;
+
+  const email = authEmail.value.trim();
+  const password = authPassword.value;
+  const name = authName.value.trim();
+
+  if (!isSecureAppConnection()) {
+    showAuthMessage("Please use a secure HTTPS connection before signing in.");
+    return;
+  }
+
+  if (!email || !password || (authMode === "register" && !name)) {
+    showAuthMessage("Please fill all required fields.");
+    return;
+  }
+
+  if (authMode === "register" && getPasswordScore(password) < 4) {
+    showAuthMessage("Create a stronger password before continuing.");
+    return;
+  }
+
+  if (authMode === "register" && password.length < 8) {
+    showAuthMessage("Password must be at least 8 characters.");
+    return;
+  }
+
+  isAuthSubmitting = true;
+  authSubmit.disabled = true;
+  authSubmit.innerText = "Loading...";
+
+  clearLocalAuthState();
+
+  const auth = firebase.auth();
+  const authRequest = authMode === "login"
+    ? auth.signInWithEmailAndPassword(email, password)
+    : auth.createUserWithEmailAndPassword(email, password);
+
+  authRequest
+    .then((userCredential) => {
+      const user = userCredential.user;
+      const profileUpdate = authMode === "register" && name
+        ? user.updateProfile({ displayName: name })
+        : Promise.resolve();
+
+      return profileUpdate.then(() => {
+        console.log("Auth success:", user.email);
+        commitFirebaseSession(user, "firebase", name || "Explorer");
+        goToHomepage();
+      });
+    })
+    .catch((error) => {
+      isAuthSubmitting = false;
+      authSubmit.disabled = false;
+      setAuthMode(authMode);
+      clearLocalAuthState();
+      firebase.auth().signOut().catch(() => {});
+      showAuthMessage(getFriendlyFirebaseError(error));
+    });
+});
+</script>
+
+<!-- ✅ YAHAN PASTE KAR -->
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+
+  // GOOGLE
+  const gbtn = document.querySelector('[data-social-auth="google"]');
+  if (false && gbtn) {
+gbtn.addEventListener('click', () => {
+
+  if (isAuthSubmitting) return;
+  isAuthSubmitting = true;      const provider = new firebase.auth.GoogleAuthProvider();
+
+      firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          console.log("Google login:", user.displayName || user.email);
+          markCogniLensSignedUp({ name: user.displayName, email: user.email, provider: "google" });
+          window.location.href = "../pages/dashboard/homepage.html";
+        })
+.catch((error) => {
+  console.error(error);
+
+  isAuthSubmitting = false;
+
+  showAuthMessage(error.message);
+});    });
+  }
+
+  // FACEBOOK 🔥
+  const fbtn = document.querySelector('[data-social-auth="facebook"]');
+  if (false && fbtn) {
+fbtn.addEventListener('click', () => {
+
+  if (isAuthSubmitting) return;
+  isAuthSubmitting = true;      const provider = new firebase.auth.FacebookAuthProvider();
+      provider.addScope("email");
+
+      firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          console.log("Facebook login:", user.displayName || user.email);
+          markCogniLensSignedUp({ name: user.displayName, email: user.email, provider: "facebook" });
+          window.location.href = "../pages/dashboard/homepage.html";
+        })
+.catch((error) => {
+  console.error(error);
+
+  isAuthSubmitting = false;
+
+  showAuthMessage(error.message);
+});    });
+  }
+
+});
+</script>
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  const providerButtons = document.querySelectorAll("[data-social-auth]");
+  let authRedirectHandled = false;
+
+  function setSocialBusy(isBusy) {
+    isAuthSubmitting = isBusy;
+    providerButtons.forEach((button) => {
+      button.disabled = isBusy;
+      button.style.opacity = isBusy ? "0.65" : "";
+      button.style.pointerEvents = isBusy ? "none" : "";
+    });
+  }
+
+  function getProvider(providerName) {
+    if (providerName === "google") {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
+      return provider;
+    }
+
+    const provider = new firebase.auth.FacebookAuthProvider();
+    provider.addScope("email");
+    return provider;
+  }
+
+  function getFriendlyAuthMessage(error) {
+    return getFriendlyFirebaseError(error);
+  }
+
+  function shouldUseRedirectFlow() {
+    return false;
+  }
+
+  function setRedirectPending(providerName) {
+    sessionStorage.setItem("cognilensAuthRedirectPending", providerName);
+    sessionStorage.setItem("cognilensAuthRedirectStartedAt", String(Date.now()));
+    sessionStorage.setItem("cognilensAuthModePending", authMode);
+  }
+
+  function clearRedirectPending() {
+    sessionStorage.removeItem("cognilensAuthRedirectPending");
+    sessionStorage.removeItem("cognilensAuthRedirectStartedAt");
+    sessionStorage.removeItem("cognilensAuthModePending");
+  }
+
+  function hasFreshRedirectPending() {
+    const startedAt = Number(sessionStorage.getItem("cognilensAuthRedirectStartedAt") || 0);
+    return startedAt > 0 && Date.now() - startedAt < 10 * 60 * 1000;
+  }
+
+  async function rejectSocialAuthIfModeMismatch(user, isNewUser) {
+    if (typeof isNewUser !== "boolean") return false;
+
+    if (authMode === "login" && isNewUser) {
+      await user.delete().catch(() => firebase.auth().signOut().catch(() => {}));
+      clearLocalAuthState();
+      setSocialBusy(false);
+      showAuthMessage("No existing account was found for this provider. Switch to Sign Up to create a new account.");
+      return true;
+    }
+
+    if (authMode === "register" && !isNewUser) {
+      await firebase.auth().signOut().catch(() => {});
+      clearLocalAuthState();
+      setSocialBusy(false);
+      showAuthMessage("This provider already has an account. Switch to Log In to continue.");
+      return true;
+    }
+
+    return false;
+  }
+
+  async function finishSocialAuth(user, providerName, isNewUser) {
+    if (!user || authRedirectHandled) return;
+    if (!user.uid) {
+      showAuthMessage("Provider sign-in did not return a verified session. Please try again.");
+      setSocialBusy(false);
+      return;
+    }
+    if (await rejectSocialAuthIfModeMismatch(user, isNewUser)) return;
+    authRedirectHandled = true;
+    clearRedirectPending();
+    clearLocalAuthState();
+    commitFirebaseSession(user, providerName, "Explorer");
+    goToHomepage();
+  }
+
+  function getProviderNameFromUser(user) {
+    const providerId = user?.providerData?.[0]?.providerId || "";
+    if (providerId.includes("facebook")) return "facebook";
+    if (providerId.includes("google")) return "google";
+    return "firebase";
+  }
+
+  const pendingAuthMode = sessionStorage.getItem("cognilensAuthModePending");
+  if (pendingAuthMode === "login" || pendingAuthMode === "register") {
+    setAuthMode(pendingAuthMode);
+  }
+
+  async function startSocialAuth(providerName) {
+    hideAuthMessage();
+    if (isAuthSubmitting) return;
+
+    if (!isSecureAppConnection()) {
+      showAuthMessage("Please use HTTPS before starting provider sign-in.");
+      return;
+    }
+
+    const provider = getProvider(providerName);
+    const auth = firebase.auth();
+    clearLocalAuthState();
+    setSocialBusy(true);
+
+    try {
+      if (shouldUseRedirectFlow()) {
+        setRedirectPending(providerName);
+        await auth.signInWithRedirect(provider);
+        return;
+      }
+
+      const result = await auth.signInWithPopup(provider);
+      await finishSocialAuth(result.user, providerName, result.additionalUserInfo?.isNewUser);
+    } catch (error) {
+      const popupNeedsRedirect = [
+        "auth/popup-blocked",
+        "auth/operation-not-supported-in-this-environment",
+        "auth/cancelled-popup-request",
+        "auth/web-storage-unsupported"
+      ].includes(error?.code);
+
+      if (popupNeedsRedirect) {
+        showAuthMessage(getFriendlyAuthMessage(error), "info");
+        setRedirectPending(providerName);
+        await auth.signInWithRedirect(provider);
+        return;
+      }
+
+      console.error(error);
+      setSocialBusy(false);
+      clearLocalAuthState();
+      showAuthMessage(getFriendlyAuthMessage(error));
+    }
+  }
+
+  firebase.auth().getRedirectResult()
+    .then((result) => {
+      if (!result?.user) return;
+      const providerName = result.providerId?.includes("facebook") ? "facebook" : "google";
+      clearRedirectPending();
+      finishSocialAuth(result.user, providerName, result.additionalUserInfo?.isNewUser);
+    })
+    .catch((error) => {
+      console.error(error);
+      setSocialBusy(false);
+      clearLocalAuthState();
+      showAuthMessage(getFriendlyAuthMessage(error));
+    });
+
+  firebase.auth().onAuthStateChanged((currentUser) => {
+    if (!currentUser || authRedirectHandled) return;
+    const pendingProvider = sessionStorage.getItem("cognilensAuthRedirectPending");
+    if (!pendingProvider || !hasFreshRedirectPending()) {
+      clearRedirectPending();
+      return;
+    }
+    clearRedirectPending();
+    finishSocialAuth(currentUser, pendingProvider || getProviderNameFromUser(currentUser));
+  });
+
+  document.querySelector('[data-social-auth="google"]')?.addEventListener("click", () => startSocialAuth("google"));
+  document.querySelector('[data-social-auth="facebook"]')?.addEventListener("click", () => startSocialAuth("facebook"));
+});
+</script>
+</body>
+</html>

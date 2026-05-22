@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CogniLens | Result History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link href="../../dashboard-shell.css" rel="stylesheet">
+<style>
+  body {
+    font-family: Inter, system-ui, sans-serif;
+    background: radial-gradient(circle at 0 0, #eef6ff 0, #ffffff 48%, #faf5ff 100%);
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:focus,
+  a:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .brand-logo-mark {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: #4f46e5;
+    box-shadow: 0 10px 22px rgba(79,70,229,0.28);
+  }
+
+  .glass {
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(255,255,255,0.82);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+  }
+
+  .history-card {
+    background: rgba(255,255,255,0.82);
+    border: 1px solid rgba(226,232,240,0.8);
+    box-shadow: 0 18px 45px rgba(15,23,42,0.06);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .history-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99,102,241,0.22);
+    box-shadow: 0 22px 55px rgba(15,23,42,0.09);
+  }
+
+  .nav-link {
+    color: rgba(15,23,42,0.48);
+    transition: color 160ms ease;
+  }
+
+  .nav-link:hover,
+  .nav-link.is-active {
+    color: rgba(15,23,42,0.95);
+  }
+
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-variation-settings: 'FILL' 0, 'wght' 250, 'GRAD' 0, 'opsz' 20;
+    font-size: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .desktop-nav {
+      display: none;
+    }
+  }
+</style>
+</head>
+<body class="dashboard-shell-body min-h-screen text-slate-700">
+<div class="dashboard-shell">
+<aside class="dashboard-sidebar">
+  <a class="dashboard-brand" href="homepage.html" aria-label="CogniLens homepage">
+    <span class="brand-logo-mark" aria-hidden="true">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path>
+        <path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path>
+      </svg>
+    </span>
+    <span>CogniLens</span>
+  </a>
+  <nav class="dashboard-nav">
+    <a href="homepage.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Dashboard</span></a>
+    <a href="insights.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Insights</span></a>
+    <a href="traits.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 11a2 2 0 0 0-2 2c0 3.2 1.1 5.4 3.5 7" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8 13a4 4 0 1 1 8 0c0 1.1-.12 2.18-.36 3.22" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5.3 17A8.8 8.8 0 0 1 5 13a7 7 0 0 1 14 0c0 2.1-.28 4.02-.84 5.76" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 13a9 9 0 0 1 15.3-6.4M12 3.5A9.5 9.5 0 0 1 21.5 13" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Traits</span></a>
+    <a href="reports.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Reports</span></a>
+    <a class="is-active" href="history.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>History</span></a>
+    <a href="homepage.html?settings=open"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Settings</span></a>
+  </nav>
+  <div class="dashboard-upgrade-card">
+    <h3>Upgrade to Premium</h3>
+    <p>Unlock deeper AI insights, advanced reports, and personalized recommendations.</p>
+    <a href="payment.html">Upgrade Now <span class="material-symbols-outlined !text-[16px]">arrow_forward</span></a>
+  </div>
+</aside>
+
+<main class="dashboard-main">
+  <section class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-indigo-600">Assessment Archive</p>
+      <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">Result History</h1>
+      <p class="mt-2 max-w-xl text-sm leading-relaxed text-slate-500">Every completed test is saved here with its date, time, personality result, and confidence score.</p>
+    </div>
+    <div class="flex gap-2">
+      <a class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm hover:border-indigo-200 hover:text-indigo-600" href="homepage.html">
+        <span class="material-symbols-outlined !text-[17px]">home</span>
+        Homepage
+      </a>
+      <button class="inline-flex items-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-100" data-clear-history type="button">
+        <span class="material-symbols-outlined !text-[17px]">delete</span>
+        Clear
+      </button>
+    </div>
+  </section>
+
+  <section class="grid gap-4" data-history-list></section>
+  <section class="hidden rounded-[2rem] border border-dashed border-slate-200 bg-white/70 p-10 text-center" data-history-empty>
+    <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+      <span class="material-symbols-outlined">history</span>
+    </div>
+    <h2 class="text-lg font-bold text-slate-950">No test history yet</h2>
+    <p class="mx-auto mt-2 max-w-md text-sm leading-relaxed text-slate-500">Complete your first CogniLens test and the result will appear here automatically.</p>
+    <a class="mt-5 inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700" href="../Assets/question.html">
+      Start Test
+      <span class="material-symbols-outlined !text-[17px]">arrow_forward</span>
+    </a>
+  </section>
+</main>
+</div>
+
+<script src="../../script.js"></script>
+<script>
+const historyList = document.querySelector("[data-history-list]");
+const emptyState = document.querySelector("[data-history-empty]");
+const clearButton = document.querySelector("[data-clear-history]");
+
+function escapeText(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatSavedDate(value) {
+  const date = value ? new Date(value) : new Date();
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function getTopMetric(result) {
+  const metrics = result.metrics || {};
+  const entries = Object.entries(metrics);
+  if (!entries.length) return { label: "Balanced", value: 0 };
+  const [key, value] = entries.sort((a, b) => Math.abs(b[1] - 50) - Math.abs(a[1] - 50))[0];
+  const labels = { I: "Introversion", E: "Extraversion", N: "Intuition", S: "Sensing", T: "Thinking", F: "Feeling", J: "Judging", P: "Perceiving" };
+  return { label: labels[key] || key, value };
+}
+
+function openHistoryResult(historyId) {
+  const item = getCogniLensHistory().find((entry) => entry.historyId === historyId);
+  if (!item) return;
+  setCurrentCogniLensResult(item);
+  window.location.href = "result.html";
+}
+
+function renderHistory() {
+  const history = getCogniLensHistory();
+  emptyState.classList.toggle("hidden", history.length > 0);
+  historyList.classList.toggle("hidden", history.length === 0);
+  clearButton.disabled = history.length === 0;
+  clearButton.classList.toggle("opacity-50", history.length === 0);
+
+  historyList.innerHTML = history.map((item, index) => {
+    const top = getTopMetric(item);
+    const confidence = Math.round(Number(item.confidence || 0));
+    const type = escapeText(item.type || "TYPE");
+    const title = escapeText(item.title || "CogniLens Result");
+    const summary = escapeText(item.summary || "Assessment result saved from your completed test.");
+
+    return `
+      <article class="history-card rounded-[1.6rem] p-5 sm:p-6">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="rounded-full bg-indigo-600 px-3 py-1 text-xs font-extrabold text-white">${type}</span>
+              <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-500">Test ${history.length - index}</span>
+              <span class="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-600">${confidence}% confidence</span>
+            </div>
+            <h2 class="mt-3 text-xl font-extrabold tracking-tight text-slate-950">${title}</h2>
+            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-slate-500">${summary}</p>
+            <div class="mt-4 flex flex-wrap gap-3 text-xs font-bold text-slate-400">
+              <span class="inline-flex items-center gap-1.5"><span class="material-symbols-outlined !text-[16px]">calendar_clock</span>${formatSavedDate(item.savedAt)}</span>
+              <span class="inline-flex items-center gap-1.5"><span class="material-symbols-outlined !text-[16px]">trending_up</span>${escapeText(top.label)} ${Math.round(Number(top.value || 0))}%</span>
+            </div>
+          </div>
+          <button class="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white hover:bg-indigo-700" data-open-history="${escapeText(item.historyId)}" type="button">
+            Open Result
+            <span class="material-symbols-outlined !text-[17px]">arrow_forward</span>
+          </button>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  historyList.querySelectorAll("[data-open-history]").forEach((button) => {
+    button.addEventListener("click", () => openHistoryResult(button.dataset.openHistory));
+  });
+}
+
+clearButton.addEventListener("click", () => {
+  clearCogniLensHistory();
+  renderHistory();
+});
+
+renderHistory();
+</script>
+</body>
+</html>

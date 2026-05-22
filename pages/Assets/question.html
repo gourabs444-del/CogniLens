@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CogniLens | Phase Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="app" aria-live="polite">
+  <header class="app-header">
+    <a class="home-link" href="../dashboard/homepage.html">CogniLens</a>
+    <div class="phase-pill" id="phase-name">Assessment</div>
+  </header>
+
+  <div class="pipeline" id="pipeline"></div>
+
+  <section class="progress-shell">
+    <div class="progress-meta">
+      <span id="progressText">Question 1 / 18</span>
+      <span id="phaseProgressText">P1</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </section>
+
+  <section class="timer-panel" id="timerPanel" hidden>
+    <div class="timer-copy">
+      <span>Pressure timer</span>
+      <strong><span id="timerValue">10</span>s</strong>
+    </div>
+    <div class="timer-track"><div id="timerFill"></div></div>
+  </section>
+
+  <section class="question-card" id="questionCard">
+    <div class="question-kicker" id="question-title">Q1</div>
+    <h1 id="question-text">Loading question...</h1>
+    <div id="options" class="options"></div>
+    <div class="total-panel" id="totalPanel" hidden>
+      <span>Total</span>
+      <strong><span id="total">0</span> / 10</strong>
+    </div>
+    <p class="error" id="error"></p>
+  </section>
+
+  <button class="help-button" id="helpButton" type="button">Explain simply</button>
+  <div class="explain" id="explainBox"></div>
+
+  <button class="next-button" id="nextButton" type="button">Next</button>
+</main>
+
+<section id="phase-screen" class="phase-screen active" aria-modal="true" role="dialog">
+  <div id="phase-screen-content">
+    <div class="intro-badge">CogniLens Assessment</div>
+    <h2 id="phase-big-title">6 smooth phases</h2>
+    <p id="phase-subtitle">You will move through core choices, point allocation, moral judgement, pressure response, hidden behavior, and final synthesis.</p>
+    <div class="phase-overview" id="phaseOverview"></div>
+    <button id="phaseStartButton" class="phase-start-button" type="button">Start Phase 1</button>
+  </div>
+</section>
+
+<script src="../../score-system.js"></script>
+<script src="../../script.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

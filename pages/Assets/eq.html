@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CogniLens | EQ Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :root {
+    --ink: #111827;
+    --muted: #64748b;
+    --line: rgba(148, 163, 184, 0.22);
+    --rose: #fb7185;
+    --orange: #f97316;
+    --blue: #2563eb;
+    --violet: #7c3aed;
+    --surface: rgba(255, 255, 255, 0.82);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 8% 0%, rgba(251, 113, 133, 0.2), transparent 32%),
+      radial-gradient(circle at 96% 12%, rgba(249, 115, 22, 0.18), transparent 34%),
+      linear-gradient(135deg, #fff7f8 0%, #ffffff 48%, #fff7ed 100%);
+  }
+
+  button,
+  a {
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:focus,
+  a:focus {
+    outline: none;
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid rgba(251, 113, 133, 0.35);
+    outline-offset: 3px;
+  }
+
+  .shell {
+    width: min(100%, 1180px);
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 24px;
+    display: grid;
+    align-items: center;
+  }
+
+  .assessment {
+    min-height: 720px;
+    border-radius: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    background: var(--surface);
+    box-shadow: 0 34px 90px rgba(15, 23, 42, 0.12);
+    backdrop-filter: blur(22px);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 0.92fr 1.08fr;
+  }
+
+  .story-panel {
+    position: relative;
+    padding: 34px;
+    background:
+      radial-gradient(circle at 14% 9%, rgba(20, 184, 166, 0.48), transparent 34%),
+      radial-gradient(circle at 92% 12%, rgba(251, 191, 36, 0.3), transparent 30%),
+      radial-gradient(circle at 72% 88%, rgba(236, 72, 153, 0.34), transparent 34%),
+      linear-gradient(148deg, #071827 0%, #233a75 46%, #5b3d8b 72%, #7c3f4c 100%);
+    color: white;
+    overflow: hidden;
+  }
+
+  .story-panel::before,
+  .story-panel::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .story-panel::before {
+    inset: 0;
+    background:
+      radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 1px, transparent 1.6px),
+      radial-gradient(circle, rgba(103, 232, 249, 0.22) 0 1px, transparent 1.8px),
+      linear-gradient(115deg, rgba(255, 255, 255, 0.06), transparent 42%, rgba(255, 255, 255, 0.045));
+    background-position: 0 0, 18px 22px, 0 0;
+    background-size: 46px 46px, 72px 72px, 100% 100%;
+    opacity: 0.34;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.78) 56%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.78) 56%, transparent 100%);
+  }
+
+  .story-panel::after {
+    inset: auto -14% -18% 34%;
+    width: 420px;
+    height: 300px;
+    border-radius: 42% 58% 48% 52%;
+    background:
+      conic-gradient(from 160deg, rgba(45, 212, 191, 0.22), rgba(99, 102, 241, 0.28), rgba(251, 113, 133, 0.22), rgba(251, 191, 36, 0.16), rgba(45, 212, 191, 0.22));
+    filter: blur(22px);
+    opacity: 0.78;
+  }
+
+  .topline {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: 850;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2dd4bf, #6366f1);
+    box-shadow: 0 14px 28px rgba(45, 212, 191, 0.26);
+  }
+
+  .back-link {
+    color: rgba(255, 255, 255, 0.72);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .story-body {
+    position: relative;
+    z-index: 1;
+    min-height: 510px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .story-emblem {
+    position: relative;
+    width: 86px;
+    height: 86px;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background:
+      radial-gradient(circle at 28% 26%, rgba(255, 255, 255, 0.72), transparent 10%),
+      radial-gradient(circle at 72% 34%, rgba(45, 212, 191, 0.6), transparent 24%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.05));
+    box-shadow:
+      inset 0 0 28px rgba(255, 255, 255, 0.09),
+      0 24px 48px rgba(15, 23, 42, 0.22);
+    overflow: hidden;
+  }
+
+  .story-emblem[hidden] {
+    display: none !important;
+  }
+
+  .story-emblem::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle, rgba(255, 255, 255, 0.42) 0 1px, transparent 1.6px),
+      linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.14));
+    background-size: 19px 19px, 100% 100%;
+    opacity: 0.5;
+  }
+
+  .story-emblem::after {
+    content: "";
+    position: absolute;
+    right: -18px;
+    bottom: -20px;
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    background: rgba(99, 102, 241, 0.2);
+  }
+
+  .emblem-moon,
+  .emblem-chat,
+  .emblem-signal,
+  .emblem-spark {
+    position: absolute;
+    z-index: 1;
+  }
+
+  .emblem-moon {
+    left: 18px;
+    top: 16px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fef3c7, #f8fafc);
+    box-shadow: 0 0 26px rgba(254, 243, 199, 0.48);
+  }
+
+  .emblem-moon::after {
+    content: "";
+    position: absolute;
+    right: -6px;
+    top: -4px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #273a75;
+  }
+
+  .emblem-chat {
+    left: 26px;
+    bottom: 18px;
+    width: 38px;
+    height: 25px;
+    border-radius: 12px 12px 12px 5px;
+    background: linear-gradient(135deg, rgba(45, 212, 191, 0.92), rgba(99, 102, 241, 0.9));
+    box-shadow: 0 12px 26px rgba(45, 212, 191, 0.24);
+  }
+
+  .emblem-chat::after {
+    content: "";
+    position: absolute;
+    left: 7px;
+    bottom: -6px;
+    border-top: 8px solid rgba(45, 212, 191, 0.92);
+    border-right: 8px solid transparent;
+  }
+
+  .emblem-signal {
+    right: 15px;
+    top: 18px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.62);
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+    transform: rotate(-14deg);
+  }
+
+  .emblem-spark {
+    right: 20px;
+    bottom: 22px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fbbf24;
+    box-shadow:
+      0 0 18px rgba(251, 191, 36, 0.65),
+      -38px -22px 0 -2px rgba(255, 255, 255, 0.74);
+  }
+
+  .story-title {
+    margin: 18px 0 0;
+    font-size: clamp(2.15rem, 4vw, 4.2rem);
+    line-height: 0.98;
+    letter-spacing: 0;
+    font-weight: 900;
+  }
+
+  .story-copy {
+    display: grid;
+    gap: 11px;
+    margin-top: 24px;
+    max-width: 31rem;
+    color: rgba(255, 255, 255, 0.76);
+    font-size: 15px;
+    line-height: 1.75;
+    font-weight: 560;
+  }
+
+  .story-copy p {
+    margin: 0;
+  }
+
+  .message-card {
+    margin-top: 24px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    padding: 18px;
+  }
+
+  .message-card p {
+    margin: 0;
+    color: white;
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 800;
+  }
+
+  .message-card span {
+    display: block;
+    margin-top: 10px;
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .psych-theme {
+    position: relative;
+    width: 100%;
+    min-height: 430px;
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+  }
+
+  .psych-theme[hidden] {
+    display: none !important;
+  }
+
+  .psych-theme::before {
+    content: "";
+    position: absolute;
+    inset: 6% 2%;
+    border-radius: 38px;
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 34px 34px;
+    opacity: 0.38;
+    -webkit-mask-image: radial-gradient(circle at center, #000 0 58%, transparent 76%);
+    mask-image: radial-gradient(circle at center, #000 0 58%, transparent 76%);
+  }
+
+  .psych-theme::after {
+    content: "";
+    position: absolute;
+    width: min(76%, 360px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow:
+      inset 0 0 70px rgba(255, 255, 255, 0.08),
+      0 0 90px rgba(34, 211, 238, 0.18);
+  }
+
+  .psych-frame {
+    position: relative;
+    width: min(72%, 330px);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+  }
+
+  .psych-frame::before,
+  .psych-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+  }
+
+  .psych-frame::before {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background:
+      conic-gradient(from 110deg, rgba(45, 212, 191, 0), rgba(45, 212, 191, 0.36), rgba(99, 102, 241, 0), rgba(251, 113, 133, 0.28), rgba(45, 212, 191, 0));
+    filter: drop-shadow(0 18px 45px rgba(15, 23, 42, 0.28));
+    animation: slowTurn 18s linear infinite;
+  }
+
+  .psych-frame::after {
+    inset: 17%;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.045);
+    backdrop-filter: blur(10px);
+  }
+
+  .psych-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .psych-ring-one {
+    inset: 10%;
+    box-shadow: 0 0 34px rgba(45, 212, 191, 0.16);
+  }
+
+  .psych-ring-two {
+    inset: 31%;
+    border-color: rgba(251, 113, 133, 0.3);
+    box-shadow: 0 0 32px rgba(251, 113, 133, 0.14);
+  }
+
+  .psych-axis {
+    position: absolute;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+    opacity: 0.72;
+  }
+
+  .axis-x {
+    width: 96%;
+    height: 1px;
+  }
+
+  .axis-y {
+    width: 1px;
+    height: 96%;
+    background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  }
+
+  .psych-core {
+    position: relative;
+    z-index: 1;
+    width: 148px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background:
+      radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.96) 0 8%, rgba(255, 255, 255, 0.18) 9% 28%, transparent 29%),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.05));
+    box-shadow:
+      inset 0 0 36px rgba(255, 255, 255, 0.14),
+      0 24px 70px rgba(15, 23, 42, 0.34);
+  }
+
+  .psych-core::before {
+    content: "";
+    position: absolute;
+    inset: 42px 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.34);
+    transform: scaleY(0.58);
+    box-shadow: 0 0 24px rgba(45, 212, 191, 0.22);
+  }
+
+  .psych-core::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #67e8f9;
+    box-shadow: 0 0 28px rgba(103, 232, 249, 0.72);
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes slowTurn {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .question-panel {
+    padding: 34px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .progress-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .progress-label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 850;
+  }
+
+  .progress-label strong {
+    color: var(--ink);
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 9px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.08);
+    margin-bottom: 24px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 20%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #2dd4bf, #6366f1, #f59e0b);
+    transition: width 280ms ease;
+  }
+
+  .phase-rail {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .phase-chip {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 18% 12%, rgba(45, 212, 191, 0.13), transparent 34%),
+      linear-gradient(135deg, rgba(248, 250, 252, 0.94), rgba(241, 245, 249, 0.9));
+    height: 86px;
+    min-height: 86px;
+    padding: 16px;
+    color: #64748b;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+  }
+
+  .phase-chip span {
+    position: relative;
+    z-index: 1;
+    display: block;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .phase-chip.phase-p2,
+  .phase-chip.phase-p3 {
+    border-color: rgba(255, 255, 255, 0.24);
+    background-position: center;
+    background-size: cover;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  }
+
+  .phase-chip.phase-p2 {
+    background-image:
+      linear-gradient(135deg, rgba(6, 24, 42, 0.7), rgba(37, 99, 235, 0.3)),
+      url("phase-card-horse.jpg");
+  }
+
+  .phase-chip.phase-p3 {
+    background-image:
+      linear-gradient(135deg, rgba(45, 13, 18, 0.66), rgba(245, 158, 11, 0.25)),
+      url("phase-card-horse.jpg");
+  }
+
+  .phase-chip.phase-p2::after,
+  .phase-chip.phase-p3::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 16% 18%, rgba(255, 255, 255, 0.2), transparent 24%),
+      linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+    opacity: 0.65;
+    pointer-events: none;
+  }
+
+  .phase-chip.phase-p2 span,
+  .phase-chip.phase-p3 span {
+    color: white;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.58);
+  }
+
+  .phase-chip.is-active {
+    border-color: rgba(99, 102, 241, 0.34);
+    background: linear-gradient(135deg, rgba(236, 254, 255, 0.96), rgba(238, 242, 255, 0.92));
+    box-shadow: 0 16px 32px rgba(99, 102, 241, 0.08);
+  }
+
+  .phase-chip.phase-p2.is-active {
+    border-color: rgba(103, 232, 249, 0.58);
+    background-image:
+      linear-gradient(135deg, rgba(4, 18, 33, 0.62), rgba(37, 99, 235, 0.22)),
+      url("phase-card-horse.jpg");
+    box-shadow: 0 18px 36px rgba(37, 99, 235, 0.16);
+  }
+
+  .phase-chip.phase-p3.is-active {
+    border-color: rgba(251, 191, 36, 0.58);
+    background-image:
+      linear-gradient(135deg, rgba(45, 13, 18, 0.58), rgba(239, 68, 68, 0.2)),
+      url("phase-card-horse.jpg");
+    box-shadow: 0 18px 36px rgba(239, 68, 68, 0.16);
+  }
+
+  .question-card {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-radius: 28px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.86)),
+      radial-gradient(circle at 18px 18px, rgba(99, 102, 241, 0.13) 0 1.1px, transparent 1.8px),
+      radial-gradient(circle at 48px 34px, rgba(20, 184, 166, 0.16) 0 1.15px, transparent 1.8px),
+      radial-gradient(circle at 24px 54px, rgba(245, 158, 11, 0.12) 0 1.05px, transparent 1.7px);
+    background-size: 100% 100%, 48px 48px, 70px 70px, 92px 92px;
+    padding: 28px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+  }
+
+  .question-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(45deg, transparent 48.5%, rgba(99, 102, 241, 0.07) 49.5%, rgba(99, 102, 241, 0.07) 50.5%, transparent 51.5%),
+      linear-gradient(-45deg, transparent 48.5%, rgba(20, 184, 166, 0.07) 49.5%, rgba(20, 184, 166, 0.07) 50.5%, transparent 51.5%);
+    background-size: 72px 72px;
+    opacity: 0.54;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(140deg, rgba(0, 0, 0, 0.9), transparent 76%);
+    mask-image: linear-gradient(140deg, rgba(0, 0, 0, 0.9), transparent 76%);
+  }
+
+  .question-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .question-kicker {
+    color: var(--rose);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .question-title {
+    margin: 14px 0 22px;
+    color: #111827;
+    font-size: clamp(1.65rem, 3vw, 2.6rem);
+    line-height: 1.08;
+    letter-spacing: 0;
+    font-weight: 900;
+  }
+
+  .options {
+    display: grid;
+    gap: 12px;
+  }
+
+  .option {
+    width: 100%;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 19px;
+    background: rgba(248, 250, 252, 0.92);
+    color: #334155;
+    padding: 16px 17px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+  }
+
+  .option:hover {
+    transform: translateY(-1px);
+    border-color: rgba(251, 113, 133, 0.38);
+    box-shadow: 0 16px 32px rgba(251, 113, 133, 0.08);
+  }
+
+  .option.is-selected {
+    border-color: rgba(251, 113, 133, 0.58);
+    background: linear-gradient(135deg, rgba(255, 241, 242, 0.98), rgba(255, 247, 237, 0.92));
+    box-shadow: 0 18px 34px rgba(251, 113, 133, 0.1);
+  }
+
+  .option-index {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    flex: 0 0 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    color: var(--rose);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .option-text {
+    line-height: 1.45;
+    font-size: 14px;
+    font-weight: 760;
+  }
+
+  .controls {
+    margin-top: auto;
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .control-button {
+    border: 0;
+    border-radius: 17px;
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .control-button.secondary {
+    background: #f1f5f9;
+    color: #475569;
+  }
+
+  .control-button.primary {
+    min-width: 140px;
+    background: linear-gradient(135deg, #2dd4bf, #6366f1);
+    color: white;
+    box-shadow: 0 18px 36px rgba(99, 102, 241, 0.18);
+  }
+
+  .control-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+    box-shadow: none;
+  }
+
+  .assessment.phase-two .story-panel {
+    background:
+      radial-gradient(circle at 14% 0%, rgba(45, 212, 191, 0.26), transparent 34%),
+      radial-gradient(circle at 90% 12%, rgba(129, 140, 248, 0.32), transparent 36%),
+      linear-gradient(155deg, rgba(15, 23, 42, 0.96), rgba(49, 46, 129, 0.88));
+  }
+
+  .assessment.phase-two .brand-mark,
+  .assessment.phase-two .control-button.primary,
+  .assessment.phase-two .progress-fill {
+    background: linear-gradient(135deg, #22c55e, #2563eb);
+    box-shadow: 0 18px 36px rgba(37, 99, 235, 0.18);
+  }
+
+  .assessment.phase-two .question-kicker,
+  .assessment.phase-two .option-index {
+    color: #2563eb;
+  }
+
+  .assessment.phase-two .option:hover {
+    border-color: rgba(37, 99, 235, 0.34);
+    box-shadow: 0 16px 32px rgba(37, 99, 235, 0.08);
+  }
+
+  .assessment.phase-two .option.is-selected {
+    border-color: rgba(37, 99, 235, 0.5);
+    background: linear-gradient(135deg, rgba(239, 246, 255, 0.98), rgba(240, 253, 250, 0.92));
+    box-shadow: 0 18px 34px rgba(37, 99, 235, 0.1);
+  }
+
+  .assessment.phase-two .phase-chip.is-active {
+    border-color: rgba(37, 99, 235, 0.38);
+    background: linear-gradient(135deg, rgba(239, 246, 255, 0.96), rgba(240, 253, 250, 0.9));
+    box-shadow: 0 16px 32px rgba(37, 99, 235, 0.08);
+  }
+
+  .assessment.phase-three .story-panel {
+    background:
+      radial-gradient(circle at 12% 6%, rgba(245, 158, 11, 0.28), transparent 36%),
+      radial-gradient(circle at 88% 18%, rgba(239, 68, 68, 0.28), transparent 34%),
+      linear-gradient(155deg, rgba(17, 24, 39, 0.96), rgba(69, 10, 10, 0.88));
+  }
+
+  .assessment.phase-three .brand-mark,
+  .assessment.phase-three .control-button.primary,
+  .assessment.phase-three .progress-fill {
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    box-shadow: 0 18px 36px rgba(239, 68, 68, 0.18);
+  }
+
+  .assessment.phase-three .question-kicker,
+  .assessment.phase-three .option-index {
+    color: #dc2626;
+  }
+
+  .assessment.phase-three .option:hover {
+    border-color: rgba(239, 68, 68, 0.34);
+    box-shadow: 0 16px 32px rgba(239, 68, 68, 0.08);
+  }
+
+  .assessment.phase-three .option.is-selected {
+    border-color: rgba(239, 68, 68, 0.5);
+    background: linear-gradient(135deg, rgba(255, 247, 237, 0.98), rgba(254, 242, 242, 0.92));
+    box-shadow: 0 18px 34px rgba(239, 68, 68, 0.1);
+  }
+
+  .assessment.phase-three .phase-chip.is-active {
+    border-color: rgba(239, 68, 68, 0.38);
+    background: linear-gradient(135deg, rgba(255, 247, 237, 0.96), rgba(254, 242, 242, 0.9));
+    box-shadow: 0 16px 32px rgba(239, 68, 68, 0.08);
+  }
+
+  .assessment.phase-two .phase-chip.phase-p2.is-active {
+    border-color: rgba(103, 232, 249, 0.58);
+    background-image:
+      linear-gradient(135deg, rgba(4, 18, 33, 0.62), rgba(37, 99, 235, 0.22)),
+      url("phase-card-horse.jpg");
+    background-position: center;
+    background-size: cover;
+    box-shadow: 0 18px 36px rgba(37, 99, 235, 0.16);
+  }
+
+  .assessment.phase-three .phase-chip.phase-p3.is-active {
+    border-color: rgba(251, 191, 36, 0.58);
+    background-image:
+      linear-gradient(135deg, rgba(45, 13, 18, 0.58), rgba(239, 68, 68, 0.2)),
+      url("phase-card-horse.jpg");
+    background-position: center;
+    background-size: cover;
+    box-shadow: 0 18px 36px rgba(239, 68, 68, 0.16);
+  }
+
+  @media (max-width: 920px) {
+    .shell {
+      padding: 12px;
+    }
+
+    .assessment {
+      min-height: 0;
+      grid-template-columns: 1fr;
+      border-radius: 24px;
+    }
+
+    .story-panel,
+    .question-panel {
+      padding: 22px;
+    }
+
+    .story-body {
+      min-height: 330px;
+    }
+
+    .phase-rail {
+      grid-template-columns: 1fr;
+    }
+
+    .psych-theme {
+      min-height: 300px;
+    }
+
+    .psych-frame {
+      width: min(74%, 260px);
+    }
+
+    .psych-core {
+      width: 112px;
+    }
+
+  }
+</style>
+</head>
+<body>
+  <main class="shell">
+    <section class="assessment" aria-label="CogniLens EQ story assessment">
+      <aside class="story-panel">
+        <div class="topline">
+          <a class="brand" href="../dashboard/homepage.html" aria-label="CogniLens dashboard">
+            <span class="brand-mark" aria-hidden="true">
+              <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path>
+                <path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path>
+              </svg>
+            </span>
+            <span>CogniLens</span>
+          </a>
+          <a class="back-link" href="../dashboard/homepage.html">Dashboard</a>
+        </div>
+
+        <div class="story-body">
+          <div class="story-emblem" id="storyEmblem" aria-hidden="true">
+            <span class="emblem-moon"></span>
+            <span class="emblem-chat"></span>
+            <span class="emblem-signal"></span>
+            <span class="emblem-spark"></span>
+          </div>
+          <h1 class="story-title" id="storyTitle">The pinned chat</h1>
+          <div class="story-copy" id="storyCopy"></div>
+          <div class="message-card" id="messageCard" hidden>
+            <p id="messageText"></p>
+            <span id="messageMeta"></span>
+          </div>
+          <div class="psych-theme" id="psychTheme" hidden aria-hidden="true">
+            <div class="psych-frame">
+              <span class="psych-ring psych-ring-one"></span>
+              <span class="psych-ring psych-ring-two"></span>
+              <span class="psych-axis axis-x"></span>
+              <span class="psych-axis axis-y"></span>
+              <span class="psych-core"></span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="question-panel">
+        <div class="progress-head">
+          <span class="progress-label"><strong id="questionCount">Question 1</strong> of <span id="questionTotal">0</span></span>
+          <span class="progress-label" id="answerStatus">0 answered</span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="phase-rail" id="phaseRail" aria-label="EQ test phases"></div>
+
+        <article class="question-card">
+          <span class="question-kicker" id="questionKicker">Q1</span>
+          <h2 class="question-title" id="questionText">Question loading...</h2>
+          <div class="options" id="options"></div>
+
+          <div class="controls">
+            <button class="control-button secondary" id="prevButton" type="button">Previous</button>
+            <button class="control-button primary" id="nextButton" type="button" disabled>Next</button>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+<script src="eq-scoring.js"></script>
+<script>
+const EQ_STORAGE_KEY = "cognilensEqAnswers";
+
+const eqPhases = [
+  { id: "P1", label: "Phase 1" },
+  { id: "P2", label: "Phase 2" },
+  { id: "P3", label: "Phase 3" }
+];
+
+const eqQuestions = [
+  {
+    id: "EQ1",
+    phase: "P1",
+    stage: "Morning after",
+    title: "The pinned chat",
+    story: [
+      "You are lying on your bed.",
+      "The fan is spinning slowly. The room is quiet.",
+      "You open WhatsApp. Their chat is still pinned at the top.",
+      "No fight before this. No big argument. Just this message."
+    ],
+    message: "Let's just end this. It's better for both of us.",
+    meta: "Last seen: 2:17 AM",
+    question: "What do you do first?",
+    options: [
+      "Open the chat and start reading old messages",
+      "Feel like replying immediately",
+      "Put the phone aside and don't react instantly"
+    ]
+  },
+  {
+    id: "EQ2",
+    phase: "P1",
+    stage: "Scrolling back",
+    title: "Everything looked normal",
+    story: [
+      "You start scrolling.",
+      "Good mornings, random conversations, late night talks.",
+      "Everything looks normal. Nothing clearly broken.",
+      "And yet, it ended."
+    ],
+    question: "What's going on in your mind right now?",
+    options: [
+      "Trying to figure out where things changed",
+      "Feeling emotions but trying to stay composed",
+      "Wanting to distract yourself and avoid thinking too much"
+    ]
+  },
+  {
+    id: "EQ3",
+    phase: "P1",
+    stage: "Unsent messages",
+    title: "You type, then delete",
+    story: [
+      "You type a message: \"Why?\"",
+      "Then delete it.",
+      "You type again: \"Can we talk?\"",
+      "You stop again. Nothing feels right."
+    ],
+    question: "What do you decide to do?",
+    options: [
+      "Ask directly for clarity",
+      "Wait until your emotions settle",
+      "Send a short, simple message"
+    ]
+  },
+  {
+    id: "EQ4",
+    phase: "P1",
+    stage: "The reply",
+    title: "No blame, just distance",
+    story: [
+      "After a while, they reply:",
+      "\"I didn't feel the same anymore. I didn't want to force it.\"",
+      "No anger. No blame.",
+      "Just distance."
+    ],
+    question: "How do you respond now?",
+    options: [
+      "Try to understand their perspective",
+      "Express your feelings honestly",
+      "Accept it and keep your reply minimal"
+    ]
+  },
+  {
+    id: "EQ5",
+    phase: "P1",
+    stage: "Final moment",
+    title: "The screen goes dark",
+    story: [
+      "The conversation ends.",
+      "No more typing. No more notifications. Just silence.",
+      "You are still sitting there, phone in your hand.",
+      "Same room. Different feeling."
+    ],
+    question: "What stays with you the most?",
+    options: [
+      "Understanding what actually happened",
+      "Processing your own emotions",
+      "Letting go and moving forward"
+    ]
+  },
+  {
+    id: "EQ6",
+    phase: "P2",
+    stage: "Close friend comparison",
+    title: "A close friend moves ahead",
+    story: [
+      "A close friend reaches a place you wanted to reach.",
+      "You are happy for them, but you also notice your own reaction.",
+      "No one is asking you to explain it.",
+      "You still know what you feel first."
+    ],
+    question: "If a close friend gets ahead of you in life, do you feel jealous?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    id: "EQ8",
+    phase: "P2",
+    stage: "Honesty paradox",
+    title: "Safe truth",
+    story: [
+      "Someone gives you full permission to be honest.",
+      "They say there will be no judgment.",
+      "That sounds safe.",
+      "But safety can also make people more careful."
+    ],
+    question: "If someone says, \"Be completely honest, I will not judge you,\" do you become more honest or more careful?",
+    options: [
+      "More honest",
+      "More careful"
+    ]
+  },
+  {
+    id: "EQ9",
+    phase: "P2",
+    stage: "Perfect image",
+    title: "The version people see",
+    story: [
+      "Sometimes people only see the polished version.",
+      "The calm reply. The confident face. The controlled answer.",
+      "But inside, things may be more complicated."
+    ],
+    question: "Do you sometimes try to appear more perfect to others than you actually are?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    id: "EQ10",
+    phase: "P2",
+    stage: "Impression style",
+    title: "Trying to be noticed",
+    story: [
+      "You want to impress your crush.",
+      "You care about how they see you.",
+      "The question is not what sounds best.",
+      "It is what you would naturally do."
+    ],
+    question: "If you wanted to impress your crush, what would you most naturally do?",
+    options: [
+      "Try to act cool and confident",
+      "Show your strengths or achievements",
+      "Talk normally, just the way you usually are",
+      "Understand their interests and spend time with them"
+    ]
+  },
+  {
+    id: "EQ11",
+    phase: "P2",
+    stage: "New people",
+    title: "Real self or adjusted self",
+    story: [
+      "You meet new people.",
+      "There is a first impression to manage.",
+      "Some people stay exactly the same.",
+      "Some adjust slightly to the room."
+    ],
+    question: "When you meet new people, do you speak as your real self or adjust your personality?",
+    options: [
+      "I am completely real",
+      "I adjust a little depending on the situation"
+    ]
+  },
+  {
+    id: "EQ12",
+    phase: "P2",
+    stage: "Value conflict",
+    title: "Different views",
+    story: [
+      "You and your partner have completely different political views.",
+      "The difference is not small.",
+      "It affects how both of you see people, society, and decisions."
+    ],
+    question: "If you and your partner had completely different political views, would you still choose to stay in the relationship?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    id: "EQ13",
+    phase: "P2",
+    stage: "Honesty risk",
+    title: "Truth with consequences",
+    story: [
+      "Being fully honest about yourself could change how someone sees you.",
+      "You might keep the connection.",
+      "You might lose it.",
+      "The choice is between safety and truth."
+    ],
+    question: "If being completely honest about yourself meant risking losing someone important, would you still choose to be fully honest?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    id: "EQ14",
+    phase: "P3",
+    stage: "Value conflict",
+    title: "One life, two meanings",
+    story: [
+      "A decision has to be made quickly.",
+      "There is no perfect answer.",
+      "Both lives matter.",
+      "Your instinct chooses what your values protect first."
+    ],
+    question: "If you could save only one person, an elderly person or a young child, would you choose the child?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    id: "EQ15",
+    phase: "P3",
+    stage: "Scale vs emotion",
+    title: "Five lives and one life",
+    story: [
+      "The choice becomes larger.",
+      "Numbers make the answer look logical.",
+      "Emotion still does not disappear.",
+      "Your answer shows how you balance scale and attachment."
+    ],
+    question: "If saving five children meant letting one elderly person die, would you still choose the five children?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    id: "EQ16",
+    phase: "P3",
+    stage: "Reverse paradox",
+    title: "The rule gets tested",
+    story: [
+      "Now the direction changes.",
+      "The single life is younger.",
+      "The group is older.",
+      "A consistent answer may feel harder than it sounds."
+    ],
+    question: "If you had to choose between saving five elderly people or one child, would you still choose the child?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    id: "EQ17",
+    phase: "P3",
+    stage: "Moral boundary",
+    title: "Justice and life",
+    story: [
+      "Some actions create deep anger.",
+      "Punishment can feel necessary.",
+      "The question is where your moral boundary stops.",
+      "This is not about approval. It is about the right to live."
+    ],
+    question: "Do you believe someone who has committed a serious crime, such as rape, still deserves the right to live?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    id: "EQ18",
+    phase: "P3",
+    stage: "Guilt vs honesty",
+    title: "Truth at home",
+    story: [
+      "You did something that deeply hurt your parents.",
+      "They may never know unless you tell them.",
+      "The truth could hurt them again.",
+      "Silence could protect you from guilt."
+    ],
+    question: "If you did something that deeply hurt your parents, would you choose to tell them the truth?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    id: "EQ19",
+    phase: "P3",
+    stage: "Truth vs consequence",
+    title: "When honesty destroys",
+    story: [
+      "The truth is real.",
+      "But telling it could damage someone's entire life.",
+      "Now honesty is not just a virtue.",
+      "It becomes a consequence."
+    ],
+    question: "If telling the truth could destroy someone's life, would you still tell it?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  },
+  {
+    id: "EQ20",
+    phase: "P3",
+    stage: "Self vs others",
+    title: "Your happiness as the cost",
+    story: [
+      "Multiple people could become happy.",
+      "The cost is your own happiness.",
+      "No one can force the choice.",
+      "Your answer shows where sacrifice begins and ends."
+    ],
+    question: "If sacrificing your own happiness could make multiple people happy, would you do it?",
+    options: [
+      "Yes",
+      "No"
+    ]
+  }
+];
+
+let currentQuestion = 0;
+let answers = loadAnswers();
+
+const storyEmblem = document.getElementById("storyEmblem");
+const storyTitle = document.getElementById("storyTitle");
+const storyCopy = document.getElementById("storyCopy");
+const messageCard = document.getElementById("messageCard");
+const messageText = document.getElementById("messageText");
+const messageMeta = document.getElementById("messageMeta");
+const psychTheme = document.getElementById("psychTheme");
+const questionCount = document.getElementById("questionCount");
+const questionTotal = document.getElementById("questionTotal");
+const answerStatus = document.getElementById("answerStatus");
+const progressFill = document.getElementById("progressFill");
+const phaseRail = document.getElementById("phaseRail");
+const questionKicker = document.getElementById("questionKicker");
+const questionText = document.getElementById("questionText");
+const optionsEl = document.getElementById("options");
+const prevButton = document.getElementById("prevButton");
+const nextButton = document.getElementById("nextButton");
+
+function loadAnswers() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(EQ_STORAGE_KEY) || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveAnswers() {
+  localStorage.setItem(EQ_STORAGE_KEY, JSON.stringify(answers));
+}
+
+function renderStory(question) {
+  const visualOnly = question.phase === "P2";
+  psychTheme.hidden = !visualOnly;
+  storyEmblem.hidden = visualOnly;
+  storyTitle.hidden = visualOnly;
+  storyCopy.hidden = visualOnly;
+
+  if (visualOnly) {
+    messageCard.hidden = true;
+    return;
+  }
+
+  storyTitle.textContent = question.title;
+  storyCopy.innerHTML = question.story.map((line) => `<p>${line}</p>`).join("");
+
+  if (question.message) {
+    messageCard.hidden = false;
+    messageText.textContent = question.message;
+    messageMeta.textContent = question.meta || "";
+  } else {
+    messageCard.hidden = true;
+  }
+}
+
+function renderPhaseRail(activePhaseId) {
+  phaseRail.innerHTML = eqPhases.map((phase) => `
+    <div class="phase-chip phase-${phase.id.toLowerCase()} ${phase.id === activePhaseId ? "is-active" : ""}">
+      <span>${phase.label}</span>
+    </div>
+  `).join("");
+}
+
+function renderQuestion() {
+  const question = eqQuestions[currentQuestion];
+  const selected = answers[currentQuestion]?.optionIndex;
+  const answeredCount = answers.filter(Boolean).length;
+
+  const assessment = document.querySelector(".assessment");
+  assessment.classList.toggle("phase-two", question.phase === "P2");
+  assessment.classList.toggle("phase-three", question.phase === "P3");
+  renderStory(question);
+  renderPhaseRail(question.phase);
+  questionCount.textContent = `Question ${currentQuestion + 1}`;
+  questionTotal.textContent = eqQuestions.length;
+  answerStatus.textContent = `${answeredCount} answered`;
+  progressFill.style.width = `${((currentQuestion + 1) / eqQuestions.length) * 100}%`;
+  questionKicker.textContent = question.id;
+  questionText.textContent = question.question;
+
+  optionsEl.innerHTML = question.options.map((option, optionIndex) => `
+    <button class="option ${selected === optionIndex ? "is-selected" : ""}" data-option-index="${optionIndex}" type="button">
+      <span class="option-index">${optionIndex + 1}</span>
+      <span class="option-text">${option}</span>
+    </button>
+  `).join("");
+
+  prevButton.disabled = currentQuestion === 0;
+  nextButton.disabled = selected === undefined;
+  nextButton.textContent = currentQuestion === eqQuestions.length - 1 ? "Finish" : "Next";
+}
+
+function selectOption(optionIndex) {
+  const question = eqQuestions[currentQuestion];
+  answers[currentQuestion] = {
+    questionId: question.id,
+    optionIndex,
+    optionText: question.options[optionIndex],
+    answeredAt: new Date().toISOString()
+  };
+  saveAnswers();
+  renderQuestion();
+}
+
+function finishAssessment() {
+  saveAnswers();
+  localStorage.setItem("cognilensEqCompletedAt", new Date().toISOString());
+
+  if (typeof window.scoreCogniLensEQ === "function") {
+    const result = window.scoreCogniLensEQ(answers, eqQuestions);
+    if (result) {
+      localStorage.setItem("cognilensEqResult", JSON.stringify(result));
+    }
+  }
+
+  window.location.href = "eq-result.html";
+}
+
+function goToPreviousQuestion() {
+  if (currentQuestion === 0) return;
+  currentQuestion -= 1;
+  renderQuestion();
+}
+
+function goToNextQuestion() {
+  if (!answers[currentQuestion]) return;
+  if (currentQuestion === eqQuestions.length - 1) {
+    finishAssessment();
+    return;
+  }
+  currentQuestion += 1;
+  renderQuestion();
+}
+
+optionsEl.addEventListener("click", (event) => {
+  const option = event.target.closest("[data-option-index]");
+  if (!option) return;
+  selectOption(Number(option.dataset.optionIndex));
+});
+
+prevButton.addEventListener("click", goToPreviousQuestion);
+
+nextButton.addEventListener("click", goToNextQuestion);
+
+document.addEventListener("keydown", (event) => {
+  const target = event.target;
+  const isTyping = target?.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName);
+  if (isTyping || event.altKey || event.ctrlKey || event.metaKey) return;
+
+  const focusedOption = target?.closest?.("[data-option-index]");
+
+  if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+    event.preventDefault();
+    goToPreviousQuestion();
+    return;
+  }
+
+  if (event.key === "Enter" && focusedOption && !answers[currentQuestion]) {
+    event.preventDefault();
+    selectOption(Number(focusedOption.dataset.optionIndex));
+    return;
+  }
+
+  if (event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "Enter") {
+    event.preventDefault();
+    goToNextQuestion();
+  }
+});
+
+renderQuestion();
+</script>
+</body>
+</html>

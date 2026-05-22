@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CogniLens | Result Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="../../dashboard-edge-panel.css" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --apple-blue: #0071e3;
+            --apple-purple: #9f7aea;
+            --apple-cyan: #55efc4;
+            --apple-pink: #ff7eb9;
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-main: #1d1d1f;
+            --text-secondary: #86868b;
+        }
+        html {
+            overflow-y: scroll;
+            scrollbar-gutter: stable;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at 0% 0%, #f0f7ff 0%, #ffffff 50%, #f9f0ff 100%);
+            color: var(--text-main);
+            background-attachment: fixed;
+        }
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.02);
+        }
+        .brand-logo-mark {
+            width: 1.65rem;
+            height: 1.65rem;
+            border-radius: 0.55rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            background: linear-gradient(135deg, #7c6ef5, #6c5ce7);
+            box-shadow: 0 8px 18px rgba(108,92,231,0.3);
+        }
+        .settings-logout-button {
+            border: 1px solid rgba(248,113,113,0.16);
+            background: linear-gradient(135deg, rgba(255,247,247,0.95), rgba(255,255,255,0.9));
+            color: #dc2626;
+            transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+        }
+        .settings-logout-button:hover {
+            transform: translateY(-1px);
+            border-color: rgba(248,113,113,0.32);
+            background: #fff1f2;
+        }
+        .story-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.88), rgba(247,250,255,0.72));
+            border: 1px solid rgba(255,255,255,0.88);
+            box-shadow: 0 20px 40px rgba(0, 113, 227, 0.08);
+        }
+        .share-option {
+            background: rgba(255,255,255,0.72);
+            border: 1px solid rgba(17,24,39,0.06);
+            transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+        }
+        .share-option:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0,113,227,0.18);
+            box-shadow: 0 14px 28px rgba(15,23,42,0.08);
+        }
+        @keyframes resultGearSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            60% { transform: rotate(128deg) scale(1.08); }
+            100% { transform: rotate(92deg) scale(1); }
+        }
+        .settings-shell {
+            position: relative;
+            z-index: 120;
+        }
+        .settings-button {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+        }
+        .settings-button:hover {
+            background: rgba(0,0,0,0.06);
+            color: #111827;
+        }
+        .settings-gear.is-spinning {
+            animation: resultGearSpin 0.48s cubic-bezier(.2,.8,.2,1);
+            transform-origin: center;
+        }
+        .settings-panel {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 0.75rem);
+            width: min(18rem, calc(100vw - 2rem));
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px) scale(0.96);
+            transform-origin: top right;
+            transition: opacity 220ms ease, transform 280ms cubic-bezier(.2,.8,.2,1);
+        }
+        .settings-panel.is-open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+        .settings-panel > div {
+            background: #ffffff !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-color: rgba(226,232,240,0.9) !important;
+            box-shadow: 0 28px 70px rgba(15,23,42,0.18) !important;
+        }
+        .theme-chip {
+            transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+        }
+        .theme-chip:hover {
+            transform: translateY(-1px);
+        }
+        .theme-chip.is-active {
+            background: #111827 !important;
+            color: white !important;
+            box-shadow: 0 12px 24px rgba(17,24,39,0.14);
+        }
+        .result-mode-button:hover {
+            transform: translateY(-1px);
+            background: rgba(37,99,235,0.08);
+        }
+        .result-mode-button.is-active {
+            background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(16,185,129,0.1)) !important;
+            box-shadow: inset 0 0 0 1px rgba(37,99,235,0.16);
+        }
+        .sidebar-item-active {
+            background: rgba(0, 113, 227, 0.06);
+            color: var(--apple-blue);
+        }
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 20;
+            font-size: 20px;
+        }
+        .ring-glow {
+            filter: drop-shadow(0 0 3px currentColor);
+        }
+        .charging-ring {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .enhanced-meter::before {
+            content: "";
+            position: absolute;
+            inset: -0.85rem;
+            border-radius: 999px;
+            background: conic-gradient(from 160deg, rgba(0,113,227,0.12), rgba(159,122,234,0.16), rgba(85,239,196,0.12), rgba(255,126,185,0.14), rgba(0,113,227,0.12));
+            filter: blur(10px);
+            opacity: 0.8;
+        }
+        .enhanced-meter .meter-track {
+            stroke: rgba(17,24,39,0.055);
+        }
+        .enhanced-meter [data-ring-fill] {
+            transition: stroke-dashoffset 900ms cubic-bezier(.2,.8,.2,1), stroke 220ms ease;
+            filter: drop-shadow(0 8px 10px rgba(0,113,227,0.12));
+        }
+        .enhanced-meter svg {
+            overflow: visible;
+        }
+        .meter-center {
+            background: radial-gradient(circle at 30% 15%, rgba(255,255,255,0.98), rgba(248,250,252,0.78));
+            border: 1px solid rgba(255,255,255,0.92);
+            box-shadow: inset 0 1px 12px rgba(255,255,255,0.9), 0 14px 35px rgba(15,23,42,0.06);
+        }
+        .j-meter-track {
+            stroke: rgba(148,163,184,0.18);
+            stroke-width: 7.5;
+        }
+        [data-ring-fill="J"] {
+            stroke: #f97316;
+            filter: drop-shadow(0 7px 10px rgba(249,115,22,0.24));
+        }
+        .meter-type-chip {
+            position: absolute;
+            top: 1.15rem;
+            right: 1.15rem;
+            z-index: 30;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            padding: 0.42rem 0.72rem;
+            font-size: 0.68rem;
+            font-weight: 850;
+            letter-spacing: 0.12em;
+            line-height: 1;
+            border: 1px solid rgba(255,255,255,0.56);
+            box-shadow: 0 18px 36px rgba(37,99,235,0.28), inset 0 1px 0 rgba(255,255,255,0.24);
+        }
+        .profile-capsule-panel {
+            width: min(100%, 22rem);
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+        .capsule-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            max-width: 100%;
+            border-radius: 999px;
+            border: 1px solid rgba(17,24,39,0.06);
+            background: rgba(255,255,255,0.82);
+            padding: 0.48rem 0.72rem;
+            color: rgba(17,24,39,0.68);
+            font-size: 0.68rem;
+            font-weight: 700;
+            line-height: 1;
+            box-shadow: 0 10px 24px rgba(15,23,42,0.04);
+        }
+        .capsule-chip.is-primary {
+            background: linear-gradient(135deg, rgba(37,99,235,0.96), rgba(124,58,237,0.92));
+            color: white;
+            border-color: rgba(255,255,255,0.48);
+        }
+        .link-field {
+            background: rgba(255,255,255,0.76);
+            border: 1px solid rgba(17,24,39,0.06);
+            box-shadow: 0 18px 35px rgba(15,23,42,0.04);
+        }
+        .link-field input {
+            min-width: 0;
+        }
+        .metric-axis-label {
+            max-width: 45%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .story-card {
+            transition: transform 220ms ease, box-shadow 220ms ease;
+        }
+        .story-card.is-sharing {
+            transform: translateY(-2px);
+            box-shadow: 0 28px 60px rgba(37,99,235,0.14);
+        }
+        .share-launch {
+            width: auto;
+            min-width: 8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            transition: transform 180ms ease, box-shadow 180ms ease, min-width 220ms ease;
+        }
+        .share-launch.is-active {
+            min-width: 9.5rem;
+            transform: translateY(-1px);
+        }
+        .story-share-menu {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px) scale(0.97);
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 220ms ease, transform 260ms cubic-bezier(.2,.8,.2,1), max-height 280ms ease, margin 220ms ease;
+        }
+        .story-share-menu.is-open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+            max-height: 15rem;
+            margin-top: 0.85rem;
+        }
+        .app-logo {
+            width: 2.55rem;
+            height: 2.55rem;
+            border-radius: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            flex: 0 0 auto;
+            box-shadow: 0 12px 24px rgba(15,23,42,0.1);
+        }
+        .app-logo svg {
+            display: block;
+        }
+        .app-logo.instagram {
+            background:
+                radial-gradient(circle at 30% 105%, #feda75 0%, #feda75 18%, #fa7e1e 34%, #d62976 58%, #962fbf 78%, #4f5bd5 100%);
+        }
+        .app-logo.whatsapp {
+            background: linear-gradient(135deg, #25d366, #12b76a);
+        }
+        .app-logo.facebook {
+            background: linear-gradient(135deg, #1877f2, #0f4fb3);
+            font-family: Arial, sans-serif;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+        .cognitive-graph {
+            width: 100%;
+            height: 12rem;
+            display: block;
+            overflow: visible;
+        }
+        .graph-grid {
+            stroke: rgba(17,24,39,0.06);
+            stroke-width: 1;
+        }
+        .graph-area {
+            fill: url(#graphFill);
+            opacity: 0.72;
+        }
+        .graph-line {
+            fill: none;
+            stroke: #2563eb;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 10px 16px rgba(37,99,235,0.18));
+        }
+        .graph-point {
+            fill: white;
+            stroke-width: 4;
+        }
+        .graph-axis-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            fill: rgba(17,24,39,0.42);
+            text-transform: uppercase;
+        }
+        .graph-value-label {
+            font-size: 12px;
+            font-weight: 800;
+            fill: rgba(17,24,39,0.68);
+        }
+        .graph-value-pill {
+            fill: rgba(255,255,255,0.9);
+            stroke: rgba(15,23,42,0.06);
+            stroke-width: 1;
+        }
+        .potential-card {
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.72), rgba(246,250,255,0.58)),
+                repeating-linear-gradient(90deg, rgba(37,99,235,0.035) 0 1px, transparent 1px 44px);
+        }
+        .potential-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            border-radius: 999px;
+            background: rgba(37,99,235,0.08);
+            color: #2563eb;
+            padding: 0.4rem 0.68rem;
+            font-size: 0.66rem;
+            font-weight: 850;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+        .potential-score-card {
+            border-radius: 1.75rem;
+            background: linear-gradient(135deg, rgba(15,23,42,0.94), rgba(37,99,235,0.9));
+            color: white;
+            box-shadow: 0 24px 55px rgba(37,99,235,0.18);
+        }
+        .potential-score-card.profile-scope-card {
+            border-radius: 1.35rem;
+            background:
+                radial-gradient(circle at 12% 50%, rgba(124,58,237,0.32), transparent 34%),
+                linear-gradient(135deg, rgba(15,23,42,0.96), rgba(37,99,235,0.92));
+            box-shadow: 0 16px 34px rgba(37,99,235,0.14);
+        }
+        .potential-score-card.profile-scope-card:hover {
+            box-shadow: 0 20px 44px rgba(37,99,235,0.2);
+        }
+        .potential-score-ring {
+            background: conic-gradient(var(--potential-color, #2563eb) calc(var(--score, 0) * 1%), rgba(255,255,255,0.16) 0);
+        }
+        .potential-field-card {
+            border: 1px solid rgba(15,23,42,0.06);
+            background: rgba(255,255,255,0.74);
+            transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+        }
+        .potential-field-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(37,99,235,0.18);
+            box-shadow: 0 18px 34px rgba(15,23,42,0.07);
+        }
+        .potential-field-fill {
+            height: 100%;
+            border-radius: inherit;
+            transition: width 700ms cubic-bezier(.2,.8,.2,1);
+        }
+        .potential-list-card {
+            border: 1px solid rgba(15,23,42,0.06);
+            background: rgba(255,255,255,0.64);
+        }
+        .profile-potential-stack {
+            margin-top: 1rem;
+            display: grid;
+            gap: 0.75rem;
+        }
+        .profile-potential-card {
+            border: 1px solid rgba(17,24,39,0.055);
+            background: rgba(255,255,255,0.66);
+            border-radius: 1.2rem;
+            padding: 0.85rem;
+        }
+        .profile-potential-card [data-mini-list] {
+            display: grid;
+            gap: 0.55rem;
+        }
+        .potential-graph-card {
+            border: 1px solid rgba(15,23,42,0.06);
+            background: rgba(255,255,255,0.66);
+            border-radius: 1.5rem;
+        }
+        .potential-scope-row {
+            display: grid;
+            grid-template-columns: minmax(7rem, 1fr) minmax(8rem, 1.4fr) 3rem;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .potential-scope-track {
+            height: 0.48rem;
+            border-radius: 999px;
+            background: rgba(15,23,42,0.07);
+            overflow: hidden;
+        }
+        .potential-scope-fill {
+            height: 100%;
+            border-radius: inherit;
+            transition: width 760ms cubic-bezier(.2,.8,.2,1);
+        }
+        .story-export {
+            position: fixed;
+            left: -9999px;
+            top: 0;
+            width: 1080px;
+            height: 1920px;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 15% 0%, rgba(0,113,227,0.22), transparent 34%),
+                radial-gradient(circle at 90% 16%, rgba(255,126,185,0.22), transparent 34%),
+                linear-gradient(150deg, #09111f 0%, #111827 46%, #1d4ed8 100%);
+            color: white;
+            padding: 96px;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .story-export__panel {
+            margin-top: auto;
+            border-radius: 56px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.22);
+            backdrop-filter: blur(18px);
+            padding: 64px;
+            box-shadow: 0 42px 90px rgba(0,0,0,0.22);
+        }
+        .story-export__type {
+            font-size: 148px;
+            line-height: 0.9;
+            font-weight: 800;
+            letter-spacing: -0.08em;
+        }
+        .story-export__metrics {
+            display: grid;
+            gap: 22px;
+            margin-top: 56px;
+        }
+        .story-export__metric {
+            display: grid;
+            gap: 10px;
+        }
+        .story-export__metric-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 26px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.82);
+        }
+        .story-export__metric-track {
+            height: 18px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.16);
+            overflow: hidden;
+        }
+        .story-export__metric-fill {
+            height: 100%;
+            border-radius: inherit;
+        }
+        .story-export__footer {
+            margin-top: 72px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 28px;
+            color: rgba(255,255,255,0.72);
+        }
+        body.theme-dark {
+            background: radial-gradient(circle at 0% 0%, #172554 0%, #0f172a 48%, #17122d 100%);
+            color: #f8fafc;
+        }
+        body.theme-dark .glass,
+        body.theme-dark .glass-card,
+        body.theme-dark .story-card,
+        body.theme-dark .settings-panel > div {
+            background: rgba(15,23,42,0.78);
+            border-color: rgba(148,163,184,0.18);
+            color: #f8fafc;
+        }
+        body.theme-dark .settings-panel > div {
+            background: #0f172a !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        body.theme-dark .text-black\/90,
+        body.theme-dark .text-black\/85,
+        body.theme-dark .text-black\/80,
+        body.theme-dark .text-black {
+            color: rgba(255,255,255,0.94) !important;
+        }
+        body.theme-dark .text-black\/60,
+        body.theme-dark .text-black\/55,
+        body.theme-dark .text-black\/50,
+        body.theme-dark .text-black\/40,
+        body.theme-dark .text-black\/35,
+        body.theme-dark .text-black\/30 {
+            color: rgba(226,232,240,0.72) !important;
+        }
+        body.theme-dark .bg-black\/5 {
+            background: rgba(255,255,255,0.08) !important;
+        }
+body.theme-dark .meter-center {
+            background: radial-gradient(circle at 30% 15%, rgba(30,41,59,0.98), rgba(15,23,42,0.9));
+            border-color: rgba(148,163,184,0.2);
+        }
+        body.theme-dark .meter-type-chip {
+            border-color: rgba(191,219,254,0.38);
+            box-shadow: 0 18px 36px rgba(37,99,235,0.18);
+        }
+        body.theme-dark .capsule-chip,
+        body.theme-dark .link-field {
+            background: rgba(15,23,42,0.82);
+            border-color: rgba(148,163,184,0.18);
+            color: rgba(226,232,240,0.82);
+        }
+        body.theme-dark .link-field input {
+            color: #f8fafc;
+        }
+body.theme-dark .enhanced-meter .meter-track {
+            stroke: rgba(255,255,255,0.1);
+        }
+        body.theme-dark .graph-grid {
+            stroke: rgba(255,255,255,0.08);
+        }
+        body.theme-dark .graph-axis-label,
+        body.theme-dark .graph-value-label {
+            fill: rgba(226,232,240,0.72);
+        }
+        body.theme-dark .graph-value-pill {
+            fill: rgba(15,23,42,0.9);
+            stroke: rgba(226,232,240,0.1);
+        }
+        body.theme-dark .potential-card {
+            background:
+                linear-gradient(135deg, rgba(15,23,42,0.84), rgba(30,41,59,0.72)),
+                repeating-linear-gradient(90deg, rgba(96,165,250,0.045) 0 1px, transparent 1px 44px);
+        }
+        body.theme-dark .potential-field-card,
+        body.theme-dark .potential-list-card,
+        body.theme-dark .profile-potential-card,
+        body.theme-dark .potential-graph-card {
+            background: rgba(15,23,42,0.74);
+            border-color: rgba(148,163,184,0.18);
+        }
+        body.theme-dark .potential-badge {
+            background: rgba(96,165,250,0.16);
+            color: #93c5fd;
+        }
+        body.theme-dark #result-tags span,
+        body.theme-dark #truth-list > div {
+            background: rgba(255,255,255,0.86) !important;
+            border-color: rgba(255,255,255,0.35) !important;
+        }
+        body.theme-dark #result-tags span,
+        body.theme-dark #truth-list > div span {
+            color: rgba(15,23,42,0.78) !important;
+        }
+        body.theme-dark .settings-panel label span,
+        body.theme-dark .settings-panel h3 {
+            color: rgba(255,255,255,0.86) !important;
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            header .max-w-\[1600px\] {
+                padding-left: 1rem;
+                padding-right: 1rem;
+                gap: 0.75rem;
+            }
+            header .flex.items-center.gap-6 {
+                gap: 0.7rem;
+            }
+            header input {
+                width: 8rem !important;
+            }
+            main {
+                padding: 1.25rem !important;
+            }
+            .glass-card,
+            .story-card {
+                border-radius: 1.5rem !important;
+                padding: 1.25rem !important;
+            }
+            [data-share-menu] {
+                position: static !important;
+                margin-top: 0.75rem;
+            }
+            .settings-panel {
+                position: fixed;
+                right: 1rem;
+                top: 4.25rem;
+                transform-origin: top right;
+            }
+            .meter-type-chip {
+                top: 0.8rem;
+                right: 0.8rem;
+            }
+            .story-share-menu.is-open {
+                max-height: 20rem;
+            }
+            .share-option {
+                min-height: 4rem;
+            }
+            .app-logo {
+                width: 2.3rem;
+                height: 2.3rem;
+                border-radius: 0.85rem;
+            }
+            .cognitive-graph {
+                height: 10.5rem;
+            }
+            .graph-axis-label {
+                font-size: 8px;
+                letter-spacing: 0.08em;
+            }
+            .graph-value-label {
+                font-size: 11px;
+            }
+        }
+        @media (max-width: 520px) {
+            header .relative.group {
+                display: none;
+            }
+            .settings-panel {
+                left: 1rem;
+                right: 1rem;
+                width: auto;
+            }
+            .share-launch {
+                min-width: 7rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="has-fixed-panel min-h-screen selection:bg-blue-100">
+<aside class="homepage-edge-panel" aria-label="Homepage navigation">
+<a class="homepage-edge-panel__brand" href="homepage.html" aria-label="CogniLens homepage">
+<span class="homepage-edge-panel__logo" aria-hidden="true">
+<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path>
+<path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path>
+</svg>
+</span>
+<span>CogniLens</span>
+</a>
+<nav class="homepage-edge-panel__nav">
+<a class="is-active" href="homepage.html"><span class="material-symbols-outlined">home</span><span>Dashboard</span></a>
+<a href="insights.html"><span class="material-symbols-outlined">insights</span><span>Insights</span></a>
+<a href="traits.html"><span class="material-symbols-outlined">fingerprint</span><span>Traits</span></a>
+<a href="reports.html"><span class="material-symbols-outlined">article</span><span>Reports</span></a>
+<a href="history.html"><span class="material-symbols-outlined">history</span><span>History</span></a>
+<a href="homepage.html?settings=open"><span class="material-symbols-outlined">settings</span><span>Settings</span></a>
+</nav>
+</aside>
+<header class="fixed top-0 w-full z-50 glass border-b border-white/30">
+<div class="max-w-[1600px] mx-auto flex justify-between items-center px-6 h-12">
+<div class="flex items-center gap-10">
+<a class="flex items-center gap-2 text-black/90 hover:text-black transition-colors" href="homepage.html" id="result-brand" aria-label="CogniLens homepage">
+<span class="brand-logo-mark" aria-hidden="true">
+<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path>
+<path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path>
+</svg>
+</span>
+<span class="text-[17px] font-semibold tracking-tight">CogniLens</span>
+</a>
+<nav class="hidden md:flex gap-8 text-[12px] font-medium">
+<a class="text-black/40 hover:text-black transition-colors" href="help.html">Help</a>
+<a class="text-black/40 hover:text-black transition-colors" href="contact.html">Contact</a>
+<a class="text-black/40 hover:text-black transition-colors" href="about.html">About Us</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-black/30 !text-[16px]">search</span>
+<input class="bg-black/5 border-none rounded-full pl-9 pr-4 py-1 text-[12px] w-40 focus:w-56 transition-all outline-none" placeholder="Search" type="text"/>
+</div>
+<div class="flex gap-4 text-black/40">
+<span class="material-symbols-outlined cursor-pointer hover:text-black">notifications</span>
+<div class="settings-shell">
+<button class="settings-button" data-settings-open type="button" aria-label="Open settings">
+<span class="material-symbols-outlined settings-gear">settings</span>
+</button>
+<div class="settings-panel z-50" data-settings-panel aria-hidden="true">
+<div class="glass-card rounded-3xl p-4 border border-white/70 shadow-2xl">
+<div class="flex items-center justify-between mb-4">
+<div>
+<p class="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-500">Settings</p>
+<h3 class="text-[15px] font-bold text-black/85">Result controls</h3>
+</div>
+<span class="material-symbols-outlined text-blue-500">tune</span>
+</div>
+<div class="space-y-3">
+<label class="flex items-center justify-between rounded-2xl bg-black/5 px-3 py-2.5 gap-3">
+<span>
+<span class="block text-[12px] font-bold text-black/75">Story export</span>
+<span class="block text-[10px] font-semibold text-black/35">Prepare share-ready result image</span>
+</span>
+<input class="rounded text-blue-600 focus:ring-blue-500" type="checkbox" checked data-story-ready-toggle>
+</label>
+<label class="flex items-center justify-between rounded-2xl bg-black/5 px-3 py-2.5 gap-3">
+<span>
+<span class="block text-[12px] font-bold text-black/75">Save history</span>
+<span class="block text-[10px] font-semibold text-black/35">Keep this result on this device</span>
+</span>
+<input class="rounded text-blue-600 focus:ring-blue-500" type="checkbox" checked data-result-history-toggle>
+</label>
+<button class="result-mode-button w-full rounded-2xl bg-black/5 px-3 py-2.5 text-left transition-all flex items-center justify-between gap-3" data-result-clear-local type="button">
+<span>
+<span class="block text-[12px] font-bold text-black/75">Clear local data</span>
+<span class="block text-[10px] font-semibold text-black/35">Results, progress, links, and history</span>
+</span>
+<span class="text-[10px] font-bold text-black/35" data-result-clear-status>Local</span>
+</button>
+<div>
+<p class="text-[10px] font-bold uppercase tracking-[0.2em] text-black/35 mb-2">Theme</p>
+<div class="grid grid-cols-3 gap-2">
+<button class="theme-chip rounded-2xl bg-white/80 py-2 text-[11px] font-bold text-black/75" data-result-theme="light" type="button">Light</button>
+<button class="theme-chip rounded-2xl bg-slate-900 py-2 text-[11px] font-bold text-white" data-result-theme="dark" type="button">Dark</button>
+<button class="theme-chip rounded-2xl bg-blue-50 py-2 text-[11px] font-bold text-blue-600" data-result-theme="system" type="button">Auto</button>
+</div>
+</div>
+<div class="border-t border-slate-200/80 pt-3" data-auth-account-section hidden>
+<p class="text-[10px] font-bold uppercase tracking-[0.2em] text-black/35 mb-2">Account</p>
+<button class="settings-logout-button w-full rounded-2xl px-3 py-2.5 text-left text-[12px] font-bold flex items-center justify-start gap-3" data-logout-button type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined !text-[17px]">logout</span>
+Sign out
+</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<img alt="User" class="w-7 h-7 rounded-full object-cover border border-white/50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZ3mjDCb2uFw_mR0QhfAwdge7t4pRFItz9K6o_6ov6LZdAZiOOXbN20vXYp30FakZkJx2nVg6lva-D7ymLRycBHMhm9FFPLZz10OLvIhrUC-kPwZPuOauju4k-m5Xl9Ix3od6PCIGk1seGhraEN2I1pdh3wsA36F9keSYQqnzuW54OE7U9wAAlqcYMzoHeWDm7XLyY9ExYDkbhIMoMDquDUnZ3Qm00GzJovZy2t0rQoa9VAO2Xny6NTnY8XFavWT6rIQ5TUyIgo8w"/>
+</div>
+</div>
+</header>
+<div class="flex pt-12 max-w-[1600px] mx-auto min-h-screen" data-share-capture>
+<aside class="w-52 fixed h-[calc(100vh-3rem)] hidden md:flex flex-col p-3 space-y-1 border-r border-white/20">
+<div class="px-3 py-4 mb-2">
+<h3 class="text-[10px] font-bold text-black/20 uppercase tracking-widest">Workspace</h3>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl sidebar-item-active transition-all" href="result.html">
+<span class="material-symbols-outlined">psychology</span>
+<span class="text-[13px] font-medium">Result</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl text-black/50 hover:bg-black/5 transition-all" href="potential.html">
+<span class="material-symbols-outlined">rocket_launch</span>
+<span class="text-[13px] font-medium">Potential</span>
+</a>
+</aside>
+<main class="flex-1 md:ml-52 p-10">
+<div class="flex justify-between items-end mb-12">
+<div>
+<span class="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] mb-1 block">Analysis Dashboard</span>
+<h1 class="text-4xl font-bold tracking-tight text-black/90">Hello, <span id="result-name">User</span></h1>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<div class="lg:col-span-4 glass-card rounded-[2.5rem] p-10 flex flex-col items-center text-center self-start">
+<div class="relative mb-8">
+<div class="w-44 h-44 rounded-full border border-white shadow-xl p-1.5 bg-white/20">
+<img alt="Profile" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsdXPfrbTegIMeIXmyFYvNgs8uqX9y7j2XqwOEnKS4yylKJ10YKxdoQzNwUpob33amth1OM96Ji9SpJ_q9MuMJLbuRY0oggYzYHn8EwlxCWlx_ILdKBafbnfB9E6mjIVurhRM5A0H56SSDJpCoIrhqWaxsRkcBKDfilA9vC5bRs29HhUs21pXu2BYyodJV_BspaPbPkB15fBXb9bWGjub93opkJIhqeRnKvTSFHKc59lTdSXjaSkaUm15cgU4YUi6g25q4AOOXalE"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-white p-2 rounded-full shadow-lg border border-gray-50">
+<span class="material-symbols-outlined text-blue-500 !text-[20px] fill-current">verified</span>
+</div>
+</div>
+<h2 class="text-5xl font-bold text-black/90 tracking-tighter mb-2" id="result-type">TYPE</h2>
+<h3 class="text-lg font-medium text-black/40" id="result-title">Your profile title appears here</h3>
+<div class="profile-capsule-panel">
+<div class="mb-4">
+<p class="text-[10px] font-bold uppercase tracking-[0.22em] text-black/30 mb-2">Profile Capsule</p>
+<div class="flex gap-2 flex-wrap" id="result-tags"></div>
+</div>
+<div class="rounded-[1.35rem] bg-white/70 border border-white/80 p-4 mb-4">
+<p class="text-[10px] font-bold uppercase tracking-[0.2em] text-black/35 mb-2">Auto Bio</p>
+<p class="text-[13px] text-black/55 leading-relaxed font-medium" id="result-summary">Your profile is loading.</p>
+</div>
+<a id="potential-map" href="potential.html" class="potential-score-card profile-scope-card mb-4 p-3 flex items-center justify-between gap-3 no-underline hover:scale-[1.01] active:scale-[0.99] transition-transform">
+<div class="flex items-center gap-3 min-w-0">
+<div class="potential-score-ring w-14 h-14 rounded-full p-1.5 flex-none" data-potential-score-ring style="--score:0">
+<div class="w-full h-full rounded-full bg-slate-950 flex flex-col items-center justify-center">
+<span id="potential-score" class="text-base font-black" data-potential-score>0</span>
+<span class="text-[7px] font-bold uppercase tracking-wider text-white/45">fit</span>
+</div>
+</div>
+<div class="min-w-0">
+<p class="text-[9px] font-bold uppercase tracking-[0.18em] text-white/45">Highest Scope</p>
+<h5 id="potential-focus" class="mt-1 text-[13px] font-bold leading-tight text-white" data-potential-focus>Field loading</h5>
+</div>
+</div>
+<span class="material-symbols-outlined !text-[18px] text-white/70">arrow_forward</span>
+</a>
+<div class="link-field rounded-[1.35rem] p-4">
+<label class="block text-[10px] font-bold uppercase tracking-[0.2em] text-black/35 mb-2" for="profile-link-input">Attach Link</label>
+<div class="flex items-center gap-2">
+<input id="profile-link-input" class="flex-1 bg-transparent border-none p-0 text-[12px] text-black/70 placeholder:text-black/30 focus:ring-0" type="url" placeholder="Paste profile link">
+<button class="rounded-full bg-black/85 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-black transition-all" data-profile-link-save type="button">Save</button>
+</div>
+<a id="profile-link-preview" class="mt-3 hidden text-[12px] font-semibold text-blue-600 hover:text-blue-700" href="#" target="_blank" rel="noopener noreferrer">Open attached link</a>
+</div>
+</div>
+</div>
+<div class="lg:col-span-8 space-y-8">
+<div class="glass-card rounded-[2.5rem] p-8 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-8 relative">
+<div class="meter-type-chip" id="meter-type-chip">TYPE</div>
+<div class="flex-1 w-full">
+<h4 class="text-[11px] font-bold text-black/30 uppercase tracking-[0.2em] mb-6">Trait Metrics</h4>
+<div class="grid grid-cols-1 gap-6" id="trait-metrics"></div>
+</div>
+<div class="w-full xl:w-auto flex flex-col items-center gap-5">
+<div class="enhanced-meter relative w-56 h-56 flex items-center justify-center">
+<svg class="relative z-10 w-full h-full charging-ring" viewBox="0 0 120 120">
+<defs>
+<linearGradient id="judgingRing" x1="28" y1="22" x2="92" y2="98" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#fed7aa"></stop>
+<stop offset="0.36" stop-color="#fb923c"></stop>
+<stop offset="0.72" stop-color="#f97316"></stop>
+<stop offset="1" stop-color="#ea580c"></stop>
+</linearGradient>
+</defs>
+<circle class="meter-track" cx="60" cy="60" fill="none" r="50" stroke-width="7.5"></circle>
+<circle cx="60" cy="60" data-ring-fill="I" fill="none" r="50" stroke-linecap="round" stroke-width="7.5"></circle>
+<circle class="meter-track" cx="60" cy="60" fill="none" r="40" stroke-width="7.5"></circle>
+<circle cx="60" cy="60" data-ring-fill="N" fill="none" r="40" stroke-linecap="round" stroke-width="7.5"></circle>
+<circle class="meter-track" cx="60" cy="60" fill="none" r="30" stroke-width="7.5"></circle>
+<circle cx="60" cy="60" data-ring-fill="T" fill="none" r="30" stroke-linecap="round" stroke-width="7.5"></circle>
+<circle class="meter-track j-meter-track" cx="60" cy="60" fill="none" r="20"></circle>
+<circle cx="60" cy="60" data-ring-fill="J" fill="none" r="20" stroke-linecap="round" stroke-width="7.5"></circle>
+</svg>
+<div class="meter-center absolute inset-[5.15rem] z-0 rounded-full" aria-hidden="true"></div>
+</div>
+</div>
+</div>
+<section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="potential-list-card rounded-[1.5rem] p-5">
+<p class="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600 mb-3">Your advantage</p>
+<div class="space-y-2" data-result-potential-strengths></div>
+</div>
+<div class="potential-list-card rounded-[1.5rem] p-5">
+<p class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-500 mb-3">Growth risks</p>
+<div class="space-y-2" data-result-potential-risks></div>
+</div>
+<div class="potential-list-card rounded-[1.5rem] p-5">
+<p class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-500 mb-3">Next 30 days</p>
+<div class="space-y-2" data-result-potential-plan></div>
+</div>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="glass-card rounded-[2.5rem] p-8">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center">
+<span class="material-symbols-outlined text-purple-600">analytics</span>
+</div>
+<h4 class="text-[16px] font-semibold">Response Overview</h4>
+</div>
+<div class="space-y-4">
+<div class="text-[22px] font-semibold tracking-tight text-black/85" id="truth-headline">Building your response pattern...</div>
+<p class="text-[14px] leading-relaxed text-black/55" id="truth-copy">
+                    This summary explains how your answers clustered across the four tracked preference axes.
+                </p>
+<div class="space-y-3" id="truth-list"></div>
+</div>
+</div>
+<div class="story-card rounded-[2.5rem] p-8 flex flex-col relative overflow-visible" data-story-card>
+<div class="flex items-start justify-between gap-6 mb-5">
+<div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-[10px] font-bold uppercase tracking-[0.24em] mb-4">Story Ready</div>
+<h4 class="text-[20px] font-semibold tracking-tight text-black/85">Share your result card</h4>
+</div>
+<div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined !text-[22px]">share</span>
+</div>
+</div>
+<p class="text-[14px] text-black/55 leading-relaxed mb-4">
+                    Create a story-sized result card with a ready caption. Choose an app, then confirm the post inside that app.
+                </p>
+<div class="rounded-[1.75rem] bg-white/80 border border-white/80 p-5 mb-4">
+<div class="text-[10px] font-bold uppercase tracking-[0.22em] text-black/35 mb-2">What Gets Shared</div>
+<div class="text-[17px] font-semibold text-black/85 mb-2">Story card + caption</div>
+<p class="text-[13px] text-black/55 leading-relaxed">A clean vertical export is prepared from your current result, ready for Instagram, WhatsApp, or Facebook sharing.</p>
+</div>
+<div class="relative mt-auto flex flex-col items-start">
+<button class="share-launch py-3 px-5 bg-gradient-to-r from-[#0f172a] via-[#111827] to-[#1d4ed8] text-white rounded-2xl text-[13px] font-semibold hover:shadow-[0_18px_35px_rgba(29,78,216,0.24)] active:scale-[0.98]" data-share-button type="button" aria-expanded="false">
+<span class="material-symbols-outlined !text-[17px]">ios_share</span>
+                        Share
+                    </button>
+<div class="story-share-menu w-full glass-card rounded-[1.75rem] p-3 grid grid-cols-1 gap-2 border border-white/80 shadow-2xl" data-share-menu>
+<button class="share-option text-left px-4 py-3 rounded-2xl text-[13px] font-medium flex items-center justify-between gap-3" data-share-target="instagram" type="button">
+<span class="flex items-center gap-3 min-w-0">
+<span class="app-logo instagram" aria-hidden="true">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+<rect x="5" y="5" width="14" height="14" rx="4" stroke="currentColor" stroke-width="2"></rect>
+<circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="2"></circle>
+<circle cx="16.8" cy="7.4" r="1.1" fill="currentColor"></circle>
+</svg>
+</span>
+<span class="min-w-0">
+<span class="block text-[10px] uppercase tracking-[0.18em] text-black/35 mb-1">Story</span>
+<span class="block text-black/85 font-semibold">Instagram</span>
+</span>
+</span>
+<span class="material-symbols-outlined !text-[18px] text-sky-500">arrow_forward</span>
+</button>
+<button class="share-option text-left px-4 py-3 rounded-2xl text-[13px] font-medium flex items-center justify-between gap-3" data-share-target="whatsapp" type="button">
+<span class="flex items-center gap-3 min-w-0">
+<span class="app-logo whatsapp" aria-hidden="true">
+<svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+<path d="M16.02 4.2a11.72 11.72 0 0 0-10.1 17.66L4.7 27.35l5.62-1.18A11.72 11.72 0 1 0 16.02 4.2Z" fill="currentColor"></path>
+<path d="M22.53 19.06c-.34-.17-2.02-1-2.34-1.11-.31-.12-.54-.17-.77.17-.22.34-.88 1.11-1.08 1.34-.2.22-.4.25-.74.08-.34-.17-1.43-.53-2.73-1.68-1.01-.9-1.69-2.01-1.89-2.35-.2-.34-.02-.52.15-.69.15-.15.34-.4.51-.6.17-.2.23-.34.34-.57.12-.23.06-.43-.03-.6-.08-.17-.77-1.86-1.06-2.55-.28-.67-.56-.58-.77-.59h-.66c-.23 0-.6.09-.91.43-.31.34-1.2 1.17-1.2 2.86 0 1.69 1.23 3.32 1.4 3.55.17.23 2.43 3.71 5.88 5.2.82.35 1.46.56 1.96.72.82.26 1.57.22 2.16.13.66-.1 2.02-.83 2.31-1.63.28-.8.28-1.49.2-1.63-.09-.14-.31-.23-.65-.4Z" fill="#25D366"></path>
+</svg>
+</span>
+<span class="min-w-0">
+<span class="block text-[10px] uppercase tracking-[0.18em] text-black/35 mb-1">Message</span>
+<span class="block text-black/85 font-semibold">WhatsApp</span>
+</span>
+</span>
+<span class="material-symbols-outlined !text-[18px] text-emerald-500">arrow_forward</span>
+</button>
+<button class="share-option text-left px-4 py-3 rounded-2xl text-[13px] font-medium flex items-center justify-between gap-3" data-share-target="facebook" type="button">
+<span class="flex items-center gap-3 min-w-0">
+<span class="app-logo facebook" aria-hidden="true">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+<path d="M14.25 8.2H16.4V4.65c-.38-.05-1.66-.15-3.16-.15-3.13 0-5.27 1.91-5.27 5.42v3.06H4.55v3.97h3.42V24h4.2v-7.05h3.29l.52-3.97h-3.81v-2.67c0-1.15.31-2.11 2.08-2.11Z" fill="currentColor"></path>
+</svg>
+</span>
+<span class="min-w-0">
+<span class="block text-[10px] uppercase tracking-[0.18em] text-black/35 mb-1">Story / Feed</span>
+<span class="block text-black/85 font-semibold">Facebook</span>
+</span>
+</span>
+<span class="material-symbols-outlined !text-[18px] text-blue-600">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-8 pb-10">
+<div class="glass-card rounded-[2.5rem] p-8">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h4 class="text-[11px] font-bold text-black/30 uppercase tracking-[0.2em] mb-1">Assessment Logic</h4>
+<div class="text-2xl font-bold">Preference Synthesis</div>
+</div>
+<div class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-bold rounded-full">LIVE</div>
+</div>
+<p class="text-[13px] text-black/55 leading-relaxed">
+                    Each output is assembled from live response balances across energy, information style, decision style, and judging preference. Treat it as a reflection snapshot, not a clinical assessment.
+                </p>
+</div>
+<div class="glass-card rounded-[2.5rem] p-8">
+<h4 class="text-[11px] font-bold text-black/30 uppercase tracking-[0.2em] mb-6">Cognitive Graph</h4>
+<svg class="cognitive-graph" viewBox="0 0 360 190" role="img" aria-label="Cognitive preference graph">
+<defs>
+<linearGradient id="graphFill" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#2563eb" stop-opacity="0.22"></stop>
+<stop offset="1" stop-color="#10b981" stop-opacity="0.03"></stop>
+</linearGradient>
+</defs>
+<g data-graph-grid></g>
+<path class="graph-area" data-graph-area d=""></path>
+<path class="graph-line" data-graph-line d=""></path>
+<g data-graph-points></g>
+<g data-graph-labels></g>
+</svg>
+</div>
+<div class="glass-card rounded-[2.5rem] p-8 flex flex-col justify-between">
+<div>
+<h4 class="text-[11px] font-bold text-black/30 uppercase tracking-[0.2em] mb-4">Story Ready</h4>
+<div class="text-2xl font-bold mb-2">Post your dashboard snapshot</div>
+<p class="text-[13px] text-black/55 leading-relaxed">
+                    The share action prepares a clean visual export first, then hands it to the app you choose. That keeps the final post consistent across platforms that require image uploads.
+                </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<section class="story-export" data-story-export aria-hidden="true">
+<div>
+<div style="display:inline-flex;align-items:center;gap:18px;padding:16px 24px;border-radius:999px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);font-size:24px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.78);">CogniLens Result</div>
+<h1 id="story-name" style="margin-top:52px;font-size:58px;line-height:1.05;font-weight:800;letter-spacing:-0.04em;" data-story-name>Explorer's cognitive profile</h1>
+</div>
+<div class="story-export__panel">
+<div style="font-size:24px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;color:rgba(255,255,255,0.62);margin-bottom:30px;">Personality Pattern</div>
+<div class="story-export__type" id="story-type" data-story-type>TYPE</div>
+<div id="story-title" style="font-size:42px;font-weight:700;margin-top:24px;color:rgba(255,255,255,0.86);" data-story-title>Your profile title</div>
+<p id="story-summary" style="font-size:28px;line-height:1.5;color:rgba(255,255,255,0.68);max-width:760px;margin-top:30px;" data-story-summary>Your result summary appears here.</p>
+<div class="story-export__metrics" data-story-metrics></div>
+</div>
+<div class="story-export__footer">
+<span>cognilens.ai/dashboard</span>
+<span id="story-date" data-story-date>Story ready</span>
+</div>
+</section>
+<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>
+<script src="../../firebase-config.js"></script>
+<script src="../../score-system.js"></script>
+<script src="../../potential-system.js?v=4"></script>
+<script src="../../script.js"></script>
+<script>
+const fallbackResult = {
+  type: "INTJ",
+  title: "Strategic Systems Thinker",
+  summary: "A concise preference snapshot built from your latest assessment responses.",
+  metrics: { I: 76, N: 82, T: 71, J: 78 },
+  tags: ["Analytical", "Independent", "Story-ready"],
+  savedAt: new Date().toISOString()
+};
+
+const rawResult = getCogniLensResult() || fallbackResult;
+const user = getCogniLensUser();
+const COGNILENS_PROFILE_LINK_KEY = "cognilensProfileLink";
+const typeTitles = window.COGNILENS_TYPE_TITLES || {
+  ISTJ: "Practical Systems Guardian",
+  ISFJ: "Supportive Detail Keeper",
+  INFJ: "Insightful Purpose Builder",
+  INTJ: "Strategic Systems Thinker",
+  ISTP: "Precise Tactical Solver",
+  ISFP: "Grounded Creative Observer",
+  INFP: "Reflective Values Explorer",
+  INTP: "Analytical Pattern Architect",
+  ESTP: "Action-Oriented Problem Mover",
+  ESFP: "Expressive Experience Driver",
+  ENFP: "Possibility-Focused Connector",
+  ENTP: "Inventive Challenge Solver",
+  ESTJ: "Structured Execution Leader",
+  ESFJ: "Collaborative Support Organizer",
+  ENFJ: "People-Centered Vision Guide",
+  ENTJ: "Decisive Strategy Builder"
+};
+const metricMeta = {
+  I: { axis: "Energy", label: "Introversion", opposite: "E", oppositeLabel: "Extraversion", color: "#2563eb" },
+  N: { axis: "Information", label: "Intuition", opposite: "S", oppositeLabel: "Sensing", color: "#7c3aed" },
+  T: { axis: "Decision", label: "Thinking", opposite: "F", oppositeLabel: "Feeling", color: "#10b981" },
+  J: { axis: "Lifestyle", label: "Judging", opposite: "P", oppositeLabel: "Perceiving", color: "#f97316" }
+};
+const typeColorMap = {
+  ISTJ: ["#1e40af", "#0f766e"],
+  ISFJ: ["#0f766e", "#16a34a"],
+  INFJ: ["#7c3aed", "#2563eb"],
+  INTJ: ["#4f46e5", "#7c3aed"],
+  ISTP: ["#0f766e", "#0891b2"],
+  ISFP: ["#059669", "#84cc16"],
+  INFP: ["#9333ea", "#db2777"],
+  INTP: ["#2563eb", "#06b6d4"],
+  ESTP: ["#ea580c", "#ef4444"],
+  ESFP: ["#f97316", "#ec4899"],
+  ENFP: ["#db2777", "#f59e0b"],
+  ENTP: ["#7c3aed", "#06b6d4"],
+  ESTJ: ["#1d4ed8", "#f97316"],
+  ESFJ: ["#16a34a", "#f97316"],
+  ENFJ: ["#2563eb", "#10b981"],
+  ENTJ: ["#111827", "#2563eb"]
+};
+
+function clampMetric(value, fallback) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return fallback;
+  return Math.max(0, Math.min(100, Math.round(numeric)));
+}
+
+function buildTypeFromMetrics(metrics) {
+  if (typeof getPersonalityTypeFromMetrics === "function") {
+    return getPersonalityTypeFromMetrics(metrics);
+  }
+  return `${metrics.I >= 50 ? "I" : "E"}${metrics.N >= 50 ? "N" : "S"}${metrics.T >= 50 ? "T" : "F"}${metrics.J >= 50 ? "J" : "P"}`;
+}
+
+function normalizeResult(data) {
+  const score = data.totals && typeof getPersonalityResult === "function"
+    ? getPersonalityResult(data.totals)
+    : null;
+  const rawMetrics = data.totals && typeof getPersonalityMetrics === "function"
+    ? getPersonalityMetrics(data.totals)
+    : data.metrics;
+  const metrics = {
+    I: clampMetric(rawMetrics?.I, fallbackResult.metrics.I),
+    N: clampMetric(rawMetrics?.N, fallbackResult.metrics.N),
+    T: clampMetric(rawMetrics?.T, fallbackResult.metrics.T),
+    J: clampMetric(rawMetrics?.J, fallbackResult.metrics.J)
+  };
+  const type = score?.type || buildTypeFromMetrics(metrics);
+  const generatedTitle = typeof getPersonalityTitle === "function"
+    ? getPersonalityTitle(type)
+    : (typeTitles[type] || `${type} Personality Profile`);
+  const shouldUseGeneratedTitle = !data.title || data.title === "Adaptive Personality Profile" || data.title === fallbackResult.title;
+
+  return {
+    ...fallbackResult,
+    ...data,
+    metrics,
+    type,
+    confidence: score?.confidence ?? data.confidence ?? fallbackResult.confidence,
+    breakdown: score?.breakdown || data.breakdown || fallbackResult.breakdown,
+    warning: score?.warning ?? data.warning ?? fallbackResult.warning,
+    title: shouldUseGeneratedTitle ? generatedTitle : data.title,
+    tags: data.tags?.length ? data.tags : ["Self-aware", "Balanced", "Growth-ready"]
+  };
+}
+
+const result = normalizeResult(rawResult);
+const potential = typeof getCogniLensPotential === "function"
+  ? getCogniLensPotential(result)
+  : null;
+
+function setText(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = value;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function getPreference(key) {
+  const meta = metricMeta[key];
+  const leftValue = result.metrics[key];
+  const rightValue = 100 - leftValue;
+  const leftWins = leftValue >= 50;
+
+  return {
+    key,
+    letter: leftWins ? key : meta.opposite,
+    label: leftWins ? meta.label : meta.oppositeLabel,
+    oppositeLetter: leftWins ? meta.opposite : key,
+    oppositeLabel: leftWins ? meta.oppositeLabel : meta.label,
+    value: leftWins ? leftValue : rightValue,
+    leftValue,
+    rightValue,
+    color: meta.color
+  };
+}
+
+function getPreferences() {
+  return Object.keys(metricMeta).map(getPreference);
+}
+
+function getTypeColors(type) {
+  return typeColorMap[type] || ["#2563eb", "#7c3aed"];
+}
+
+function applyTypeBadgeColor() {
+  const chip = document.getElementById("meter-type-chip");
+  if (!chip) return;
+  const colors = getTypeColors(result.type);
+  chip.style.background = `linear-gradient(135deg, ${colors[0]}, ${colors[1]})`;
+  chip.style.boxShadow = `0 18px 36px ${colors[0]}3d, inset 0 1px 0 rgba(255,255,255,0.24)`;
+}
+
+function buildProfileSummary(preferences) {
+  const ranked = [...preferences].sort((a, b) => b.value - a.value);
+  const primary = ranked[0];
+  const secondary = ranked[1];
+  const decision = preferences.find((pref) => pref.key === "T");
+  const lifestyle = preferences.find((pref) => pref.key === "J");
+  const potentialLine = potential
+    ? ` Your highest-scope zone is ${potential.focus.toLowerCase()}, where your natural pattern can turn into visible progress.`
+    : "";
+  return `Your ${result.type} pattern suggests a ${result.title.toLowerCase()} style. You currently lean most toward ${primary.label.toLowerCase()} at ${primary.value}%, with ${secondary.label.toLowerCase()} close behind. In practice, that points to ${decision?.label.toLowerCase() || "balanced decision-making"} decisions and a ${lifestyle?.label.toLowerCase() || "balanced"} approach to planning.${potentialLine}`;
+}
+
+function getProfileCapsules(preferences) {
+  const ranked = [...preferences].sort((a, b) => b.value - a.value);
+  const clarity = Number.isFinite(Number(result.confidence)) ? `${result.confidence}% clarity` : "Profile ready";
+  const focus = potential?.topFields?.[0]?.shortTitle || "Potential map";
+  return [
+    { text: result.title, primary: true },
+    { text: `${ranked[0].label} ${ranked[0].value}%` },
+    { text: `${focus} scope` },
+    { text: clarity },
+    { text: "Story-ready" }
+  ];
+}
+
+function normalizeProfileLink(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
+function hydrateProfileLink() {
+  const input = document.getElementById("profile-link-input");
+  const preview = document.getElementById("profile-link-preview");
+  if (!input || !preview) return;
+  const savedLink = localStorage.getItem(COGNILENS_PROFILE_LINK_KEY) || "";
+  input.value = savedLink;
+  const normalized = normalizeProfileLink(savedLink);
+  preview.classList.toggle("hidden", !normalized);
+  if (normalized) {
+    preview.href = normalized;
+    preview.textContent = normalized.replace(/^https?:\/\//i, "");
+  }
+}
+
+function renderCognitiveGraph(preferences) {
+  const grid = document.querySelector("[data-graph-grid]");
+  const area = document.querySelector("[data-graph-area]");
+  const line = document.querySelector("[data-graph-line]");
+  const pointsGroup = document.querySelector("[data-graph-points]");
+  const labelsGroup = document.querySelector("[data-graph-labels]");
+  if (!grid || !area || !line || !pointsGroup || !labelsGroup) return;
+
+  const width = 360;
+  const top = 30;
+  const bottom = 132;
+  const left = 24;
+  const step = 104;
+  const points = preferences.map((pref, index) => {
+    const x = left + index * step;
+    const y = bottom - (pref.value / 100) * (bottom - top);
+    return { ...pref, x, y };
+  });
+
+  grid.innerHTML = [25, 50, 75, 100].map((value) => {
+    const y = bottom - (value / 100) * (bottom - top);
+    return `<line class="graph-grid" x1="12" x2="${width - 12}" y1="${y}" y2="${y}"></line>`;
+  }).join("");
+
+  const linePath = points.map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`).join(" ");
+  const areaPath = `${linePath} L ${points[points.length - 1].x} ${bottom} L ${points[0].x} ${bottom} Z`;
+  line.setAttribute("d", linePath);
+  area.setAttribute("d", areaPath);
+
+  pointsGroup.innerHTML = points.map((point) =>
+    `<circle class="graph-point" cx="${point.x}" cy="${point.y}" r="6" stroke="${point.color}"></circle>`
+  ).join("");
+
+  labelsGroup.innerHTML = points.map((point) => {
+    const labelBelow = point.value >= 92;
+    const labelY = labelBelow ? point.y + 24 : point.y - 16;
+    const pillY = labelY - 15;
+    return `
+      <rect class="graph-value-pill" x="${point.x - 19}" y="${pillY}" width="38" height="19" rx="9.5"></rect>
+      <text class="graph-value-label" x="${point.x}" y="${labelY}" text-anchor="middle">${point.value}%</text>
+      <text class="graph-axis-label" x="${point.x}" y="166" text-anchor="middle">${point.label}</text>
+    `;
+  }).join("");
+}
+
+function getShareCaption() {
+  const top = getPreferences().sort((a, b) => b.value - a.value)[0];
+  return `My CogniLens result is ${result.type}: ${result.title}. Top preference: ${top.label} at ${top.value}%.`;
+}
+
+function hydrateUserPhotos() {
+  const photoURL = user.photoURL || "";
+  if (!photoURL) return;
+  document.querySelectorAll('img[alt="User"], img[alt="Profile"]').forEach((image) => {
+    image.src = photoURL;
+  });
+}
+
+function getPotentialModeLabel() {
+  return "Full map";
+}
+
+function renderPotentialList(target, items, icon) {
+  const containers = typeof target === "string" ? document.querySelectorAll(target) : [target].filter(Boolean);
+  containers.forEach((container) => {
+    container.innerHTML = items.map((item) => `
+    <div class="flex items-start gap-2">
+      <span class="material-symbols-outlined !text-[16px] mt-0.5 text-black/35">${icon}</span>
+      <span class="text-[12px] font-semibold leading-relaxed text-black/60">${escapeHtml(item)}</span>
+    </div>
+    `).join("");
+  });
+}
+
+function renderPotentialMap() {
+  if (!potential) return;
+  const score = Math.max(0, Math.min(100, Math.round(potential.focusScore || 0)));
+  const topColor = potential.topFields?.[0]?.color || "#2563eb";
+  setText("potential-headline", potential.headline);
+  setText("potential-copy", potential.connectiveCopy || potential.userLine);
+  setText("potential-score", score);
+  setText("potential-focus", potential.focus);
+  setText("potential-mode-label", getPotentialModeLabel());
+  const scoreRing = document.querySelector("[data-potential-score-ring]");
+  if (scoreRing) {
+    scoreRing.style.setProperty("--score", score);
+    scoreRing.style.setProperty("--potential-color", topColor);
+  }
+  const graph = document.querySelector("[data-potential-scope-graph]");
+  if (graph) {
+    graph.innerHTML = potential.topFields.map((field) => `
+      <div class="potential-scope-row">
+        <span class="truncate text-[11px] font-bold text-black/58">${escapeHtml(field.shortTitle || field.title)}</span>
+        <div class="potential-scope-track">
+          <div class="potential-scope-fill" style="width:${field.score}%;background:${field.color}"></div>
+        </div>
+        <span class="text-right text-[11px] font-black text-black/60">${field.score}%</span>
+      </div>
+    `).join("");
+  }
+  const fields = document.querySelector("[data-potential-fields]");
+  if (fields) {
+    fields.innerHTML = potential.topFields.map((field, index) => `
+      <article class="potential-field-card rounded-[1.35rem] p-4">
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="min-w-0">
+            <span class="text-[10px] font-black uppercase tracking-[0.18em]" style="color:${field.color}">${String(index + 1).padStart(2, "0")}</span>
+            <h6 class="mt-1 text-[14px] font-bold leading-tight text-black/85">${escapeHtml(field.title)}</h6>
+          </div>
+          <span class="text-[15px] font-black text-black/80">${field.score}%</span>
+        </div>
+        <div class="h-2 rounded-full bg-black/5 overflow-hidden mb-3">
+          <div class="potential-field-fill" style="width:${field.score}%;background:${field.color}"></div>
+        </div>
+        <p class="text-[12px] leading-relaxed text-black/50 mb-3">${escapeHtml(field.reason)}</p>
+        <div class="flex flex-wrap gap-1.5">
+          ${field.roles.slice(0, 3).map((role) => `<span class="rounded-full bg-black/5 px-2 py-1 text-[10px] font-bold text-black/45">${escapeHtml(role)}</span>`).join("")}
+        </div>
+      </article>
+    `).join("");
+  }
+  renderPotentialList("[data-profile-potential-strengths]", potential.strengths || [], "bolt");
+  renderPotentialList("[data-profile-potential-risks]", potential.risks || [], "warning");
+  renderPotentialList("[data-profile-potential-plan]", potential.growthPlan || [], "check_circle");
+  renderPotentialList("[data-result-potential-strengths]", potential.strengths || [], "bolt");
+  renderPotentialList("[data-result-potential-risks]", potential.risks || [], "warning");
+  renderPotentialList("[data-result-potential-plan]", potential.growthPlan || [], "check_circle");
+}
+
+function renderResult() {
+  const preferences = getPreferences();
+  result.summary = buildProfileSummary(preferences);
+  setText("result-name", user.name || "Explorer");
+  hydrateUserPhotos();
+  setText("result-type", result.type);
+  setText("meter-type-chip", result.type);
+  applyTypeBadgeColor();
+  setText("result-title", result.title);
+  setText("result-summary", result.summary);
+  document.getElementById("result-tags").innerHTML = getProfileCapsules(preferences).map((capsule) =>
+    `<span class="capsule-chip ${capsule.primary ? "is-primary" : ""}">${escapeHtml(capsule.text)}</span>`
+  ).join("");
+
+  document.getElementById("trait-metrics").innerHTML = preferences.map((pref) => {
+    return `<div>
+      <div class="flex justify-between gap-4 text-[12px] font-semibold text-black/55 mb-2">
+        <span>${pref.label} leads</span>
+        <span>${pref.value}%</span>
+      </div>
+      <div class="h-2.5 rounded-full bg-black/5 overflow-hidden">
+        <div class="h-full rounded-full transition-all duration-700" style="width:${pref.value}%;background:${pref.color}"></div>
+      </div>
+      <div class="flex justify-between text-[10px] font-bold uppercase tracking-[0.16em] text-black/30 mt-2">
+        <span class="metric-axis-label">${pref.label}</span>
+        <span class="metric-axis-label text-right">${pref.oppositeLabel}</span>
+      </div>
+    </div>`;
+  }).join("");
+
+  preferences.forEach((pref) => {
+    const ring = document.querySelector(`[data-ring-fill="${pref.key}"]`);
+    if (ring) {
+      const radius = Number(ring.getAttribute("r"));
+      const circumference = 2 * Math.PI * radius;
+      ring.style.stroke = pref.key === "J" ? "url(#judgingRing)" : pref.color;
+      ring.style.strokeDasharray = `${circumference}`;
+      ring.style.strokeDashoffset = `${circumference - (pref.value / 100) * circumference}`;
+    }
+  });
+
+  const dominant = [...preferences].sort((a, b) => b.value - a.value)[0];
+  setText("truth-headline", `${dominant.label} is your strongest preference`);
+  setText("truth-copy", "Your answers are converted into balanced preference signals and summarized as a reflection profile. It should support self-review, not label or judge you.");
+  document.getElementById("truth-list").innerHTML = preferences.map((pref) => {
+    return `<div class="flex items-center justify-between rounded-2xl bg-white/65 px-4 py-3">
+      <span class="text-[12px] font-semibold text-black/55">${pref.label}</span>
+      <span class="text-[12px] font-bold text-black/75">${pref.value}%</span>
+    </div>`;
+  }).join("");
+
+  renderStoryExport(preferences);
+  renderCognitiveGraph(preferences);
+  renderPotentialMap();
+  hydrateProfileLink();
+}
+
+function renderStoryExport(preferences) {
+  const name = user.name || "Explorer";
+  setText("story-name", `${name}'s cognitive profile`);
+  setText("story-type", result.type);
+  setText("story-title", result.title);
+  setText("story-summary", result.summary);
+  setText("story-date", new Date(result.savedAt || Date.now()).toLocaleDateString());
+  const storyMetrics = document.querySelector("[data-story-metrics]");
+  if (!storyMetrics) return;
+  storyMetrics.innerHTML = preferences.map((pref) => `
+    <div class="story-export__metric">
+      <div class="story-export__metric-head">
+        <span>${pref.label}</span>
+        <span>${pref.value}%</span>
+      </div>
+      <div class="story-export__metric-track">
+        <div class="story-export__metric-fill" style="width:${pref.value}%;background:${pref.color}"></div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function canvasToBlob(canvas) {
+  return new Promise((resolve) => canvas.toBlob(resolve, "image/png", 0.96));
+}
+
+function escapeXml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function splitText(value, maxLength) {
+  const words = String(value).split(/\s+/).filter(Boolean);
+  const lines = [];
+  let current = "";
+
+  words.forEach((word) => {
+    const next = current ? `${current} ${word}` : word;
+    if (next.length > maxLength && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = next;
+    }
+  });
+
+  if (current) lines.push(current);
+  return lines;
+}
+
+function svgTextLines(lines, x, y, size, fill, weight = 600, lineHeight = 1.25) {
+  return lines.map((line, index) =>
+    `<text x="${x}" y="${y + index * size * lineHeight}" font-size="${size}" font-weight="${weight}" fill="${fill}">${escapeXml(line)}</text>`
+  ).join("");
+}
+
+function buildStorySvg(preferences) {
+  const name = user.name || "Explorer";
+  const colors = getTypeColors(result.type);
+  const titleLines = splitText(result.title || "CogniLens Profile", 24).slice(0, 2);
+  const summaryLines = splitText(result.summary || "Your CogniLens result is ready.", 34).slice(0, 5);
+  const metricRows = preferences.map((pref, index) => {
+    const y = 1120 + index * 112;
+    return `
+      <text x="192" y="${y}" font-size="28" font-weight="750" fill="rgba(15,23,42,0.78)">${escapeXml(pref.label)}</text>
+      <text x="888" y="${y}" font-size="28" font-weight="850" text-anchor="end" fill="rgba(15,23,42,0.82)">${pref.value}%</text>
+      <rect x="192" y="${y + 30}" width="696" height="18" rx="9" fill="rgba(15,23,42,0.08)"/>
+      <rect x="192" y="${y + 30}" width="${Math.round(696 * pref.value / 100)}" height="18" rx="9" fill="${pref.color}"/>
+    `;
+  }).join("");
+
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+      <defs>
+        <linearGradient id="storyBg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="${colors[0]}"/>
+          <stop offset="0.55" stop-color="#101827"/>
+          <stop offset="1" stop-color="${colors[1]}"/>
+        </linearGradient>
+        <linearGradient id="cardBg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffffff"/>
+          <stop offset="1" stop-color="#f7fbff"/>
+        </linearGradient>
+        <radialGradient id="storyGlowA" cx="18%" cy="8%" r="62%">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.36"/>
+          <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="storyGlowB" cx="88%" cy="88%" r="56%">
+          <stop offset="0" stop-color="${colors[1]}" stop-opacity="0.5"/>
+          <stop offset="1" stop-color="${colors[1]}" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="38" stdDeviation="36" flood-color="#000000" flood-opacity="0.26"/>
+        </filter>
+      </defs>
+      <rect width="1080" height="1920" fill="url(#storyBg)"/>
+      <rect width="1080" height="1920" fill="url(#storyGlowA)"/>
+      <rect width="1080" height="1920" fill="url(#storyGlowB)"/>
+      <g filter="url(#softShadow)">
+        <rect x="96" y="252" width="888" height="1320" rx="72" fill="url(#cardBg)"/>
+      </g>
+      <rect x="140" y="308" width="292" height="58" rx="29" fill="rgba(37,99,235,0.08)"/>
+      <text x="176" y="346" font-size="22" font-weight="850" letter-spacing="5" fill="${colors[0]}">COGNILENS</text>
+      <rect x="752" y="306" width="152" height="62" rx="31" fill="${colors[0]}"/>
+      <text x="828" y="347" font-size="26" font-weight="900" text-anchor="middle" letter-spacing="4" fill="#ffffff">${escapeXml(result.type)}</text>
+      <circle cx="540" cy="530" r="142" fill="rgba(15,23,42,0.06)"/>
+      <circle cx="540" cy="530" r="112" fill="${colors[1]}" opacity="0.16"/>
+      <text x="540" y="530" font-size="148" font-weight="900" text-anchor="middle" dominant-baseline="middle" letter-spacing="-8" fill="rgba(15,23,42,0.9)">${escapeXml(result.type)}</text>
+      ${svgTextLines(titleLines, 192, 764, 52, "rgba(15,23,42,0.9)", 850, 1.12)}
+      <text x="192" y="894" font-size="25" font-weight="800" letter-spacing="5" fill="rgba(15,23,42,0.38)">AUTO BIO</text>
+      ${svgTextLines(summaryLines, 192, 952, 29, "rgba(15,23,42,0.62)", 560, 1.42)}
+      <text x="192" y="1072" font-size="25" font-weight="850" letter-spacing="5" fill="rgba(15,23,42,0.38)">TRAIT BALANCE</text>
+      ${metricRows}
+      <rect x="192" y="1468" width="696" height="2" fill="rgba(15,23,42,0.08)"/>
+      <text x="192" y="1532" font-size="26" font-weight="760" fill="rgba(15,23,42,0.62)">${escapeXml(name)}'s result card</text>
+      <text x="888" y="1532" font-size="26" font-weight="850" text-anchor="end" fill="${colors[0]}">Story ready</text>
+      <text x="96" y="1778" font-size="28" font-weight="800" fill="rgba(255,255,255,0.78)">CogniLens</text>
+      <text x="984" y="1778" font-size="28" font-weight="650" text-anchor="end" fill="rgba(255,255,255,0.72)">share card</text>
+    </svg>
+  `;
+}
+
+function svgToPngBlob(svg) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    const canvas = document.createElement("canvas");
+    const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+
+    canvas.width = 1080;
+    canvas.height = 1920;
+
+    image.onload = () => {
+      const context = canvas.getContext("2d");
+      context.drawImage(image, 0, 0);
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, "image/png", 0.96);
+    };
+    image.onerror = reject;
+    image.src = url;
+  });
+}
+
+function downloadStory(url) {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `cognilens-${result.type.toLowerCase()}-story.png`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+async function prepareStoryAsset() {
+  const caption = getShareCaption();
+  await window.navigator?.clipboard?.writeText(caption).catch(() => {});
+
+  if (document.querySelector("[data-story-ready-toggle]")?.checked === false) {
+    return { caption, file: null, url: null };
+  }
+
+  const blob = await svgToPngBlob(buildStorySvg(getPreferences()));
+
+  if (!blob) return { caption, file: null, url: null };
+
+  const file = typeof File === "function"
+    ? new File([blob], `cognilens-${result.type.toLowerCase()}-story.png`, { type: "image/png" })
+    : null;
+  return { caption, file, url: URL.createObjectURL(blob) };
+}
+
+async function shareStory(target = "native") {
+  const shareButton = document.querySelector("[data-share-button]");
+  const shareMenu = document.querySelector("[data-share-menu]");
+  const storyCard = document.querySelector("[data-story-card]");
+  const originalHtml = shareButton.innerHTML;
+  const directLinks = {
+    whatsapp: "https://wa.me/",
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}`,
+    instagram: "https://www.instagram.com/"
+  };
+  const popup = target !== "native"
+    ? window.open("about:blank", "_blank")
+    : null;
+
+  shareButton.disabled = true;
+  shareButton.innerHTML = `<span class="material-symbols-outlined !text-[17px]">hourglass_top</span>Preparing`;
+
+  try {
+    const asset = await prepareStoryAsset();
+    const encoded = encodeURIComponent(asset.caption);
+    const links = {
+      whatsapp: `https://wa.me/?text=${encoded}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}`,
+      instagram: "https://www.instagram.com/"
+    };
+    const canNativeShareFile = asset.file && typeof window.navigator?.share === "function" && (
+      !window.navigator.canShare || window.navigator.canShare({ files: [asset.file] })
+    );
+
+    if ((target === "native" || target === "instagram" || target === "facebook") && canNativeShareFile) {
+      await window.navigator.share({
+        files: [asset.file],
+        title: "CogniLens result",
+        text: asset.caption
+      });
+      popup?.close();
+    } else {
+      if (asset.url) downloadStory(asset.url);
+      if (target !== "native" && links[target]) {
+        if (popup) popup.location.href = links[target];
+        else window.open(links[target], "_blank", "noopener,noreferrer");
+      }
+    }
+    shareMenu?.classList.remove("is-open");
+    shareMenu?.classList.add("hidden");
+    shareButton?.classList.remove("is-active");
+    shareButton?.setAttribute("aria-expanded", "false");
+    storyCard?.classList.remove("is-sharing");
+  } catch (error) {
+    await window.navigator?.clipboard?.writeText(getShareCaption()).catch(() => {});
+    if (target !== "native" && directLinks[target]) {
+      if (popup) popup.location.href = directLinks[target];
+      else window.open(directLinks[target], "_blank", "noopener,noreferrer");
+    } else if (popup) {
+      popup.close();
+    }
+  } finally {
+    shareButton.disabled = false;
+    shareButton.innerHTML = originalHtml;
+  }
+}
+
+function setupShare() {
+  const shareButton = document.querySelector("[data-share-button]");
+  const shareMenu = document.querySelector("[data-share-menu]");
+  const storyCard = document.querySelector("[data-story-card]");
+
+  shareButton.addEventListener("click", () => {
+    const settingsPanel = document.querySelector("[data-settings-panel]");
+    settingsPanel?.classList.remove("is-open");
+    settingsPanel?.setAttribute("aria-hidden", "true");
+    if (typeof window.navigator?.share === "function") {
+      shareMenu.classList.add("hidden");
+      shareMenu.classList.remove("is-open");
+      shareButton.classList.add("is-active");
+      shareButton.setAttribute("aria-expanded", "true");
+      storyCard?.classList.add("is-sharing");
+      shareStory("native");
+      return;
+    }
+    shareMenu.classList.remove("hidden");
+    const isOpen = shareMenu.classList.toggle("is-open");
+    shareButton.classList.toggle("is-active", isOpen);
+    shareButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    storyCard?.classList.toggle("is-sharing", isOpen);
+  });
+
+  document.querySelectorAll("[data-share-target]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const settingsPanel = document.querySelector("[data-settings-panel]");
+      settingsPanel?.classList.remove("is-open");
+      settingsPanel?.setAttribute("aria-hidden", "true");
+      shareStory(button.dataset.shareTarget);
+    });
+  });
+}
+
+function setupStoryIntent() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("share") !== "story") return;
+
+  const shareButton = document.querySelector("[data-share-button]");
+  const shareMenu = document.querySelector("[data-share-menu]");
+  const storyCard = document.querySelector("[data-story-card]");
+  const settingsPanel = document.querySelector("[data-settings-panel]");
+
+  settingsPanel?.classList.remove("is-open");
+  settingsPanel?.setAttribute("aria-hidden", "true");
+  shareMenu?.classList.add("is-open");
+  shareMenu?.classList.remove("hidden");
+  shareButton?.classList.add("is-active");
+  shareButton?.setAttribute("aria-expanded", "true");
+  storyCard?.classList.add("is-sharing");
+  storyCard?.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function setupProfileLink() {
+  const input = document.getElementById("profile-link-input");
+  const saveButton = document.querySelector("[data-profile-link-save]");
+  if (!input || !saveButton) return;
+
+  saveButton.addEventListener("click", () => {
+    const normalized = normalizeProfileLink(input.value);
+    if (normalized && !/^https?:\/\/[^\s.]+\.[^\s]+/i.test(normalized)) {
+      input.setCustomValidity("Enter a valid link.");
+      input.reportValidity();
+      return;
+    }
+    input.setCustomValidity("");
+    localStorage.setItem(COGNILENS_PROFILE_LINK_KEY, normalized);
+    input.value = normalized;
+    hydrateProfileLink();
+  });
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveButton.click();
+    }
+  });
+}
+
+function resolveTheme(choice) {
+  if (choice === "system") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return choice;
+}
+
+function applyResultTheme(choice) {
+  const resolved = resolveTheme(choice);
+  document.body.classList.toggle("theme-dark", resolved === "dark");
+  localStorage.setItem("cognilensTheme", choice);
+  document.querySelectorAll("[data-result-theme]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.resultTheme === choice);
+  });
+}
+
+function hydratePotentialControls() {
+  const activeMode = localStorage.getItem("cognilensPotentialMode") || "career";
+  document.querySelectorAll("[data-result-potential-mode]").forEach((button) => {
+    const active = button.dataset.resultPotentialMode === activeMode;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+  setText("potential-mode-label", getPotentialModeLabel());
+}
+
+function setupPotentialControls() {
+  document.querySelectorAll("[data-result-potential-mode]").forEach((button) => {
+    button.addEventListener("click", () => {
+      localStorage.setItem("cognilensPotentialMode", button.dataset.resultPotentialMode || "career");
+      hydratePotentialControls();
+      document.getElementById("potential-map")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+  document.querySelector("[data-jump-potential]")?.addEventListener("click", () => {
+    hydratePotentialControls();
+    document.querySelector("[data-settings-panel]")?.classList.remove("is-open");
+  });
+}
+
+function setupSettings() {
+  const settingsButton = document.querySelector("[data-settings-open]");
+  const settingsPanel = document.querySelector("[data-settings-panel]");
+  const settingsGear = document.querySelector(".settings-gear");
+  const logoutButton = document.querySelector("[data-logout-button]");
+  const resultHistoryToggle = document.querySelector("[data-result-history-toggle]");
+  const clearLocalButton = document.querySelector("[data-result-clear-local]");
+  const clearLocalStatus = document.querySelector("[data-result-clear-status]");
+
+  const toggleSettingsPanel = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    document.querySelector("[data-share-menu]")?.classList.remove("is-open");
+    document.querySelector("[data-share-button]")?.classList.remove("is-active");
+    document.querySelector("[data-story-card]")?.classList.remove("is-sharing");
+    const isOpen = settingsPanel.classList.toggle("is-open");
+    settingsPanel.setAttribute("aria-hidden", isOpen ? "false" : "true");
+    settingsGear.classList.add("is-spinning");
+    setTimeout(() => settingsGear.classList.remove("is-spinning"), 500);
+  };
+
+  settingsButton.addEventListener("click", toggleSettingsPanel);
+  settingsButton.addEventListener("touchend", toggleSettingsPanel, { passive: false });
+
+  document.addEventListener("click", (event) => {
+    if (!settingsPanel.contains(event.target) && !settingsButton.contains(event.target)) {
+      settingsPanel.classList.remove("is-open");
+      settingsPanel.setAttribute("aria-hidden", "true");
+    }
+  });
+
+  document.querySelectorAll("[data-result-theme]").forEach((button) => {
+    button.addEventListener("click", () => applyResultTheme(button.dataset.resultTheme));
+  });
+
+  if (resultHistoryToggle) {
+    resultHistoryToggle.checked = getCogniLensSetting("saveHistory", true);
+    resultHistoryToggle.addEventListener("change", () => setCogniLensSetting("saveHistory", resultHistoryToggle.checked));
+  }
+
+  clearLocalButton?.addEventListener("click", () => {
+    localStorage.removeItem("cognilensResult");
+    localStorage.removeItem("cognilensResultHistory");
+    localStorage.removeItem("cognilensAssessmentProgress");
+    localStorage.removeItem("cognilensShareReady");
+    localStorage.removeItem("cognilensProfileLink");
+    if (clearLocalStatus) {
+      clearLocalStatus.textContent = "Cleared";
+      setTimeout(() => {
+        clearLocalStatus.textContent = "Local";
+      }, 1400);
+    }
+  });
+
+  logoutButton?.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+    logoutButton.classList.add("opacity-70", "cursor-wait");
+    await logoutCogniLens("../../auth/signup.html?mode=login");
+  });
+
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if ((localStorage.getItem("cognilensTheme") || "light") === "system") applyResultTheme("system");
+  });
+
+  applyResultTheme(localStorage.getItem("cognilensTheme") || "light");
+  hydratePotentialControls();
+  setupPotentialControls();
+}
+
+renderResult();
+setupSettings();
+setupShare();
+setupProfileLink();
+setupStoryIntent();
+</script>
+</body></html>

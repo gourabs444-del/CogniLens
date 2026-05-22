@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CogniLens | EQ Result</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a,
+  button {
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  a:focus,
+  button:focus {
+    outline: none;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid rgba(251, 113, 133, 0.36);
+    outline-offset: 3px;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #111827;
+    background:
+      radial-gradient(circle at 10% 0%, rgba(251, 113, 133, 0.2), transparent 32%),
+      radial-gradient(circle at 92% 12%, rgba(249, 115, 22, 0.16), transparent 34%),
+      linear-gradient(135deg, #fff7f8 0%, #ffffff 48%, #fff7ed 100%);
+  }
+
+  .shell {
+    min-height: 100vh;
+    width: min(100%, 760px);
+    margin: 0 auto;
+    padding: 22px;
+    display: grid;
+    place-items: center;
+  }
+
+  .card {
+    width: 100%;
+    border-radius: 32px;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.86);
+    box-shadow: 0 34px 90px rgba(15, 23, 42, 0.12);
+    padding: 34px;
+  }
+
+  .eyebrow {
+    color: #fb7185;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .result-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    margin: 12px 0 0;
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: 0;
+  }
+
+  p {
+    color: #64748b;
+    line-height: 1.7;
+    font-weight: 560;
+  }
+
+  .status {
+    margin-top: 24px;
+    border-radius: 22px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    padding: 18px;
+    color: #9a3412;
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 760;
+  }
+
+  .result-grid {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 12px;
+  }
+
+  .metric {
+    border-radius: 18px;
+    background: rgba(248, 250, 252, 0.9);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    padding: 15px;
+  }
+
+  .metric span,
+  .trait-row span {
+    display: block;
+    color: #94a3b8;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .metric strong {
+    display: block;
+    margin-top: 7px;
+    color: #111827;
+    font-size: 18px;
+    line-height: 1.15;
+    font-weight: 900;
+  }
+
+  .trait-list {
+    margin-top: 18px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .trait-row {
+    display: grid;
+    grid-template-columns: 164px 1fr 52px;
+    gap: 10px;
+    align-items: center;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(226, 232, 240, 0.86);
+    padding: 11px 12px;
+  }
+
+  .trait-name strong {
+    display: block;
+    color: #111827;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .trait-name small {
+    display: block;
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .trait-track {
+    height: 9px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    overflow: hidden;
+  }
+
+  .trait-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+  }
+
+  .trait-value {
+    color: #111827;
+    font-size: 13px;
+    font-weight: 900;
+    text-align: right;
+  }
+
+  .actions {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 17px;
+    padding: 13px 18px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 900;
+    min-height: 44px;
+    user-select: none;
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  }
+
+  .button:active {
+    transform: translateY(1px);
+  }
+
+  .button.primary {
+    background: linear-gradient(135deg, #fb7185, #f97316);
+    color: white;
+  }
+
+  .button.secondary {
+    background: #f1f5f9;
+    color: #475569;
+  }
+
+  .button.home {
+    background: #111827;
+    color: white;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.16);
+  }
+
+  .button.home.top {
+    min-height: 38px;
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .card {
+      padding: 24px;
+    }
+
+    .result-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .trait-row {
+      grid-template-columns: 1fr;
+    }
+
+    .trait-value {
+      text-align: left;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="shell">
+    <section class="card">
+      <div class="result-topbar">
+        <span class="eyebrow">EQ Trait Profile</span>
+        <a class="button home top" href="../dashboard/homepage.html">Homepage</a>
+      </div>
+      <h1 id="resultTitle">Scoring logic pending</h1>
+      <p id="resultCopy">Your EQ answers are converted into behavioral trait signals with weighted scoring, consistency checks, and confidence adjustment.</p>
+      <div class="status" id="statusBox">Waiting for EQ scoring rules.</div>
+      <div class="result-grid" id="resultGrid" hidden></div>
+      <div class="trait-list" id="traitList" hidden></div>
+      <div class="actions">
+        <a class="button primary" href="eq.html">Retake EQ Test</a>
+        <a class="button home" href="../dashboard/homepage.html">Homepage</a>
+      </div>
+    </section>
+  </main>
+
+<script src="eq-scoring.js"></script>
+<script>
+let savedResult = (() => {
+  try {
+    return JSON.parse(localStorage.getItem("cognilensEqResult") || "null");
+  } catch (error) {
+    return null;
+  }
+})();
+
+const savedAnswers = (() => {
+  try {
+    return JSON.parse(localStorage.getItem("cognilensEqAnswers") || "[]");
+  } catch (error) {
+    return [];
+  }
+})();
+
+if ((!savedResult?.behavioralTraits?.length) && savedAnswers.length && typeof window.scoreCogniLensEQ === "function") {
+  savedResult = window.scoreCogniLensEQ(savedAnswers);
+  localStorage.setItem("cognilensEqResult", JSON.stringify(savedResult));
+}
+
+const resultTitle = document.getElementById("resultTitle");
+const resultCopy = document.getElementById("resultCopy");
+const statusBox = document.getElementById("statusBox");
+const resultGrid = document.getElementById("resultGrid");
+const traitList = document.getElementById("traitList");
+
+function addMetric(label, value) {
+  const metric = document.createElement("div");
+  metric.className = "metric";
+
+  const labelEl = document.createElement("span");
+  labelEl.textContent = label;
+
+  const valueEl = document.createElement("strong");
+  valueEl.textContent = value;
+
+  metric.append(labelEl, valueEl);
+  resultGrid.append(metric);
+}
+
+function addTraitRow(item) {
+  const row = document.createElement("div");
+  row.className = "trait-row";
+
+  const labelEl = document.createElement("div");
+  labelEl.className = "trait-name";
+
+  const nameEl = document.createElement("strong");
+  nameEl.textContent = item.label;
+
+  const groupEl = document.createElement("small");
+  groupEl.textContent = item.group || "Trait";
+
+  labelEl.append(nameEl, groupEl);
+
+  const track = document.createElement("div");
+  track.className = "trait-track";
+
+  const fill = document.createElement("div");
+  fill.className = "trait-fill";
+  fill.style.width = `${item.score}%`;
+  fill.style.background = `linear-gradient(135deg, ${item.color || "#f59e0b"}, #ef4444)`;
+  track.append(fill);
+
+  const valueEl = document.createElement("div");
+  valueEl.className = "trait-value";
+  valueEl.textContent = `${item.score}%`;
+  valueEl.title = item.evidence?.length ? item.evidence.join(" | ") : item.description || "";
+
+  row.append(labelEl, track, valueEl);
+  traitList.append(row);
+}
+
+if (savedResult) {
+  const rawScores = savedResult.moralScores || savedResult.raw || {};
+  const scoreEntries = Object.entries(rawScores);
+  const fallbackMax = Math.max(1, ...scoreEntries.map(([, value]) => value));
+  const traitItems = Array.isArray(savedResult.behavioralTraits) && savedResult.behavioralTraits.length
+    ? savedResult.behavioralTraits
+    : scoreEntries.map(([key, value]) => ({
+        key,
+        label: key.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase()),
+        group: "Moral",
+        score: Math.round((value / fallbackMax) * 100),
+        color: "#f59e0b"
+      }));
+
+  resultTitle.textContent = savedResult.profileType || savedResult.moralType || savedResult.type || "EQ Result Ready";
+  resultCopy.textContent = savedResult.summary || "Your EQ scoring result is ready.";
+  statusBox.textContent = savedResult.flag || "Behavioral trait model calculated from your EQ responses.";
+
+  resultGrid.hidden = false;
+  addMetric("Model Confidence", `${savedResult.modelConfidence ?? "Ready"}%`);
+  addMetric("Consistency", `${savedResult.consistency ?? savedResult.score ?? "Ready"}%`);
+  addMetric("Dominant", savedResult.topTraits?.[0]?.label || savedResult.dominantTraitLabel || "Ready");
+  addMetric("Contradictions", String(savedResult.contradiction ?? 0));
+
+  if (traitItems.length) {
+    traitList.hidden = false;
+    traitItems.forEach(addTraitRow);
+  }
+} else {
+  statusBox.textContent = `${savedAnswers.length} answers saved. Complete the EQ test to generate your moral scoring result.`;
+}
+</script>
+</body>
+</html>

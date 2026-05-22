@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CogniLens | Traits</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link href="../../dashboard-shell.css" rel="stylesheet">
+<style>
+  .trait-card {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(226,232,240,0.9);
+    box-shadow: 0 18px 42px rgba(15,23,42,0.05);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+  .trait-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99,102,241,0.24);
+    box-shadow: 0 24px 60px rgba(15,23,42,0.08);
+  }
+  .trait-track {
+    height: 0.55rem;
+    border-radius: 999px;
+    background: #eef2f7;
+    overflow: hidden;
+  }
+  .trait-fill {
+    height: 100%;
+    width: calc(var(--score, 0) * 1%);
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--trait-color, #6366f1), color-mix(in srgb, var(--trait-color, #6366f1) 70%, #ffffff));
+    transition: width 760ms cubic-bezier(.2,.8,.2,1);
+  }
+  .signal-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #64748b;
+  }
+</style>
+</head>
+<body class="dashboard-shell-body min-h-screen text-slate-700">
+<div class="dashboard-shell">
+  <aside class="dashboard-sidebar">
+    <a class="dashboard-brand" href="homepage.html" aria-label="CogniLens homepage">
+      <span class="brand-logo-mark" aria-hidden="true">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path>
+          <path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path>
+        </svg>
+      </span>
+      <span>CogniLens</span>
+    </a>
+    <nav class="dashboard-nav">
+      <a href="homepage.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Dashboard</span></a>
+      <a href="insights.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Insights</span></a>
+      <a class="is-active" href="traits.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 11a2 2 0 0 0-2 2c0 3.2 1.1 5.4 3.5 7" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8 13a4 4 0 1 1 8 0c0 1.1-.12 2.18-.36 3.22" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5.3 17A8.8 8.8 0 0 1 5 13a7 7 0 0 1 14 0c0 2.1-.28 4.02-.84 5.76" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 13a9 9 0 0 1 15.3-6.4M12 3.5A9.5 9.5 0 0 1 21.5 13" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Traits</span></a>
+      <a href="reports.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Reports</span></a>
+      <a href="history.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>History</span></a>
+      <a href="homepage.html?settings=open"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Settings</span></a>
+    </nav>
+    <div class="dashboard-upgrade-card">
+      <h3>Upgrade to Premium</h3>
+      <p>Unlock deeper AI insights, advanced reports, and personalized recommendations.</p>
+      <a href="payment.html">Upgrade Now <span class="material-symbols-outlined !text-[16px]">arrow_forward</span></a>
+    </div>
+  </aside>
+
+  <main class="dashboard-main">
+    <header class="flex flex-col gap-4 mb-8 xl:flex-row xl:items-end xl:justify-between">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest text-indigo-600">Trait Intelligence</p>
+        <h1 class="text-3xl font-extrabold text-slate-900 mt-1">Behavioral Traits</h1>
+        <p class="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">Scores are calculated from your attempted answers, allocation points, pressure responses, and MBTI balance. Betrayal risk is a behavior-risk estimate, not a character label.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a class="inline-flex justify-center rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white hover:bg-indigo-700" href="../Assets/question.html">Retake Test</a>
+        <a class="inline-flex justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 hover:border-indigo-200 hover:text-indigo-600" href="result.html">Open Result</a>
+      </div>
+    </header>
+
+    <section class="grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+      <article class="trait-card rounded-[1.6rem] p-6">
+        <div class="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_auto] 2xl:items-center">
+          <div class="min-w-0">
+            <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Current profile</p>
+            <h2 class="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-4xl font-black tracking-tight text-slate-950"><span data-trait-type>TYPE</span> <span class="text-base font-bold leading-tight text-slate-400" data-trait-title>Profile loading</span></h2>
+            <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-500" data-trait-summary>Loading trait model...</p>
+          </div>
+          <div class="grid grid-cols-1 gap-2 text-center sm:grid-cols-3 2xl:min-w-[330px]">
+            <div class="min-w-0 rounded-2xl bg-indigo-50 px-3 py-3">
+              <p class="whitespace-nowrap text-[9px] font-black uppercase tracking-[0.14em] text-indigo-500">Answers</p>
+              <p class="mt-1 text-2xl font-black leading-none text-indigo-700" data-answer-count>0</p>
+            </div>
+            <div class="min-w-0 rounded-2xl bg-emerald-50 px-3 py-3">
+              <p class="whitespace-nowrap text-[9px] font-black uppercase tracking-[0.14em] text-emerald-500">Clarity</p>
+              <p class="mt-1 text-2xl font-black leading-none text-emerald-700" data-clarity-score>0%</p>
+            </div>
+            <div class="min-w-0 rounded-2xl bg-orange-50 px-3 py-3">
+              <p class="whitespace-nowrap text-[9px] font-black uppercase tracking-[0.14em] text-orange-500">Risk</p>
+              <p class="mt-1 text-2xl font-black leading-none text-orange-700" data-risk-score>0%</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="trait-card rounded-[1.6rem] p-6">
+        <p class="text-[10px] font-black uppercase tracking-[0.22em] text-rose-500">Betrayal risk model</p>
+        <h2 class="mt-2 text-2xl font-black text-slate-950"><span data-betrayal-score>0%</span> estimated risk</h2>
+        <p class="mt-3 text-sm leading-relaxed text-slate-500">Calculated from loyalty choices, truth handling, pressure reaction, stress behavior, and accountability answers.</p>
+        <div class="trait-track mt-5"><div class="trait-fill" data-betrayal-bar style="--score:0;--trait-color:#f97316"></div></div>
+        <div class="mt-4 flex flex-wrap gap-2" data-betrayal-evidence></div>
+      </article>
+    </section>
+
+    <section class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" data-trait-grid></section>
+
+    <section class="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+      <article class="trait-card rounded-[1.6rem] p-6">
+        <p class="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Scoring breakdown</p>
+        <h2 class="mt-2 text-xl font-black text-slate-950">How the scores were built</h2>
+        <div class="mt-5 space-y-3 text-sm text-slate-600" data-scoring-breakdown></div>
+      </article>
+      <article class="trait-card rounded-[1.6rem] p-6">
+        <p class="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-500">Question evidence</p>
+        <h2 class="mt-2 text-xl font-black text-slate-950">Signals from attempted questions</h2>
+        <div class="mt-5 grid gap-3" data-answer-evidence></div>
+      </article>
+    </section>
+  </main>
+</div>
+<script src="../../score-system.js"></script>
+<script src="../../script.js"></script>
+<script src="../Assets/eq-scoring.js"></script>
+<script>
+const traitClamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Math.round(Number(value) || 0)));
+const average = (...values) => traitClamp(values.reduce((sum, value) => sum + (Number(value) || 0), 0) / Math.max(values.length, 1));
+const pct = (value) => `${traitClamp(value)}%`;
+
+function readProgressAnswers() {
+  try {
+    const progress = JSON.parse(localStorage.getItem("cognilensAssessmentProgress")) || {};
+    return Array.isArray(progress.answers) ? progress.answers : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function buildPartialResultFromAnswers(answers) {
+  const totals = { I: 0, E: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
+  answers.forEach((answer) => {
+    (answer.values || []).forEach((value, index) => {
+      const trait = answer.traits?.[index];
+      if (trait && totals[trait] !== undefined) totals[trait] += Number(value) || 0;
+    });
+  });
+  const score = typeof getPersonalityResult === "function" ? getPersonalityResult(totals) : { type: "INTJ", confidence: 0 };
+  const metrics = typeof getPersonalityMetrics === "function" ? getPersonalityMetrics(totals) : { I: 50, N: 50, T: 50, J: 50 };
+  return {
+    type: score.type,
+    confidence: score.confidence,
+    metrics,
+    totals,
+    answers,
+    title: typeof getPersonalityTitle === "function" ? getPersonalityTitle(score.type) : "Personality Profile"
+  };
+}
+
+function getTraitSource() {
+  const saved = typeof getCogniLensResult === "function" ? getCogniLensResult() : null;
+  if (saved?.answers?.length) return saved;
+  const progressAnswers = readProgressAnswers();
+  return buildPartialResultFromAnswers(progressAnswers);
+}
+
+function answerByText(answers, text) {
+  const needle = text.toLowerCase();
+  return answers.find((answer) => String(answer.question || "").toLowerCase().includes(needle));
+}
+
+function selectedOption(answer) {
+  if (!answer) return "Not answered";
+  if (answer.type === "allocation") {
+    const values = answer.values || [];
+    const topIndex = values.indexOf(Math.max(...values));
+    return `${answer.options?.[topIndex] || "Highest"} (${values[topIndex] || 0}/10)`;
+  }
+  return answer.options?.[answer.selected] || "Not answered";
+}
+
+function buildTraitModel(result) {
+  const answers = result.answers || [];
+  if (!answers.length) {
+    const zeroScores = {
+      trust: 0,
+      loyalty: 0,
+      honesty: 0,
+      empathy: 0,
+      selfControl: 0,
+      aggressionControl: 0,
+      accountability: 0,
+      loveLoyalty: 0,
+      forgiveness: 0,
+      boundaries: 0,
+      patience: 0,
+      riskAppetite: 0,
+      adaptability: 0,
+      planning: 0,
+      socialWarmth: 0,
+      conflictRecovery: 0,
+      fairness: 0,
+      impulseControl: 0,
+      emotionalStability: 0,
+      commitment: 0,
+      respect: 0,
+      angerReactivity: 0,
+      envy: 0,
+      greed: 0,
+      lust: 0,
+      imageManagement: 0,
+      validationSeeking: 0,
+      attachmentIntensity: 0,
+      egoControl: 0,
+      authenticity: 0,
+      socialAdaptability: 0,
+      closureSeeking: 0,
+      rumination: 0,
+      avoidance: 0,
+      directCommunication: 0,
+      emotionalRegulation: 0,
+      resilience: 0,
+      compassion: 0,
+      logic: 0,
+      consequentialThinking: 0,
+      justice: 0,
+      truthCourage: 0,
+      guiltSensitivity: 0,
+      ideologicalTolerance: 0,
+      attachmentPull: 0,
+      sacrifice: 0,
+      selfPreservation: 0,
+      innerConflict: 0,
+      betrayalRisk: 0
+    };
+    return { scores: zeroScores, evidence: {}, answersUsed: 0 };
+  }
+  const metrics = result.metrics || { I: 50, N: 50, T: 50, J: 50 };
+  const I = traitClamp(metrics.I, 0, 100);
+  const E = 100 - I;
+  const N = traitClamp(metrics.N, 0, 100);
+  const S = 100 - N;
+  const T = traitClamp(metrics.T, 0, 100);
+  const F = 100 - T;
+  const J = traitClamp(metrics.J, 0, 100);
+  const P = 100 - J;
+
+  const scores = {
+    trust: average(48 + F * 0.22 + E * 0.12, 52 + P * 0.12),
+    loyalty: average(55 + F * 0.22 + J * 0.14, 54 + I * 0.08),
+    honesty: average(50 + T * 0.22 + J * 0.16, 52 + S * 0.08),
+    empathy: average(50 + F * 0.32 + E * 0.08, 46 + N * 0.1),
+    selfControl: average(48 + T * 0.18 + J * 0.2 + I * 0.08, 52 + S * 0.08),
+    aggressionControl: average(55 + I * 0.16 + J * 0.12, 55 + T * 0.08),
+    accountability: average(48 + J * 0.2 + T * 0.12, 50 + F * 0.1),
+    loveLoyalty: average(56 + F * 0.24 + J * 0.14, 54 + I * 0.1),
+    forgiveness: average(48 + F * 0.24 + P * 0.14, 48 + N * 0.1),
+    boundaries: average(50 + T * 0.18 + J * 0.18, 50 + I * 0.1),
+    patience: average(48 + I * 0.18 + J * 0.12, 48 + T * 0.1),
+    riskAppetite: average(42 + E * 0.2 + P * 0.22, 44 + N * 0.1),
+    adaptability: average(45 + P * 0.3 + N * 0.12, 45 + E * 0.08),
+    planning: average(44 + J * 0.36 + T * 0.1, 46 + S * 0.08),
+    socialWarmth: average(46 + F * 0.22 + E * 0.18, 45 + P * 0.08),
+    conflictRecovery: average(50 + selfSafe(T) * 0.14 + J * 0.1, 50 + F * 0.12),
+    fairness: average(48 + F * 0.18 + T * 0.14, 48 + J * 0.08),
+    impulseControl: average(52 + J * 0.22 + I * 0.12, 52 + T * 0.1),
+    emotionalStability: average(50 + I * 0.12 + J * 0.12, 50 + T * 0.1),
+    commitment: average(52 + J * 0.24 + F * 0.12, 50 + I * 0.08),
+    respect: average(50 + F * 0.16 + J * 0.12, 50 + S * 0.08)
+  };
+
+  scores.angerReactivity = traitClamp(100 - scores.aggressionControl);
+  scores.envy = average(42 + E * 0.08 + P * 0.08, 52 + scores.riskAppetite * 0.1 - scores.emotionalStability * 0.08);
+  scores.greed = average(42 + T * 0.12 + J * 0.06, 52 + scores.riskAppetite * 0.1 - scores.empathy * 0.08);
+  scores.lust = average(44 + E * 0.15 + P * 0.14, 50 + scores.socialWarmth * 0.08 - scores.impulseControl * 0.1);
+  scores.imageManagement = average(45 + E * 0.16 + J * 0.07, 52 + scores.socialWarmth * 0.07);
+  scores.validationSeeking = average(44 + E * 0.17 + F * 0.1, 50 + scores.socialWarmth * 0.08);
+  scores.attachmentIntensity = average(scores.loveLoyalty, 100 - scores.emotionalStability + 32, 100 - scores.selfControl + 30);
+  scores.egoControl = average(100 - scores.imageManagement, scores.emotionalStability, scores.selfControl);
+  scores.authenticity = average(scores.honesty, 100 - scores.imageManagement, scores.respect);
+  scores.socialAdaptability = average(scores.adaptability, scores.socialWarmth);
+  scores.closureSeeking = average(scores.planning, 100 - scores.adaptability + 36, 48 + J * 0.16);
+  scores.rumination = average(100 - scores.emotionalStability + 36, scores.attachmentIntensity, 48 + I * 0.12);
+  scores.directCommunication = average(scores.honesty, scores.boundaries, 48 + T * 0.16 + J * 0.08);
+  scores.avoidance = average(100 - scores.directCommunication + 36, 100 - scores.selfControl + 34, 48 + I * 0.08);
+  scores.emotionalRegulation = average(scores.selfControl, scores.emotionalStability, scores.impulseControl);
+  scores.resilience = average(scores.conflictRecovery, scores.emotionalStability, scores.adaptability);
+  scores.compassion = average(scores.empathy, scores.forgiveness, scores.socialWarmth);
+  scores.logic = average(scores.planning, scores.fairness, 48 + T * 0.18);
+  scores.consequentialThinking = average(scores.logic, scores.planning, scores.accountability);
+  scores.justice = average(scores.boundaries, scores.accountability, 48 + J * 0.12 + T * 0.08);
+  scores.truthCourage = average(scores.honesty, scores.directCommunication, scores.boundaries);
+  scores.guiltSensitivity = average(scores.accountability, scores.empathy, scores.respect);
+  scores.ideologicalTolerance = average(scores.forgiveness, scores.socialWarmth, 100 - scores.boundaries + 44);
+  scores.attachmentPull = average(scores.attachmentIntensity, scores.loveLoyalty);
+  scores.sacrifice = average(scores.empathy, scores.commitment, 100 - scores.greed);
+  scores.selfPreservation = average(scores.boundaries, 100 - scores.sacrifice + 40, scores.selfControl);
+  scores.innerConflict = average(100 - scores.emotionalStability + 35, scores.rumination, scores.envy);
+
+  const evidence = {
+    trust: ["People-priority and empathy balance"],
+    loyalty: ["Close-bond, stability, and commitment signals"],
+    honesty: ["Truth handling and logic-pressure balance"],
+    empathy: ["Feeling, people impact, and moral choices"],
+    selfControl: ["Stress response and pressure timing"],
+    aggressionControl: ["Public insult reaction and impulse control"],
+    accountability: ["Response after negative feedback"],
+    loveLoyalty: ["Bond protection and long-term commitment"],
+    forgiveness: ["Flexibility after mistakes"],
+    boundaries: ["Rule respect and decision consistency"],
+    patience: ["Observe-before-acting signals"],
+    riskAppetite: ["Freedom, speed, and risk allocation"],
+    adaptability: ["Plan failure and flexibility signals"],
+    planning: ["Structure, stability, and step-by-step choices"],
+    socialWarmth: ["People-oriented and group-entry answers"],
+    conflictRecovery: ["Ability to reset after pressure"],
+    fairness: ["Moral trade-off and people impact"],
+    impulseControl: ["Timed pressure and stress answers"],
+    emotionalStability: ["Pressure response and recovery pattern"],
+    commitment: ["Long-term bond and structure signals"],
+    respect: ["Boundary, empathy, and rule signals"],
+    angerReactivity: ["Inverse of anger control and stress stability"],
+    envy: ["Comparison pressure estimated from personality balance"],
+    greed: ["Self-priority estimated from empathy, risk, and logic balance"],
+    lust: ["Romantic impulse estimated from social and impulse signals"],
+    imageManagement: ["Presentation control and social image signals"],
+    validationSeeking: ["Approval and recognition signals"],
+    attachmentIntensity: ["Bond pull and emotional carryover signals"],
+    egoControl: ["Grounded self-presentation and stability signals"],
+    authenticity: ["Honesty, directness, and low performance signals"],
+    socialAdaptability: ["Adaptability and social warmth signals"],
+    closureSeeking: ["Need for explanation and completion signals"],
+    rumination: ["Memory-loop and emotional carryover signals"],
+    avoidance: ["Distance from uncomfortable emotion signals"],
+    directCommunication: ["Truth and clarity signals"],
+    emotionalRegulation: ["Control, stability, and impulse balance"],
+    resilience: ["Recovery and adaptation signals"],
+    compassion: ["Empathy and forgiveness signals"],
+    logic: ["Planning and reasoning balance"],
+    consequentialThinking: ["Outcome and impact calculation signals"],
+    justice: ["Boundary and accountability signals"],
+    truthCourage: ["Honesty under social cost"],
+    guiltSensitivity: ["Accountability and repair sensitivity"],
+    ideologicalTolerance: ["Tolerance across value differences"],
+    attachmentPull: ["Relationship pull and emotional bond signals"],
+    sacrifice: ["Self-cost for others' benefit signals"],
+    selfPreservation: ["Self-protection and boundary signals"],
+    innerConflict: ["Contradiction and emotional tension signals"]
+  };
+
+  function push(key, amount, note) {
+    scores[key] = traitClamp(scores[key] + amount);
+    evidence[key]?.push(note);
+  }
+
+  const closeChoice = selectedOption(answerByText(answers, "saving one close person"));
+  if (closeChoice.includes("close person")) {
+    push("loyalty", 14, "Chose close bond in moral conflict");
+    push("loveLoyalty", 16, "Prioritized personal bond");
+    push("commitment", 10, "Protected an important relationship");
+  } else if (closeChoice.includes("five strangers")) {
+    push("empathy", 12, "Chose wider harm reduction");
+    push("fairness", 16, "Prioritized wider harm reduction");
+    push("loyalty", -4, "Bond priority was lower than group outcome");
+  } else if (!closeChoice.includes("Not answered")) {
+    push("boundaries", 6, "Needs context before moral decision");
+    push("fairness", 8, "Uses context before moral judgment");
+  }
+
+  const truthChoice = selectedOption(answerByText(answers, "truth could hurt"));
+  if (truthChoice.includes("Tell the truth")) {
+    push("honesty", 18, "Truth-first answer");
+    push("boundaries", 8, "Direct truth boundary");
+    push("respect", 4, "Gives others direct truth");
+  } else if (truthChoice.includes("Hide") || truthChoice.includes("soften")) {
+    push("empathy", 12, "Protects feelings under truth pressure");
+    push("honesty", -8, "Truth may be softened under emotional pressure");
+    push("respect", 6, "Protects emotional safety");
+  } else if (!truthChoice.includes("Not answered")) {
+    push("honesty", 6, "Context-based truth handling");
+    push("empathy", 6, "Balances honesty with emotional impact");
+    push("respect", 8, "Balances honesty and care");
+  }
+
+  const ruleChoice = selectedOption(answerByText(answers, "breaking a rule"));
+  if (ruleChoice.includes("Follow the rule")) {
+    push("boundaries", 14, "Rule-first choice");
+    push("accountability", 8, "High rule accountability");
+    push("respect", 8, "Respects agreed rules");
+  } else if (ruleChoice.includes("Break the rule")) {
+    push("empathy", 10, "Outcome-focused helping choice");
+    push("riskAppetite", 8, "Can break structure for people");
+    push("fairness", 8, "Focuses on practical help");
+  } else if (!ruleChoice.includes("Not answered")) {
+    push("adaptability", 8, "Situation-based rule judgment");
+    push("fairness", 8, "Judges rules case by case");
+  }
+
+  const insultChoice = selectedOption(answerByText(answers, "insults you publicly"));
+  if (insultChoice.includes("Ignore")) {
+    push("aggressionControl", 16, "Stayed calm under public insult");
+    push("selfControl", 10, "Low reactive impulse");
+    push("impulseControl", 16, "Did not answer insult impulsively");
+    push("emotionalStability", 10, "Stable under public insult");
+  } else if (insultChoice.includes("Respond immediately")) {
+    push("aggressionControl", -18, "Immediate response under insult pressure");
+    push("selfControl", -10, "Fast reaction signal");
+    push("impulseControl", -18, "Fast public reaction");
+    push("emotionalStability", -8, "Pressure reaction rises quickly");
+  } else if (!insultChoice.includes("Not answered")) {
+    push("selfControl", 14, "Thought before reacting");
+    push("aggressionControl", 10, "Delayed reaction under pressure");
+    push("impulseControl", 12, "Thinks before responding");
+    push("emotionalStability", 8, "Uses pause before reaction");
+  }
+
+  const stressChoice = selectedOption(answerByText(answers, "stressful situation"));
+  if (stressChoice.includes("Slow down")) {
+    push("selfControl", 14, "Slows down under stress");
+    push("patience", 10, "Careful stress handling");
+    push("impulseControl", 12, "Stress response is controlled");
+    push("emotionalStability", 10, "Slows down under stress");
+  } else if (stressChoice.includes("React quickly")) {
+    push("selfControl", -14, "Fast stress reaction");
+    push("aggressionControl", -8, "Impulse can rise under stress");
+    push("impulseControl", -14, "Stress may trigger fast action");
+  } else if (!stressChoice.includes("Not answered")) {
+    push("trust", 8, "Looks at people before acting");
+    push("socialWarmth", 8, "Social calibration under stress");
+    push("respect", 6, "Reads people before acting");
+  }
+
+  const planChoice = selectedOption(answerByText(answers, "don't go as planned"));
+  if (planChoice.includes("fix it logically")) {
+    push("planning", 12, "Fixes failed plans step by step");
+    push("accountability", 8, "Takes action to repair");
+    push("emotionalStability", 6, "Repairs through steps");
+  } else if (planChoice.includes("Adapt quickly")) {
+    push("adaptability", 16, "Adapts quickly after plan failure");
+    push("emotionalStability", 5, "Moves after disruption");
+  } else if (!planChoice.includes("Not answered")) {
+    push("patience", 12, "Observes before acting");
+    push("impulseControl", 8, "Waits before changing path");
+  }
+
+  const negativeChoice = selectedOption(answerByText(answers, "people reacted negatively"));
+  if (negativeChoice.includes("Stick")) {
+    push("boundaries", 10, "Can hold a logical decision");
+    push("socialWarmth", -6, "People reaction may get less weight");
+    push("commitment", 6, "Stays with chosen decision");
+  } else if (negativeChoice.includes("Adjust")) {
+    push("accountability", 12, "Adjusts after negative reaction");
+    push("empathy", 10, "Responds to people impact");
+    push("respect", 10, "Responds to people's reaction");
+  } else if (!negativeChoice.includes("Not answered")) {
+    push("selfControl", 8, "Pauses before continuing");
+    push("accountability", 8, "Rethinks when outcomes are poor");
+    push("emotionalStability", 8, "Pauses instead of escalating");
+  }
+
+  const instinctChoice = selectedOption(answerByText(answers, "instinct, but it turned out wrong"));
+  if (instinctChoice.includes("Trust logic")) {
+    push("accountability", 10, "Learns from wrong instinct");
+    push("selfControl", 8, "Corrects decision method");
+    push("impulseControl", 8, "Learns from instinct error");
+  } else if (instinctChoice.includes("Still trust")) {
+    push("riskAppetite", 8, "Stays instinctive after mistake");
+    push("accountability", -5, "Less method correction after mistake");
+  } else if (!instinctChoice.includes("Not answered")) {
+    push("adaptability", 8, "Balances logic and instinct");
+    push("accountability", 8, "Adjusts method situationally");
+    push("emotionalStability", 6, "Balances after mistake");
+  }
+
+  scores.angerReactivity = traitClamp(100 - average(scores.aggressionControl, scores.impulseControl, scores.emotionalStability));
+  scores.attachmentIntensity = average(scores.loveLoyalty, 100 - scores.emotionalStability + 32, 100 - scores.selfControl + 30);
+  scores.egoControl = average(100 - scores.imageManagement, scores.emotionalStability, scores.selfControl);
+  scores.authenticity = average(scores.honesty, 100 - scores.imageManagement, scores.respect);
+  scores.socialAdaptability = average(scores.adaptability, scores.socialWarmth);
+  scores.closureSeeking = average(scores.planning, 100 - scores.adaptability + 36);
+  scores.rumination = average(100 - scores.emotionalStability + 36, scores.attachmentIntensity, scores.envy);
+  scores.directCommunication = average(scores.honesty, scores.boundaries);
+  scores.avoidance = average(100 - scores.directCommunication + 36, 100 - scores.selfControl + 34);
+  scores.emotionalRegulation = average(scores.selfControl, scores.emotionalStability, scores.impulseControl);
+  scores.resilience = average(scores.conflictRecovery, scores.emotionalStability, scores.adaptability);
+  scores.compassion = average(scores.empathy, scores.forgiveness, scores.socialWarmth);
+  scores.logic = average(scores.planning, scores.fairness);
+  scores.consequentialThinking = average(scores.logic, scores.planning, scores.accountability);
+  scores.justice = average(scores.boundaries, scores.accountability);
+  scores.truthCourage = average(scores.honesty, scores.directCommunication, scores.boundaries);
+  scores.guiltSensitivity = average(scores.accountability, scores.empathy, scores.respect);
+  scores.ideologicalTolerance = average(scores.forgiveness, scores.socialWarmth, 100 - scores.boundaries + 44);
+  scores.attachmentPull = average(scores.attachmentIntensity, scores.loveLoyalty);
+  scores.sacrifice = average(scores.empathy, scores.commitment, 100 - scores.greed);
+  scores.selfPreservation = average(scores.boundaries, 100 - scores.sacrifice + 40, scores.selfControl);
+  scores.innerConflict = average(100 - scores.emotionalStability + 35, scores.rumination, scores.envy);
+
+  const betrayalRisk = traitClamp(
+    115
+    - scores.loyalty * 0.24
+    - scores.honesty * 0.2
+    - scores.empathy * 0.14
+    - scores.selfControl * 0.16
+    - scores.accountability * 0.14
+    - scores.commitment * 0.08
+    - scores.respect * 0.06
+    + scores.riskAppetite * 0.08
+  );
+
+  return { scores: { ...scores, betrayalRisk }, evidence, answersUsed: answers.length };
+}
+
+function selfSafe(value) {
+  return traitClamp(value);
+}
+
+function labelForScore(score, inverse = false) {
+  const value = inverse ? 100 - score : score;
+  if (value >= 78) return "Strong";
+  if (value >= 62) return "Healthy";
+  if (value >= 45) return "Moderate";
+  return "Watch";
+}
+
+function renderTraitCard(item) {
+  const inverse = item.inverse === true;
+  return `
+    <article class="trait-card rounded-[1.35rem] p-5">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">${item.group}</p>
+          <h3 class="mt-2 text-lg font-black text-slate-950">${item.name}</h3>
+        </div>
+        <span class="rounded-full px-3 py-1 text-xs font-black" style="background:${item.color}18;color:${item.color}">${pct(item.score)}</span>
+      </div>
+      <p class="mt-3 text-sm leading-relaxed text-slate-500">${item.copy}</p>
+      <div class="trait-track mt-4"><div class="trait-fill" style="--score:${item.score};--trait-color:${item.color}"></div></div>
+      <div class="mt-4 flex items-center justify-between text-xs font-bold text-slate-400">
+        <span>${labelForScore(item.score, inverse)}</span>
+        <span>${item.source}</span>
+      </div>
+    </article>
+  `;
+}
+
+function readEqTraitResult() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("cognilensEqResult") || "null");
+    if (saved?.behavioralTraits?.length) return saved;
+  } catch (error) {
+    // Continue with saved answers fallback.
+  }
+
+  try {
+    const eqAnswers = JSON.parse(localStorage.getItem("cognilensEqAnswers") || "[]");
+    if (Array.isArray(eqAnswers) && eqAnswers.length && typeof window.scoreCogniLensEQ === "function") {
+      const result = window.scoreCogniLensEQ(eqAnswers);
+      localStorage.setItem("cognilensEqResult", JSON.stringify(result));
+      return result;
+    }
+  } catch (error) {
+    return null;
+  }
+
+  return null;
+}
+
+function readIqTraitResult() {
+  const keys = ["cognilensIqResult", "cognilensIQResult", "cognilensIqAnswers", "cognilensIQAnswers"];
+  const hasIqSignals = (value) => {
+    if (!value || Array.isArray(value)) return false;
+    const source = value.traitScores || value.scores || value.metrics || value;
+    return ["logic", "reasoning", "logicalReasoning", "iq", "score", "pattern", "patterns", "patternRecognition", "memory", "workingMemory", "speed", "processingSpeed", "problemSolving", "problem"]
+      .some((key) => Number.isFinite(Number(source?.[key])));
+  };
+
+  for (const key of keys) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || "null");
+      if (hasIqSignals(value)) return value;
+    } catch (error) {
+      // Try the next possible key.
+    }
+  }
+  return null;
+}
+
+function eqScore(eqResult, key) {
+  if (!eqResult) return null;
+  if (eqResult.traitScores && Number.isFinite(Number(eqResult.traitScores[key]))) return Number(eqResult.traitScores[key]);
+  const found = eqResult.behavioralTraits?.find((trait) => trait.key === key);
+  return found ? Number(found.score) : null;
+}
+
+function iqScore(iqResult, keys, fallback = null) {
+  if (!iqResult) return fallback;
+  const source = iqResult.traitScores || iqResult.scores || iqResult.metrics || iqResult;
+  for (const key of keys) {
+    const value = Number(source?.[key]);
+    if (Number.isFinite(value)) return traitClamp(value);
+  }
+  return fallback;
+}
+
+function blendScore(base, incoming, weight = 0.4) {
+  if (!Number.isFinite(Number(incoming))) return traitClamp(base);
+  return traitClamp(Number(base) * (1 - weight) + Number(incoming) * weight);
+}
+
+function averageKnown(...values) {
+  const clean = values.filter((value) => Number.isFinite(Number(value)));
+  if (!clean.length) return null;
+  return clean.reduce((sum, value) => sum + Number(value), 0) / clean.length;
+}
+
+function pushEvidence(evidence, key, note) {
+  if (!evidence[key]) evidence[key] = [];
+  if (!evidence[key].includes(note)) evidence[key].push(note);
+}
+
+function applyEqLayer(scores, evidence, eqResult) {
+  if (!eqResult?.behavioralTraits?.length) return { used: false, label: "MBTI only" };
+
+  const get = (key) => eqScore(eqResult, key);
+  const blend = (key, value, weight, note) => {
+    if (!Number.isFinite(Number(value))) return;
+    scores[key] = blendScore(scores[key], value, weight);
+    pushEvidence(evidence, key, note);
+  };
+
+  blend("trust", averageKnown(get("authenticity"), get("empathy"), get("socialAdaptability")), 0.32, "EQ trust blend");
+  blend("loyalty", averageKnown(get("attachmentIntensity"), get("honesty"), get("sacrifice")), 0.38, "EQ loyalty blend");
+  blend("honesty", averageKnown(get("honesty"), get("truthCourage"), get("authenticity")), 0.46, "EQ honesty blend");
+  blend("empathy", averageKnown(get("empathy"), get("compassion")), 0.45, "EQ empathy blend");
+  blend("selfControl", averageKnown(get("emotionalRegulation"), get("impulseControl")), 0.44, "EQ self-control blend");
+  blend("aggressionControl", averageKnown(get("emotionalRegulation"), get("impulseControl"), 100 - (get("innerConflict") || 50)), 0.42, "EQ anger-control blend");
+  blend("accountability", averageKnown(get("guiltSensitivity"), get("truthCourage"), get("honesty")), 0.3, "EQ accountability blend");
+  blend("loveLoyalty", averageKnown(get("attachmentIntensity"), get("attachment"), get("sacrifice"), get("honesty")), 0.42, "EQ bond blend");
+  blend("forgiveness", averageKnown(get("compassion"), get("resilience")), 0.32, "EQ recovery blend");
+  blend("boundaries", averageKnown(get("boundaryStrength"), get("selfPreservation")), 0.35, "EQ boundary blend");
+  blend("patience", averageKnown(get("impulseControl"), get("emotionalRegulation")), 0.32, "EQ patience blend");
+  blend("riskAppetite", averageKnown(get("lust"), get("validationSeeking"), get("socialAdaptability")), 0.22, "EQ action-pressure blend");
+  blend("adaptability", averageKnown(get("socialAdaptability"), get("resilience")), 0.3, "EQ adaptability blend");
+  blend("planning", averageKnown(get("logic"), get("consequentialThinking")), 0.24, "EQ reasoning blend");
+  blend("socialWarmth", averageKnown(get("empathy"), get("compassion"), get("socialAdaptability")), 0.36, "EQ social warmth blend");
+  blend("conflictRecovery", averageKnown(get("resilience"), get("emotionalRegulation")), 0.4, "EQ recovery blend");
+  blend("fairness", averageKnown(get("empathy"), get("logic"), get("justice"), get("consequentialThinking")), 0.35, "EQ moral fairness blend");
+  blend("impulseControl", get("impulseControl"), 0.5, "EQ impulse blend");
+  blend("emotionalStability", averageKnown(get("emotionalRegulation"), get("resilience")), 0.48, "EQ stability blend");
+  blend("commitment", averageKnown(get("attachmentIntensity"), get("sacrifice"), get("honesty")), 0.38, "EQ commitment blend");
+  blend("respect", averageKnown(get("honesty"), get("compassion"), get("boundaryStrength")), 0.34, "EQ respect blend");
+  const eqCalm = averageKnown(get("emotionalRegulation"), get("impulseControl"));
+  blend("angerReactivity", Number.isFinite(Number(eqCalm)) ? 100 - eqCalm : null, 0.5, "EQ anger reactivity blend");
+  blend("envy", get("envy"), 0.72, "EQ envy signal");
+  blend("greed", get("greed"), 0.7, "EQ greed/self-priority signal");
+  blend("lust", get("lust"), 0.72, "EQ romantic impulse signal");
+  blend("imageManagement", get("impressionManagement"), 0.68, "EQ image-management signal");
+  blend("validationSeeking", get("validationSeeking"), 0.65, "EQ validation signal");
+  blend("attachmentIntensity", get("attachmentIntensity"), 0.68, "EQ attachment signal");
+  blend("egoControl", get("egoControl"), 0.68, "EQ ego-control signal");
+  blend("authenticity", get("authenticity"), 0.68, "EQ authenticity signal");
+  blend("socialAdaptability", get("socialAdaptability"), 0.68, "EQ social-adaptability signal");
+  blend("closureSeeking", get("closureSeeking"), 0.68, "EQ closure-seeking signal");
+  blend("rumination", get("rumination"), 0.68, "EQ rumination signal");
+  blend("avoidance", get("avoidance"), 0.68, "EQ avoidance signal");
+  blend("directCommunication", get("directCommunication"), 0.68, "EQ direct-communication signal");
+  blend("emotionalRegulation", get("emotionalRegulation"), 0.68, "EQ emotional-regulation signal");
+  blend("resilience", get("resilience"), 0.68, "EQ resilience signal");
+  blend("compassion", get("compassion"), 0.68, "EQ compassion signal");
+  blend("logic", get("logic"), 0.68, "EQ logic signal");
+  blend("consequentialThinking", get("consequentialThinking"), 0.68, "EQ consequence-thinking signal");
+  blend("justice", get("justice"), 0.68, "EQ justice signal");
+  blend("truthCourage", get("truthCourage"), 0.68, "EQ truth-courage signal");
+  blend("guiltSensitivity", get("guiltSensitivity"), 0.68, "EQ guilt-sensitivity signal");
+  blend("ideologicalTolerance", get("ideologicalTolerance"), 0.68, "EQ ideological-tolerance signal");
+  blend("attachmentPull", get("attachment"), 0.64, "EQ attachment-pull signal");
+  blend("sacrifice", get("sacrifice"), 0.68, "EQ sacrifice signal");
+  blend("selfPreservation", get("selfPreservation"), 0.68, "EQ self-preservation signal");
+  blend("innerConflict", get("innerConflict"), 0.72, "EQ inner-conflict signal");
+
+  return { used: true, label: "MBTI + EQ" };
+}
+
+function applyIqLayer(scores, evidence, iqResult) {
+  if (!iqResult) return { used: false, label: "" };
+
+  const reasoning = iqScore(iqResult, ["logic", "reasoning", "logicalReasoning", "iq", "score"]);
+  const patterns = iqScore(iqResult, ["pattern", "patterns", "patternRecognition"]);
+  const memory = iqScore(iqResult, ["memory", "workingMemory"]);
+  const speed = iqScore(iqResult, ["speed", "processingSpeed"]);
+  const problemSolving = iqScore(iqResult, ["problemSolving", "problem"]);
+
+  const blend = (key, value, weight, note) => {
+    if (!Number.isFinite(Number(value))) return;
+    scores[key] = blendScore(scores[key], value, weight);
+    pushEvidence(evidence, key, note);
+  };
+
+  blend("planning", averageKnown(reasoning, problemSolving), 0.28, "IQ reasoning blend");
+  blend("impulseControl", averageKnown(memory, reasoning), 0.2, "IQ working-memory blend");
+  blend("patience", averageKnown(memory, 100 - (speed || 50)), 0.16, "IQ timing blend");
+  blend("adaptability", averageKnown(patterns, problemSolving), 0.22, "IQ pattern blend");
+  blend("riskAppetite", speed, 0.12, "IQ speed blend");
+  blend("fairness", reasoning, 0.18, "IQ logic blend");
+  blend("selfControl", averageKnown(memory, reasoning), 0.18, "IQ control blend");
+  blend("emotionalStability", averageKnown(problemSolving, memory), 0.12, "IQ problem-solving blend");
+
+  return { used: true, label: "IQ" };
+}
+
+function recomputeDerivedScores(scores) {
+  scores.angerReactivity = traitClamp(scores.angerReactivity);
+  scores.betrayalRisk = traitClamp(
+    118
+    - scores.loyalty * 0.2
+    - scores.honesty * 0.18
+    - scores.empathy * 0.11
+    - scores.selfControl * 0.13
+    - scores.accountability * 0.1
+    - scores.commitment * 0.08
+    - scores.respect * 0.06
+    + scores.envy * 0.1
+    + scores.greed * 0.12
+    + scores.lust * 0.04
+    + scores.angerReactivity * 0.12
+    + scores.imageManagement * 0.04
+  );
+}
+
+function buildUnifiedTraitModel(result, baseModel) {
+  const scores = { ...baseModel.scores };
+  const evidence = Object.fromEntries(Object.entries(baseModel.evidence || {}).map(([key, notes]) => [key, [...notes]]));
+  const eqResult = readEqTraitResult();
+  const iqResult = readIqTraitResult();
+  if (!baseModel.answersUsed && (eqResult?.behavioralTraits?.length || iqResult)) {
+    Object.keys(scores).forEach((key) => {
+      scores[key] = 50;
+      pushEvidence(evidence, key, "Neutral baseline because MBTI is not completed yet");
+    });
+  }
+  const eqLayer = applyEqLayer(scores, evidence, eqResult);
+  const iqLayer = applyIqLayer(scores, evidence, iqResult);
+  const hasAnySource = Boolean(baseModel.answersUsed || eqLayer.used || iqLayer.used);
+  if (hasAnySource) {
+    recomputeDerivedScores(scores);
+  } else {
+    scores.betrayalRisk = 0;
+  }
+
+  const sources = [];
+  if (baseModel.answersUsed) sources.push("MBTI");
+  if (eqLayer.used) sources.push("EQ");
+  if (iqLayer.used) sources.push("IQ");
+  if (!sources.length) sources.push("Baseline");
+
+  return {
+    scores,
+    evidence,
+    answersUsed: baseModel.answersUsed,
+    sources,
+    eqResult,
+    iqResult
+  };
+}
+
+function renderTraits() {
+  const result = getTraitSource();
+  const baseModel = buildTraitModel(result);
+  const model = buildUnifiedTraitModel(result, baseModel);
+  const s = model.scores;
+  const traitItems = [
+    { name: "Trust Readiness", score: s.trust, group: "Relationship", color: "#10b981", source: "People + stress signals", copy: "How naturally you can rely on people while still reading the situation." },
+    { name: "Betrayal Risk Estimate", score: s.betrayalRisk, group: "Risk", color: "#f97316", source: "Moral + pressure answers", copy: "Lower is better. Estimates risk of disloyal or self-protective behavior under pressure.", inverse: true },
+    { name: "Anger Reactivity", score: s.angerReactivity, group: "Pressure", color: "#ef4444", source: "Impulse + anger signals", copy: "How quickly anger can rise when emotion, ego, or pressure gets triggered.", inverse: true },
+    { name: "Aggression Control", score: s.aggressionControl, group: "Pressure", color: "#dc2626", source: "Timed insult response", copy: "How well you can avoid reactive responses when publicly challenged." },
+    { name: "Love Loyalty", score: s.loveLoyalty, group: "Bond", color: "#ec4899", source: "Close-person + stability", copy: "Commitment strength toward emotionally important people and long-term bonds." },
+    { name: "Envy Signal", score: s.envy, group: "Shadow", color: "#7c3aed", source: "Comparison answers", copy: "Comparison discomfort when a close person or similar person moves ahead.", inverse: true },
+    { name: "Greed / Self-Priority", score: s.greed, group: "Shadow", color: "#ea580c", source: "Self vs others", copy: "How strongly self-benefit or self-protection can compete with others' needs.", inverse: true },
+    { name: "Lust / Romantic Impulse", score: s.lust, group: "Shadow", color: "#db2777", source: "Romantic response", copy: "Impulse to impress, attract, or seek romantic validation.", inverse: true },
+    { name: "Honesty Under Pressure", score: s.honesty, group: "Integrity", color: "#2563eb", source: "Truth-handling answer", copy: "How strongly truth stays present when it could create emotional discomfort." },
+    { name: "Empathy Signal", score: s.empathy, group: "People", color: "#8b5cf6", source: "Feeling + moral choices", copy: "How much people impact, emotion, and harm reduction shape your decisions." },
+    { name: "Self-Control", score: s.selfControl, group: "Stress", color: "#0ea5e9", source: "Stress + timing", copy: "Ability to slow down, think, and keep control when things become intense." },
+    { name: "Accountability", score: s.accountability, group: "Growth", color: "#14b8a6", source: "Feedback reaction", copy: "How likely you are to adjust, repair, or rethink when outcomes go wrong." },
+    { name: "Forgiveness", score: s.forgiveness, group: "Recovery", color: "#84cc16", source: "Flexibility + feeling", copy: "Capacity to move forward after mistakes without losing all trust." },
+    { name: "Boundary Strength", score: s.boundaries, group: "Integrity", color: "#6366f1", source: "Rules + truth + logic", copy: "Ability to hold rules, standards, and personal lines clearly." },
+    { name: "Patience", score: s.patience, group: "Timing", color: "#64748b", source: "Observe-before-act signals", copy: "How much you can wait, observe, and avoid rushing the next move." },
+    { name: "Risk Appetite", score: s.riskAppetite, group: "Action", color: "#f59e0b", source: "Freedom + speed allocation", copy: "Comfort with uncertainty, challenge, quick movement, and testing ideas." },
+    { name: "Image Management", score: s.imageManagement, group: "Identity", color: "#9333ea", source: "Self-presentation", copy: "Tendency to shape how others see you instead of showing everything directly.", inverse: true },
+    { name: "Validation Seeking", score: s.validationSeeking, group: "Social", color: "#f43f5e", source: "Approval signals", copy: "Need for approval, admiration, or positive social response.", inverse: true },
+    { name: "Attachment Intensity", score: s.attachmentIntensity, group: "Bond", color: "#be185d", source: "Bond pull", copy: "How strongly emotional bonds remain active after uncertainty, loss, or conflict." },
+    { name: "Adaptability", score: s.adaptability, group: "Change", color: "#06b6d4", source: "Plan failure answer", copy: "How quickly you can change approach when the original plan breaks." },
+    { name: "Planning Discipline", score: s.planning, group: "Execution", color: "#7c3aed", source: "Structure + stability", copy: "Preference for clear plans, steps, closure, and reliable execution." },
+    { name: "Social Warmth", score: s.socialWarmth, group: "Social", color: "#db2777", source: "Group + people signals", copy: "How warm and people-aware your default interaction style appears." },
+    { name: "Conflict Recovery", score: s.conflictRecovery, group: "Repair", color: "#22c55e", source: "Pressure + feedback", copy: "How well you can reset after tension without becoming stuck in the conflict." }
+    ,{ name: "Fairness", score: s.fairness, group: "Moral", color: "#0f766e", source: "Moral trade-off", copy: "How consistently you try to balance personal bonds, wider impact, and rules." }
+    ,{ name: "Impulse Control", score: s.impulseControl, group: "Pressure", color: "#475569", source: "Timed + stress answers", copy: "How well you can stop a quick reaction from taking control of the situation." }
+    ,{ name: "Emotional Stability", score: s.emotionalStability, group: "Stability", color: "#0284c7", source: "Stress recovery", copy: "How steady your response stays when plans fail or people react badly." }
+    ,{ name: "Commitment", score: s.commitment, group: "Bond", color: "#be123c", source: "Loyalty + structure", copy: "How strongly your answers suggest staying consistent with important people and goals." }
+    ,{ name: "Respect Signal", score: s.respect, group: "Relationship", color: "#16a34a", source: "Truth + rule handling", copy: "How much your choices protect dignity, boundaries, and fair treatment." }
+    ,{ name: "Ego Control", score: s.egoControl, group: "Self", color: "#0f766e", source: "Self-presentation", copy: "Ability to stay grounded without proving superiority." }
+    ,{ name: "Authenticity", score: s.authenticity, group: "Identity", color: "#2563eb", source: "Truth + image balance", copy: "How directly your behavior shows the real self instead of a performed version." }
+    ,{ name: "Social Adaptability", score: s.socialAdaptability, group: "Social", color: "#06b6d4", source: "Adjustment signals", copy: "Ability to adjust communication style to the situation without losing yourself." }
+    ,{ name: "Closure Seeking", score: s.closureSeeking, group: "Bond", color: "#6366f1", source: "Explanation drive", copy: "Drive to understand what happened and resolve emotional uncertainty." }
+    ,{ name: "Rumination", score: s.rumination, group: "Stress", color: "#64748b", source: "Thought loops", copy: "Tendency to replay memories, causes, and old signals after emotional impact.", inverse: true }
+    ,{ name: "Avoidance", score: s.avoidance, group: "Defense", color: "#94a3b8", source: "Distance response", copy: "Tendency to step away from emotional discomfort instead of facing it directly.", inverse: true }
+    ,{ name: "Direct Communication", score: s.directCommunication, group: "Expression", color: "#0891b2", source: "Clarity signals", copy: "Preference for clarity instead of indirect or delayed emotional signaling." }
+    ,{ name: "Emotional Regulation", score: s.emotionalRegulation, group: "Stability", color: "#16a34a", source: "Control balance", copy: "Ability to pause, process, and respond without being controlled by emotion." }
+    ,{ name: "Resilience", score: s.resilience, group: "Recovery", color: "#22c55e", source: "Recovery signals", copy: "Ability to move forward after emotional impact, failure, or conflict." }
+    ,{ name: "Compassion", score: s.compassion, group: "Moral", color: "#14b8a6", source: "Care signals", copy: "Care for dignity and suffering, even when judgment is difficult." }
+    ,{ name: "Logic", score: s.logic, group: "Moral", color: "#0ea5e9", source: "Reasoning balance", copy: "Preference for structured reasoning and outcome calculation." }
+    ,{ name: "Consequence Thinking", score: s.consequentialThinking, group: "Moral", color: "#0284c7", source: "Outcome signals", copy: "Attention to scale, outcomes, and downstream impact." }
+    ,{ name: "Justice Strictness", score: s.justice, group: "Moral", color: "#dc2626", source: "Boundary + accountability", copy: "Preference for accountability, punishment, and moral boundaries." }
+    ,{ name: "Truth Courage", score: s.truthCourage, group: "Integrity", color: "#1d4ed8", source: "Costly truth", copy: "Willingness to speak truth when there is personal or social cost." }
+    ,{ name: "Guilt Sensitivity", score: s.guiltSensitivity, group: "Integrity", color: "#f97316", source: "Repair pressure", copy: "How strongly guilt pushes you toward confession or repair." }
+    ,{ name: "Ideological Tolerance", score: s.ideologicalTolerance, group: "Relationship", color: "#65a30d", source: "Value difference", copy: "Capacity to stay connected despite deep value differences." }
+    ,{ name: "Attachment Pull", score: s.attachmentPull, group: "Relationship", color: "#be185d", source: "Bond pressure", copy: "How much important relationships influence honesty and decision-making." }
+    ,{ name: "Sacrifice Tendency", score: s.sacrifice, group: "Moral", color: "#059669", source: "Self-cost choices", copy: "Willingness to absorb personal cost for other people's happiness." }
+    ,{ name: "Self-Preservation", score: s.selfPreservation, group: "Defense", color: "#111827", source: "Self-protection", copy: "Drive to protect your own stability, safety, or happiness." }
+    ,{ name: "Inner Conflict", score: s.innerConflict, group: "Consistency", color: "#f59e0b", source: "Contradiction signals", copy: "Tension between values across similar emotional or moral situations.", inverse: true }
+  ];
+
+  document.querySelector("[data-trait-type]").textContent = result.type || "TYPE";
+  document.querySelector("[data-trait-title]").textContent = result.title || "Personality profile";
+  const unifiedAnswersUsed = model.answersUsed + (model.eqResult?.answeredCount || 0) + (model.iqResult?.answeredCount || model.iqResult?.answers?.length || 0);
+  document.querySelector("[data-trait-summary]").textContent = unifiedAnswersUsed
+    ? `Unified model active: ${model.sources.join(" + ")}. Same trait cards stay fixed; only percentages update as more tests are completed.`
+    : "No completed assessment found yet. Take the test to calculate real trait scores.";
+  document.querySelector("[data-answer-count]").textContent = unifiedAnswersUsed;
+  document.querySelector("[data-clarity-score]").textContent = pct(model.eqResult?.modelConfidence || result.confidence || 0);
+  document.querySelector("[data-risk-score]").textContent = pct(s.betrayalRisk);
+  document.querySelector("[data-betrayal-score]").textContent = pct(s.betrayalRisk);
+  document.querySelector("[data-betrayal-bar]").style.setProperty("--score", s.betrayalRisk);
+  document.querySelector("[data-betrayal-evidence]").innerHTML = [
+    ...model.sources,
+    "Truth handling",
+    "Loyalty",
+    "Anger",
+    "Envy",
+    "Lust"
+  ].map((label) => `<span class="signal-chip">${label}</span>`).join("");
+  document.querySelector("[data-trait-grid]").innerHTML = traitItems.map(renderTraitCard).join("");
+
+  document.querySelector("[data-scoring-breakdown]").innerHTML = `
+    <p><strong class="text-slate-900">MBTI axis scores:</strong> I ${pct(result.metrics?.I || 50)}, N ${pct(result.metrics?.N || 50)}, T ${pct(result.metrics?.T || 50)}, J ${pct(result.metrics?.J || 50)}.</p>
+    <p><strong class="text-slate-900">Active mechanism:</strong> ${model.sources.join(" + ")}. If only MBTI exists, MBTI estimates all traits. When EQ is completed, the same trait cards blend EQ signals. When IQ is available, reasoning and speed signals blend into the same percentages.</p>
+    <p><strong class="text-slate-900">Trait stability:</strong> card names stay fixed: loyalty, betrayal risk, anger, envy, lust, honesty, empathy, self-control, and the rest. Only percentages change as more tests are added.</p>
+    <p><strong class="text-slate-900">Betrayal risk:</strong> lower score means stronger loyalty, honesty, self-control, empathy, accountability, commitment, and respect signals. Higher score means more pressure-risk signals, not a fixed identity.</p>
+    <p><strong class="text-slate-900">Unified formula:</strong> base MBTI score + weighted EQ/IQ blend; betrayal risk is recalculated from loyalty, honesty, empathy, self-control, anger, envy, greed, lust, commitment, and respect.</p>
+  `;
+
+  const answers = result.answers || [];
+  document.querySelector("[data-answer-evidence]").innerHTML = answers.length ? answers.map((answer, index) => `
+    <div class="rounded-2xl border border-slate-100 bg-white/70 p-4">
+      <div class="flex items-center justify-between gap-3">
+        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">${answer.phase || "Phase"} / Q${index + 1}</p>
+        <span class="rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-black text-indigo-600">${answer.type || "select"}</span>
+      </div>
+      <p class="mt-2 text-sm font-bold text-slate-800">${answer.question || "Question"}</p>
+      <p class="mt-1 text-sm text-slate-500">Answer signal: <strong>${selectedOption(answer)}</strong></p>
+    </div>
+  `).join("") : `
+    <div class="rounded-2xl border border-dashed border-slate-200 bg-white/70 p-5 text-sm font-semibold text-slate-500">No attempted-question evidence yet. Complete the assessment to unlock accurate trait calculations.</div>
+  `;
+}
+
+renderTraits();
+</script>
+</body>
+</html>
