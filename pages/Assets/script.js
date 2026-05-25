@@ -6,45 +6,51 @@ const phaseDefinitions = [
     data: [
       {
         type: "select",
-        q: "When you are faced with an important decision in life, what do you naturally do first before taking action?",
-        options: ["Analyze logically", "Consider people", "Go with instinct"],
-        traits: ["T", "F", "N"],
-        explain: "Simple meaning:\nWhen you need to choose, what comes first in your head?\nLogic = you think like a puzzle.\nPeople = you think about feelings.\nInstinct = your heart says something quickly."
+        customInput: true,
+        q: "When starting a task, you usually:",
+        options: ["Make a clear plan first", "Start and adjust as you go"],
+        traits: ["J", "P"],
+        explain: "Simple meaning:\nThis checks whether you naturally prefer planning before action or learning while moving."
       },
       {
         type: "select",
-        q: "After a long and mentally tiring day, what actually helps you feel relaxed and recharged?",
-        options: ["Being alone", "Talking to someone", "Doing something active"],
-        traits: ["I", "E", "P"],
-        explain: "Simple meaning:\nAfter a tiring day, what gives your energy back?\nAlone = quiet time helps.\nTalking = people help.\nActive = moving or doing something helps."
+        customInput: true,
+        q: "When making decisions, you rely more on:",
+        options: ["Logic and facts", "Feelings and situation"],
+        traits: ["T", "F"],
+        explain: "Simple meaning:\nThis checks whether your first decision filter is objective logic or personal/emotional context."
       },
       {
         type: "select",
-        q: "When you start something important or new, how do you usually approach it?",
-        options: ["Plan it out", "Understand first", "Start immediately"],
-        traits: ["J", "N", "P"],
-        explain: "Simple meaning:\nWhen something new starts, what do you do first?\nPlan = make a small map.\nUnderstand = look at the idea first.\nStart = try it and learn."
+        customInput: true,
+        q: "You're more interested in:",
+        options: ["Practical things that are directly useful", "Ideas and possibilities"],
+        traits: ["S", "N"],
+        explain: "Simple meaning:\nThis checks whether your attention goes first to real-world usefulness or future possibilities."
       },
       {
         type: "select",
-        q: "When you receive new information, how does your brain usually process it?",
-        options: ["Break into steps", "Find patterns", "Use immediately"],
-        traits: ["S", "N", "T"],
-        explain: "Simple meaning:\nWhen new information comes, how do you use it?\nSteps = one by one.\nPatterns = connect the dots.\nUse now = try it quickly."
+        customInput: true,
+        q: "In your free time, you naturally:",
+        options: ["Stay engaged on your own", "Connect with others"],
+        traits: ["I", "E"],
+        explain: "Simple meaning:\nThis checks whether your energy usually refills through solo focus or social connection."
       },
       {
         type: "select",
-        q: "When you enter a new group or environment, what do you naturally do?",
-        options: ["Observe quietly", "Connect with a few", "Engage actively"],
-        traits: ["I", "I", "E"],
-        explain: "Simple meaning:\nIn a new group, what feels easiest?\nWatch quietly = you wait first.\nTalk to a few = you choose safe people.\nJoin actively = you jump in."
+        customInput: true,
+        q: "When there's a deadline:",
+        options: ["You finish early or on time", "You work best close to the deadline"],
+        traits: ["J", "P"],
+        explain: "Simple meaning:\nThis checks whether you naturally close tasks early or rely on last-minute pressure."
       },
       {
         type: "select",
-        q: "Which way of living feels more natural to you in daily life?",
-        options: ["Clear plan", "Flexible options", "Instant decisions"],
-        traits: ["J", "P", "P"],
-        explain: "Simple meaning:\nHow do you like your day to feel?\nClear plan = you like knowing the path.\nFlexible = you like choices.\nInstant = you decide fast."
+        customInput: true,
+        q: "When something is unclear:",
+        options: ["You decide quickly and move on", "You explore more before deciding"],
+        traits: ["J", "P"],
+        explain: "Simple meaning:\nThis checks whether you prefer closure quickly or keeping options open until more is explored."
       }
     ]
   },
@@ -261,14 +267,29 @@ function persistAssessmentProgress() {
   } catch (error) {}
 }
 
+function canRestoreAnswer(answer, question) {
+  if (!answer || !question) return false;
+  const savedOptions = answer.options || [];
+  const baseOptionsMatch = JSON.stringify(savedOptions.slice(0, question.options?.length || 0)) === JSON.stringify(question.options || []);
+  return answer.type === question.type
+    && answer.question === question.q
+    && baseOptionsMatch
+    && JSON.stringify(answer.traits || []) === JSON.stringify(question.traits || []);
+}
+
 function restoreAssessmentProgress() {
   if (!isQuestionSettingEnabled("autosaveProgress", true)) return false;
   try {
     const saved = JSON.parse(window.localStorage?.getItem(COGNILENS_ASSESSMENT_PROGRESS_KEY)) || null;
     if (!saved || !Array.isArray(saved.answers)) return false;
-    current = Math.max(0, Math.min(Number(saved.current) || 0, questions.length - 1));
-    answers = saved.answers.slice(0, questions.length);
-    maxUnlockedPhaseIndex = Math.max(0, Math.min(Number(saved.maxUnlockedPhaseIndex) || 0, phaseDefinitions.length - 1));
+    const restoredAnswers = [];
+    for (let index = 0; index < Math.min(saved.answers.length, questions.length); index += 1) {
+      if (!canRestoreAnswer(saved.answers[index], questions[index])) break;
+      restoredAnswers.push(saved.answers[index]);
+    }
+    answers = restoredAnswers;
+    current = Math.max(0, Math.min(Number(saved.current) || 0, answers.length, questions.length - 1));
+    maxUnlockedPhaseIndex = Math.max(0, Math.min(Number(saved.maxUnlockedPhaseIndex) || 0, questions[current]?.phaseIndex || 0));
     selected = null;
     return answers.length > 0 || current > 0;
   } catch (error) {
@@ -433,13 +454,58 @@ function goToPhase(phaseIndex) {
   loadQuestion(false);
 }
 
+function escapeHtml(value = "") {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
 function renderSelect(q) {
-  optionsEl.innerHTML = q.options.map((option, index) =>
-    `<button class="option" data-option-index="${index}" type="button">${option}</button>`
-  ).join("");
+  const savedCustomTexts = answers[current]?.customTexts || [];
+  const savedCustomText = answers[current]?.customAnswer || savedCustomTexts[q.options.length] || savedCustomTexts.find(Boolean) || "";
+  const optionMarkup = q.options.map((option, index) => {
+    const letter = String.fromCharCode(65 + index);
+    if (!q.customInput) {
+      return `<button class="option" data-option-index="${index}" type="button">${escapeHtml(option)}</button>`;
+    }
+    return `
+      <div class="option-group" data-option-wrapper="${index}">
+        <button class="option option-with-letter" data-option-index="${index}" type="button">
+          <span class="option-letter">${letter}</span>
+          <span>${escapeHtml(option)}</span>
+        </button>
+      </div>
+    `;
+  }).join("");
+
+  const otherIndex = q.options.length;
+  const otherMarkup = q.customInput ? `
+    <div class="option-group other-option-group" data-option-wrapper="${otherIndex}">
+      <button class="option option-with-letter" data-option-index="${otherIndex}" type="button">
+        <span class="option-letter">${String.fromCharCode(65 + otherIndex)}</span>
+        <span>Others</span>
+      </button>
+      <label class="other-box" for="custom-${current}-${otherIndex}">
+        <span>Custom</span>
+        <input id="custom-${current}-${otherIndex}" data-custom-option-index="${otherIndex}" type="text" value="${escapeHtml(savedCustomText)}" placeholder="Type your own answer...">
+      </label>
+    </div>
+  ` : "";
+
+  optionsEl.innerHTML = optionMarkup + otherMarkup;
 
   optionsEl.querySelectorAll("[data-option-index]").forEach((button) => {
     button.addEventListener("click", () => selectOption(Number(button.dataset.optionIndex)));
+  });
+
+  optionsEl.querySelectorAll("[data-custom-option-index]").forEach((input) => {
+    const optionIndex = Number(input.dataset.customOptionIndex);
+    input.addEventListener("focus", () => selectOption(optionIndex));
+    input.addEventListener("input", () => selectOption(optionIndex));
   });
 }
 
@@ -486,7 +552,8 @@ function isSameAnswer(previous, next) {
   if (!previous || !next) return false;
   return previous.type === next.type
     && previous.selected === next.selected
-    && JSON.stringify(previous.values || []) === JSON.stringify(next.values || []);
+    && JSON.stringify(previous.values || []) === JSON.stringify(next.values || [])
+    && JSON.stringify(previous.customTexts || []) === JSON.stringify(next.customTexts || []);
 }
 
 function saveAnswerAtCurrent(answer) {
@@ -508,6 +575,9 @@ function selectOption(index) {
     button.classList.toggle("selected", buttonIndex === focusedOption);
     button.classList.toggle("focused", buttonIndex === focusedOption);
   });
+  optionsEl.querySelectorAll("[data-option-wrapper]").forEach((wrapper) => {
+    wrapper.classList.toggle("selected", Number(wrapper.dataset.optionWrapper) === focusedOption);
+  });
 }
 
 function updateFocusedOption(index) {
@@ -517,6 +587,19 @@ function updateFocusedOption(index) {
   buttons.forEach((button, buttonIndex) => {
     button.classList.toggle("focused", buttonIndex === focusedOption);
   });
+  optionsEl.querySelectorAll("[data-option-wrapper]").forEach((wrapper) => {
+    wrapper.classList.toggle("focused", Number(wrapper.dataset.optionWrapper) === focusedOption);
+  });
+}
+
+function getCustomTextsForCurrentQuestion() {
+  return [...optionsEl.querySelectorAll("[data-custom-option-index]")]
+    .sort((a, b) => Number(a.dataset.customOptionIndex) - Number(b.dataset.customOptionIndex))
+    .map((input) => input.value.trim());
+}
+
+function getCustomTextForCurrentQuestion() {
+  return optionsEl.querySelector("[data-custom-option-index]")?.value.trim() || "";
 }
 
 function numberValue(input) {
@@ -569,14 +652,18 @@ function nextQuestion(fromTimer = false) {
         return;
       }
     }
+    const customAnswer = q.customInput ? getCustomTextForCurrentQuestion() : "";
+    const savedOptions = q.customInput ? [...q.options, customAnswer || "Others"] : q.options;
     saveAnswerAtCurrent({
       phase: q.phaseId,
       type: q.type,
       question: q.q,
-      options: q.options,
+      options: savedOptions,
       traits: q.traits,
       selected,
-      values: q.options.map((_, index) => index === selected ? 10 : 0)
+      values: savedOptions.map((_, index) => index === selected ? 10 : 0),
+      customAnswer,
+      customTexts: q.customInput ? getCustomTextsForCurrentQuestion() : []
     });
   } else {
     const inputs = [...document.querySelectorAll("[data-allocation-index]")];
@@ -682,6 +769,8 @@ function toggleExplain() {
 
 document.addEventListener("keydown", (event) => {
   if (!isQuestionSettingEnabled("keyboardControls", true)) return;
+  const target = event.target;
+  if (target?.matches?.("input, textarea, [contenteditable='true']")) return;
 
   if (phaseScreen.classList.contains("active")) {
     if (event.key === "Enter") {
