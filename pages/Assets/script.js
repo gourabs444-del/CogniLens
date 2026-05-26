@@ -506,7 +506,47 @@ function renderSelect(q) {
     const optionIndex = Number(input.dataset.customOptionIndex);
     input.addEventListener("focus", () => selectOption(optionIndex));
     input.addEventListener("input", () => selectOption(optionIndex));
+    input.addEventListener("keydown", (event) => handleCustomInputKeys(event, optionIndex));
   });
+}
+
+function focusSelectControl(index, preferCustomInput = false) {
+  const buttons = [...optionsEl.querySelectorAll("[data-option-index]")];
+  if (!buttons.length) return;
+  const safeIndex = (index + buttons.length) % buttons.length;
+  updateFocusedOption(safeIndex);
+
+  const customInput = optionsEl.querySelector(`[data-custom-option-index="${safeIndex}"]`);
+  if (preferCustomInput && customInput) {
+    customInput.focus();
+    return;
+  }
+
+  buttons[safeIndex]?.focus();
+}
+
+function handleCustomInputKeys(event, optionIndex) {
+  if (!isQuestionSettingEnabled("keyboardControls", true)) return;
+  const buttons = [...optionsEl.querySelectorAll("[data-option-index]")];
+  if (!buttons.length) return;
+
+  if (event.key === "ArrowUp") {
+    event.preventDefault();
+    focusSelectControl(optionIndex - 1);
+    return;
+  }
+
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    focusSelectControl(optionIndex + 1);
+    return;
+  }
+
+  if (event.key === "Enter") {
+    event.preventDefault();
+    selectOption(optionIndex);
+    nextQuestion();
+  }
 }
 
 function renderAllocation(q) {
@@ -785,11 +825,11 @@ document.addEventListener("keydown", (event) => {
 
   if (event.key === "ArrowDown" || event.key === "ArrowRight") {
     event.preventDefault();
-    updateFocusedOption(focusedOption + 1);
+    focusSelectControl(focusedOption + 1);
   }
   if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
     event.preventDefault();
-    updateFocusedOption(focusedOption - 1);
+    focusSelectControl(focusedOption - 1);
   }
   if (event.key === " ") {
     event.preventDefault();
@@ -797,6 +837,12 @@ document.addEventListener("keydown", (event) => {
   }
   if (event.key === "Enter") {
     event.preventDefault();
+    const customInput = optionsEl.querySelector(`[data-custom-option-index="${focusedOption}"]`);
+    if (customInput && document.activeElement !== customInput) {
+      selectOption(focusedOption);
+      customInput.focus();
+      return;
+    }
     if (selected === null) selectOption(focusedOption);
     else nextQuestion();
   }
