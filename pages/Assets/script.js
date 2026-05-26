@@ -474,11 +474,12 @@ function escapeHtml(value = "") {
 }
 
 function renderSelect(q) {
+  const hasCustomInput = q.customInput !== false;
   const savedCustomTexts = answers[current]?.customTexts || [];
   const savedCustomText = answers[current]?.customAnswer || savedCustomTexts[q.options.length] || savedCustomTexts.find(Boolean) || "";
   const optionMarkup = q.options.map((option, index) => {
     const letter = String.fromCharCode(65 + index);
-    if (!q.customInput) {
+    if (!hasCustomInput) {
       return `<button class="option" data-option-index="${index}" type="button">${escapeHtml(option)}</button>`;
     }
     return `
@@ -492,7 +493,7 @@ function renderSelect(q) {
   }).join("");
 
   const otherIndex = q.options.length;
-  const otherMarkup = q.customInput ? `
+  const otherMarkup = hasCustomInput ? `
     <div class="option-group other-option-group" data-option-wrapper="${otherIndex}">
       <button class="option option-with-letter" data-option-index="${otherIndex}" type="button">
         <span class="option-letter">${String.fromCharCode(65 + otherIndex)}</span>
@@ -701,8 +702,9 @@ function nextQuestion(fromTimer = false) {
         return;
       }
     }
-    const customAnswer = q.customInput ? getCustomTextForCurrentQuestion() : "";
-    const savedOptions = q.customInput ? [...q.options, customAnswer || "Others"] : q.options;
+    const hasCustomInput = q.customInput !== false;
+    const customAnswer = hasCustomInput ? getCustomTextForCurrentQuestion() : "";
+    const savedOptions = hasCustomInput ? [...q.options, customAnswer || "Others"] : q.options;
     saveAnswerAtCurrent({
       phase: q.phaseId,
       type: q.type,
@@ -712,7 +714,7 @@ function nextQuestion(fromTimer = false) {
       selected,
       values: savedOptions.map((_, index) => index === selected ? 10 : 0),
       customAnswer,
-      customTexts: q.customInput ? getCustomTextsForCurrentQuestion() : []
+      customTexts: hasCustomInput ? getCustomTextsForCurrentQuestion() : []
     });
   } else {
     const inputs = [...document.querySelectorAll("[data-allocation-index]")];
