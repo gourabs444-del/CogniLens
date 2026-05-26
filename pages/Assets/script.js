@@ -10,7 +10,7 @@ const phaseDefinitions = [
         q: "When starting a task, you usually:",
         options: ["Make a clear plan first", "Start and adjust as you go"],
         traits: ["J", "P"],
-        explain: "Simple meaning:\nThis checks whether you naturally prefer planning before action or learning while moving."
+        explain: "Simple meaning:\nThis checks whether you feel safer with structure or whether you learn better by starting. Real-life analogy: before a trip, some people make a route, packing list, and timing plan first. Others start the journey and adjust when they see traffic, weather, or new options."
       },
       {
         type: "select",
@@ -18,7 +18,7 @@ const phaseDefinitions = [
         q: "When making decisions, you rely more on:",
         options: ["Logic and facts", "Feelings and situation"],
         traits: ["T", "F"],
-        explain: "Simple meaning:\nThis checks whether your first decision filter is objective logic or personal/emotional context."
+        explain: "Simple meaning:\nThis checks whether your first filter is objective reasoning or emotional context. Real-life analogy: when buying a phone, a logic-first person compares price, battery, camera, and performance. A feelings-first person also asks whether it feels comfortable, suits their lifestyle, or makes them happy."
       },
       {
         type: "select",
@@ -26,7 +26,7 @@ const phaseDefinitions = [
         q: "You're more interested in:",
         options: ["Practical things that are directly useful", "Ideas and possibilities"],
         traits: ["S", "N"],
-        explain: "Simple meaning:\nThis checks whether your attention goes first to real-world usefulness or future possibilities."
+        explain: "Simple meaning:\nThis checks whether your mind first looks for practical use or future possibilities. Real-life analogy: if someone shows you a new gadget, one person asks, 'How will this help me today?' Another asks, 'What could this become in the future?'"
       },
       {
         type: "select",
@@ -34,7 +34,7 @@ const phaseDefinitions = [
         q: "In your free time, you naturally:",
         options: ["Stay engaged on your own", "Connect with others"],
         traits: ["I", "E"],
-        explain: "Simple meaning:\nThis checks whether your energy usually refills through solo focus or social connection."
+        explain: "Simple meaning:\nThis checks how your social battery usually recharges. Real-life analogy: after a busy week, some people recover by gaming, music, coding, or being alone. Others feel alive again after calling friends, chatting, or going out."
       },
       {
         type: "select",
@@ -42,7 +42,7 @@ const phaseDefinitions = [
         q: "When there's a deadline:",
         options: ["You finish early or on time", "You work best close to the deadline"],
         traits: ["J", "P"],
-        explain: "Simple meaning:\nThis checks whether you naturally close tasks early or rely on last-minute pressure."
+        explain: "Simple meaning:\nThis checks your natural deadline style. Real-life analogy: before an exam or project, some people finish early so their mind feels clear. Others work best when the deadline is close because pressure gives them speed and focus."
       },
       {
         type: "select",
@@ -50,7 +50,7 @@ const phaseDefinitions = [
         q: "When something is unclear:",
         options: ["You decide quickly and move on", "You explore more before deciding"],
         traits: ["J", "P"],
-        explain: "Simple meaning:\nThis checks whether you prefer closure quickly or keeping options open until more is explored."
+        explain: "Simple meaning:\nThis checks whether you prefer quick closure or deeper exploration. Real-life analogy: when choosing a restaurant, one person quickly picks a decent place and moves on. Another checks reviews, menu, distance, and mood before deciding."
       }
     ]
   },
@@ -61,33 +61,38 @@ const phaseDefinitions = [
     data: [
       {
         type: "select",
-        q: "Tum generally kya dekhna pasand karte ho?",
+        q: "What do you usually prefer to watch?",
         options: ["Crime, strategy, mind games", "Love, emotions, relationships", "Real-life / realistic stories"],
-        traits: ["T", "F", "S"]
+        traits: ["T", "F", "S"],
+        explain: "Simple meaning:\nThis checks what naturally holds your attention. Real-life analogy: when you open a streaming app, your first choice can show your mental flavor. Strategy and mind games point toward analysis, emotional stories point toward people and feelings, and realistic stories point toward practical real-world interest."
       },
       {
         type: "select",
-        q: "Free time milte hi tum kya karte ho?",
-        options: ["Apne aap kuch karta hu (game, music, coding, etc.)", "Kisi se baat karta hu ya social hota hu"],
-        traits: ["I", "E"]
+        q: "What do you usually do when you get free time?",
+        options: ["Do something on your own (gaming, music, coding, etc.)", "Talk to someone or socialize"],
+        traits: ["I", "E"],
+        explain: "Simple meaning:\nThis checks where your energy naturally goes when nobody is forcing you. Real-life analogy: after school or work, some people instantly wear headphones, open a game, learn something, or create alone. Others feel better by messaging, calling, or meeting people."
       },
       {
         type: "select",
-        q: "Tumhe zyada kis type ki baatein interesting lagti hain?",
-        options: ["Future, ideas, possibilities", "Real life, practical cheezein"],
-        traits: ["N", "S"]
+        q: "What kind of topics feel more interesting to you?",
+        options: ["Future, ideas, possibilities", "Real life, practical things"],
+        traits: ["N", "S"],
+        explain: "Simple meaning:\nThis checks whether your mind enjoys imagination and patterns or practical reality. Real-life analogy: in a conversation, one person enjoys discussing future technology, theories, and what could happen. Another enjoys useful tips, real examples, and what can be done right now."
       },
       {
         type: "select",
-        q: "Tumhe kaunsa type ka content boring lagta hai?",
+        q: "What type of content feels boring to you?",
         options: ["Slow emotional stories", "Simple real-life / daily stuff"],
-        traits: ["T", "N"]
+        traits: ["T", "N"],
+        explain: "Simple meaning:\nThis is a reverse signal. It checks what your mind naturally rejects when content feels too slow or too ordinary. Real-life analogy: some people get bored when a movie spends too much time on feelings. Others get bored when the story is too normal and want bigger ideas, twists, or imagination."
       },
       {
         type: "select",
-        q: "Tumhe zyada kya pasand hai?",
+        q: "What do you prefer more?",
         options: ["Solo activities (gaming, editing, learning)", "Group activities (friends, chatting)"],
-        traits: ["I", "E"]
+        traits: ["I", "E"],
+        explain: "Simple meaning:\nThis checks whether your natural comfort zone is solo focus or group energy. Real-life analogy: on a free evening, one person feels happiest improving a skill, editing, gaming, or learning alone. Another feels happiest when friends are involved and the moment becomes social."
       }
     ]
   },
@@ -98,33 +103,38 @@ const phaseDefinitions = [
     data: [
       {
         type: "select",
-        q: "Lambe time tak logon ke sath rehne ke baad tum kya feel karte ho?",
-        options: ["Thak jata hu", "Energetic feel karta hu"],
-        traits: ["I", "E"]
+        q: "After spending a long time with people, what do you usually feel?",
+        options: ["I feel tired", "I feel energetic"],
+        traits: ["I", "E"],
+        explain: "Simple meaning:\nThis checks what social interaction does to your energy. Real-life analogy: after a long family function or hangout, some people need silence and personal space to recover. Others come home more excited and feel like the interaction charged them."
       },
       {
         type: "select",
-        q: "Sach batao: tum zyada kaam kab complete karte ho?",
-        options: ["Time se pehle", "Last moment"],
-        traits: ["J", "P"]
+        q: "Honestly, when do you usually complete most of your work?",
+        options: ["Before the deadline", "At the last moment"],
+        traits: ["J", "P"],
+        explain: "Simple meaning:\nThis checks your real working rhythm, not your ideal answer. Real-life analogy: for an assignment, some people finish early and relax later. Others wait until the pressure is real, then suddenly become fast and focused."
       },
       {
         type: "select",
-        q: "Decision lete waqt tum zyada kispe depend karte ho?",
+        q: "When making a decision, what do you depend on more?",
         options: ["Logic", "Feelings"],
-        traits: ["T", "F"]
+        traits: ["T", "F"],
+        explain: "Simple meaning:\nThis checks what you trust first when both facts and emotions are present. Real-life analogy: if two friends are arguing, one person asks, 'What exactly happened and what is fair?' Another asks, 'Who is hurt and how can this be handled gently?'"
       },
       {
         type: "select",
-        q: "Agar tum ek company start karo, tum kispe zyada focus karoge?",
+        q: "If you started a company, what would you focus on more?",
         options: ["Profit, strategy, logical growth", "Employees, culture, people satisfaction"],
-        traits: ["T", "F"]
+        traits: ["T", "F"],
+        explain: "Simple meaning:\nThis checks how you balance results and people when responsibility gets bigger. Real-life analogy: as a founder, one person first looks at revenue, market position, systems, and growth. Another first asks whether the team feels respected, motivated, and emotionally safe."
       },
       {
         type: "select",
-        q: "Agar tum ek political party lead karo, tum kispe focus karoge?",
+        q: "If you led a political party, what would you focus on more?",
         options: ["Strong decisions, rules, system", "Public emotions, people connect"],
-        traits: ["T", "F"]
+        traits: ["T", "F"],
+        explain: "Simple meaning:\nThis asks the same trait in a different context to check consistency. Real-life analogy: a strict leader may focus on law, order, discipline, and systems. A people-connect leader may focus on public emotion, trust, belonging, and how people feel about decisions."
       }
     ]
   },
@@ -135,27 +145,31 @@ const phaseDefinitions = [
     data: [
       {
         type: "select",
-        q: "Sach bolne se agar relation toot jaye, kya tum sach bologe?",
-        options: ["Haan", "Na"],
-        traits: ["T", "F"]
+        q: "If telling the truth could break a relationship, would you still tell the truth?",
+        options: ["Yes", "No"],
+        traits: ["T", "F"],
+        explain: "Simple meaning:\nThis checks how you handle truth when emotions are at risk. Real-life analogy: imagine your close friend asks for honest feedback that may hurt them. A truth-first person says it clearly because honesty matters. A relationship-protective person may soften it, delay it, or avoid saying it directly."
       },
       {
         type: "select",
-        q: "Tum zyada kya choose karoge?",
-        options: ["Future control karna", "Present enjoy karna"],
-        traits: ["J", "P"]
+        q: "What would you choose more often?",
+        options: ["Controlling the future", "Enjoying the present"],
+        traits: ["J", "P"],
+        explain: "Simple meaning:\nThis checks whether your mind wants security and planning or freedom and experience. Real-life analogy: one person saves money, plans the next five years, and wants control. Another wants to enjoy today's moment, travel, explore, and not over-plan everything."
       },
       {
         type: "select",
-        q: "Problem aane par tum kya karte ho?",
-        options: ["Face karna", "Avoid karna"],
-        traits: ["E", "I"]
+        q: "When a problem appears, what do you usually do?",
+        options: ["Face it", "Avoid it"],
+        traits: ["E", "I"],
+        explain: "Simple meaning:\nThis checks your first reaction to discomfort. Real-life analogy: if there is a difficult call or conflict, some people handle it directly even if it feels uncomfortable. Others step back, delay it, or avoid it until they feel ready."
       },
       {
         type: "select",
-        q: "Tum zyada kya choose karoge?",
-        options: ["Safe rehna", "Risk lena"],
-        traits: ["J", "P"]
+        q: "What would you choose more often?",
+        options: ["Staying safe", "Taking a risk"],
+        traits: ["J", "P"],
+        explain: "Simple meaning:\nThis checks your comfort with uncertainty. Real-life analogy: choosing a stable job is like staying on a known road with clear signs. Taking a risky opportunity is like entering a new road where the reward may be higher, but the outcome is less certain."
       }
     ]
   },
@@ -169,14 +183,14 @@ const phaseDefinitions = [
         q: "In a stressful situation, what do you actually end up doing most of the time?",
         options: ["Slow down and think carefully", "React quickly without overthinking", "Look at what others are doing first"],
         traits: ["T", "P", "E"],
-        explain: "Simple meaning:\nWhen pressure comes, what do you really do?\nNot the perfect answer. Pick the honest answer."
+        explain: "Simple meaning:\nThis checks your real pressure behavior, not the perfect answer. Real-life analogy: when something suddenly goes wrong, some people pause and think, some act immediately, and some look around to understand what others are doing before choosing their move."
       },
       {
         type: "select",
         q: "When things don't go as planned, what is your natural reaction?",
         options: ["Try to fix it logically step by step", "Adapt quickly and try something else", "Wait and observe before acting"],
         traits: ["T", "P", "I"],
-        explain: "Simple meaning:\nYour plan breaks.\nDo you fix step by step, try a new way, or wait and watch first?"
+        explain: "Simple meaning:\nThis checks how you recover when your plan breaks. Real-life analogy: if your travel plan fails, one person rebuilds the route step by step, another quickly changes destination or method, and another waits, observes, and decides after more clarity."
       }
     ]
   },
@@ -190,14 +204,14 @@ const phaseDefinitions = [
         q: "You made a decision that logically made sense, but people reacted negatively. What do you do next?",
         options: ["Stick with the decision because it was logically correct", "Adjust the decision to improve people's reaction", "Pause and rethink everything again"],
         traits: ["T", "F", "N"],
-        explain: "Simple meaning:\nYour choice made sense, but people got upset.\nDo you keep it, change it, or stop and think again?"
+        explain: "Simple meaning:\nThis checks how you respond when logic and people's reactions clash. Real-life analogy: imagine you made a fair rule in a group project, but everyone feels upset. One person keeps the rule because it is logically correct, another adjusts it for people, and another pauses to rethink the whole decision."
       },
       {
         type: "select",
         q: "You followed your instinct, but it turned out wrong. What is your natural response?",
         options: ["Trust logic more next time", "Still trust your instinct", "Balance both depending on situation"],
         traits: ["T", "N", "J"],
-        explain: "Simple meaning:\nYour feeling told you to do something, but it went wrong.\nNext time, do you trust logic, trust feeling again, or use both?"
+        explain: "Simple meaning:\nThis checks how you learn after instinct fails. Real-life analogy: if you trusted your gut in a match, investment, or friendship choice and it went wrong, you might switch to logic, still trust your instinct, or learn to balance both next time."
       }
     ]
   }
