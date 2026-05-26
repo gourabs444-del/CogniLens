@@ -1,209 +1,9 @@
-const phaseDefinitions = [
-  {
-    id: "P1",
-    name: "Phase 1 - Core",
-    displayCount: "6 Questions",
-    data: [
-      {
-        type: "select",
-        customInput: true,
-        q: "When starting a task, you usually:",
-        options: ["Make a clear plan first", "Start and adjust as you go"],
-        traits: ["J", "P"],
-        explain: "Simple meaning:\nThis checks whether you naturally prefer planning before action or learning while moving."
-      },
-      {
-        type: "select",
-        customInput: true,
-        q: "When making decisions, you rely more on:",
-        options: ["Logic and facts", "Feelings and situation"],
-        traits: ["T", "F"],
-        explain: "Simple meaning:\nThis checks whether your first decision filter is objective logic or personal/emotional context."
-      },
-      {
-        type: "select",
-        customInput: true,
-        q: "You're more interested in:",
-        options: ["Practical things that are directly useful", "Ideas and possibilities"],
-        traits: ["S", "N"],
-        explain: "Simple meaning:\nThis checks whether your attention goes first to real-world usefulness or future possibilities."
-      },
-      {
-        type: "select",
-        customInput: true,
-        q: "In your free time, you naturally:",
-        options: ["Stay engaged on your own", "Connect with others"],
-        traits: ["I", "E"],
-        explain: "Simple meaning:\nThis checks whether your energy usually refills through solo focus or social connection."
-      },
-      {
-        type: "select",
-        customInput: true,
-        q: "When there's a deadline:",
-        options: ["You finish early or on time", "You work best close to the deadline"],
-        traits: ["J", "P"],
-        explain: "Simple meaning:\nThis checks whether you naturally close tasks early or rely on last-minute pressure."
-      },
-      {
-        type: "select",
-        customInput: true,
-        q: "When something is unclear:",
-        options: ["You decide quickly and move on", "You explore more before deciding"],
-        traits: ["J", "P"],
-        explain: "Simple meaning:\nThis checks whether you prefer closure quickly or keeping options open until more is explored."
-      }
-    ]
-  },
-  {
-    id: "P2",
-    name: "Phase 2 - Preferences",
-    displayCount: "5 Questions",
-    data: [
-      {
-        type: "select",
-        q: "Tum generally kya dekhna pasand karte ho?",
-        options: ["Crime, strategy, mind games", "Love, emotions, relationships", "Real-life / realistic stories"],
-        traits: ["T", "F", "S"]
-      },
-      {
-        type: "select",
-        q: "Free time milte hi tum kya karte ho?",
-        options: ["Apne aap kuch karta hu (game, music, coding, etc.)", "Kisi se baat karta hu ya social hota hu"],
-        traits: ["I", "E"]
-      },
-      {
-        type: "select",
-        q: "Tumhe zyada kis type ki baatein interesting lagti hain?",
-        options: ["Future, ideas, possibilities", "Real life, practical cheezein"],
-        traits: ["N", "S"]
-      },
-      {
-        type: "select",
-        q: "Tumhe kaunsa type ka content boring lagta hai?",
-        options: ["Slow emotional stories", "Simple real-life / daily stuff"],
-        traits: ["T", "N"]
-      },
-      {
-        type: "select",
-        q: "Tumhe zyada kya pasand hai?",
-        options: ["Solo activities (gaming, editing, learning)", "Group activities (friends, chatting)"],
-        traits: ["I", "E"]
-      }
-    ]
-  },
-  {
-    id: "P3",
-    name: "Phase 3 - Moral",
-    displayCount: "3 Questions",
-    data: [
-      {
-        type: "select",
-        q: "If you had to choose between saving one close person or five strangers, what would you do?",
-        options: ["Save five strangers", "Save the close person", "It depends on the situation"],
-        traits: ["F", "I", "N"],
-        explain: "Simple meaning:\nImagine you can help only one side.\nOne choice helps more people.\nOne choice helps someone close.\nThe third means you need more details first."
-      },
-      {
-        type: "select",
-        q: "If telling the truth could hurt someone badly, what would you do?",
-        options: ["Tell the truth anyway", "Hide or soften the truth", "Choose based on situation"],
-        traits: ["T", "F", "N"],
-        explain: "Simple meaning:\nSometimes truth can hurt feelings.\nOne answer says truth first.\nOne answer says protect feelings.\nOne answer says decide after seeing the situation."
-      },
-      {
-        type: "select",
-        q: "If breaking a rule could help many people, what would you do?",
-        options: ["Follow the rule no matter what", "Break the rule to help others", "Decide based on the situation"],
-        traits: ["J", "F", "N"],
-        explain: "Simple meaning:\nA rule says no, but people need help.\nOne answer follows the rule.\nOne answer helps people.\nOne answer checks the full situation first."
-      }
-    ]
-  },
-  {
-    id: "P4",
-    name: "Phase 4 - Pressure",
-    displayCount: "2 Timed Questions",
-    data: [
-      {
-        type: "select",
-        timeLimit: 10,
-        q: "Quick! Someone insults you publicly. What do you do first?",
-        options: ["Ignore and stay calm", "Respond immediately", "Think before reacting"],
-        traits: ["I", "E", "T"],
-        explain: "Simple meaning:\nSomeone says something bad in front of people.\nWhat is your first quick reaction?\nChoose the answer that feels most natural."
-      },
-      {
-        type: "select",
-        timeLimit: 10,
-        q: "You must decide quickly. Trust what?",
-        options: ["Logic", "Gut feeling", "People around you"],
-        traits: ["T", "N", "F"],
-        explain: "Simple meaning:\nYou must choose fast.\nWhat do you trust first?\nLogic = facts. Gut = inner feeling. People = what others say."
-      }
-    ]
-  },
-  {
-    id: "P5",
-    name: "Phase 5 - Hidden",
-    displayCount: "2 Questions",
-    data: [
-      {
-        type: "select",
-        q: "In a stressful situation, what do you actually end up doing most of the time?",
-        options: ["Slow down and think carefully", "React quickly without overthinking", "Look at what others are doing first"],
-        traits: ["T", "P", "E"],
-        explain: "Simple meaning:\nWhen pressure comes, what do you really do?\nNot the perfect answer. Pick the honest answer."
-      },
-      {
-        type: "select",
-        q: "When things don't go as planned, what is your natural reaction?",
-        options: ["Try to fix it logically step by step", "Adapt quickly and try something else", "Wait and observe before acting"],
-        traits: ["T", "P", "I"],
-        explain: "Simple meaning:\nYour plan breaks.\nDo you fix step by step, try a new way, or wait and watch first?"
-      }
-    ]
-  },
-  {
-    id: "P6",
-    name: "Phase 6 - Final",
-    displayCount: "2 Questions",
-    data: [
-      {
-        type: "select",
-        q: "You made a decision that logically made sense, but people reacted negatively. What do you do next?",
-        options: ["Stick with the decision because it was logically correct", "Adjust the decision to improve people's reaction", "Pause and rethink everything again"],
-        traits: ["T", "F", "N"],
-        explain: "Simple meaning:\nYour choice made sense, but people got upset.\nDo you keep it, change it, or stop and think again?"
-      },
-      {
-        type: "select",
-        q: "You followed your instinct, but it turned out wrong. What is your natural response?",
-        options: ["Trust logic more next time", "Still trust your instinct", "Balance both depending on situation"],
-        traits: ["T", "N", "J"],
-        explain: "Simple meaning:\nYour feeling told you to do something, but it went wrong.\nNext time, do you trust logic, trust feeling again, or use both?"
-      }
-    ]
-  }
-];
-
-const typeTitles = {
-  ISTJ: "Practical Systems Guardian",
-  ISFJ: "Supportive Detail Keeper",
-  INFJ: "Insightful Purpose Builder",
-  INTJ: "Strategic Systems Thinker",
-  ISTP: "Precise Tactical Solver",
-  ISFP: "Grounded Creative Observer",
-  INFP: "Reflective Values Explorer",
-  INTP: "Analytical Pattern Architect",
-  ESTP: "Action-Oriented Problem Mover",
-  ESFP: "Expressive Experience Driver",
-  ENFP: "Possibility-Focused Connector",
-  ENTP: "Inventive Challenge Solver",
-  ESTJ: "Structured Execution Leader",
-  ESFJ: "Collaborative Support Organizer",
-  ENFJ: "People-Centered Vision Guide",
-  ENTJ: "Decisive Strategy Builder"
-};
+﻿const phaseDefinitions = window.COGNILENS_PHASES || window.COGNILENS_PHASE_DEFINITIONS || [];
+if (!phaseDefinitions.length) { throw new Error('CogniLens phase files were not loaded.'); }
+const RESULT_PAGE_PATH = window.COGNILENS_RESULT_PATH
+  || (window.location.pathname.includes("/mbti-system/")
+    ? "../../../pages/dashboard/result.html"
+    : "../dashboard/result.html");
 
 const phaseStarts = [];
 const questions = [];
@@ -762,36 +562,10 @@ function goToQuestionFromHistory(index) {
 }
 
 function buildResult() {
-  const totals = { I: 0, E: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 };
-
-  answers.forEach((answer) => {
-    answer.values.forEach((value, index) => {
-      const trait = answer.traits[index];
-      if (trait && totals[trait] !== undefined) totals[trait] += value;
-    });
-  });
-
-  const score = typeof getPersonalityResult === "function"
-    ? getPersonalityResult(totals)
-    : { type: "INTJ", confidence: 0, breakdown: {}, warning: null };
-  const metrics = typeof getPersonalityMetrics === "function"
-    ? getPersonalityMetrics(totals)
-    : { I: 50, N: 50, T: 50, J: 50 };
-  const type = score.type;
-  const strongest = Object.entries(metrics).sort((a, b) => Math.abs(b[1] - 50) - Math.abs(a[1] - 50))[0];
-
-  return {
-    type,
-    confidence: score.confidence,
-    breakdown: score.breakdown,
-    warning: score.warning,
-    metrics,
-    totals,
-    answers,
-    title: typeof getPersonalityTitle === "function" ? getPersonalityTitle(type) : (typeTitles[type] || `${type} Personality Profile`),
-    summary: `Your result is generated from six assessment phases with ${score.confidence}% confidence. The strongest current signal is ${strongest[0]} at ${strongest[1]}%.`,
-    tags: ["Six-phase", "Self-aware", "Story-ready"]
-  };
+  if (!window.CogniLensCollector?.buildResult) {
+    throw new Error('CogniLens collector was not loaded.');
+  }
+  return window.CogniLensCollector.buildResult(answers);
 }
 
 function finishTest() {
@@ -808,7 +582,7 @@ function finishTest() {
     </section>
   `;
   setTimeout(() => {
-    window.location.href = "../dashboard/result.html";
+    window.location.href = RESULT_PAGE_PATH;
   }, 650);
 }
 
@@ -874,3 +648,4 @@ const restoredAssessmentProgress = restoreAssessmentProgress();
 renderOverview();
 writeQuestionHistory(true);
 showPhaseOverlay(phaseDefinitions[questions[current]?.phaseIndex || 0], current === 0 && !restoredAssessmentProgress);
+

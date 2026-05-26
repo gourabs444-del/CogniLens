@@ -1,0 +1,24 @@
+QUESTION_MAPPINGS = [
+  {"id": "P1Q1", "phase": "P1", "type": "select", "traits": ["J", "P"]},
+  {"id": "P1Q2", "phase": "P1", "type": "select", "traits": ["T", "F"]},
+  {"id": "P1Q3", "phase": "P1", "type": "select", "traits": ["S", "N"]},
+  {"id": "P1Q4", "phase": "P1", "type": "select", "traits": ["I", "E"]},
+  {"id": "P1Q5", "phase": "P1", "type": "select", "traits": ["J", "P"]},
+  {"id": "P1Q6", "phase": "P1", "type": "select", "traits": ["J", "P"]},
+  {"id": "P2Q1", "phase": "P2", "type": "select", "traits": ["T", "F", "S"]},
+  {"id": "P2Q2", "phase": "P2", "type": "select", "traits": ["I", "E"]},
+  {"id": "P2Q3", "phase": "P2", "type": "select", "traits": ["N", "S"]},
+  {"id": "P2Q4", "phase": "P2", "type": "select", "traits": ["T", "N"]},
+  {"id": "P2Q5", "phase": "P2", "type": "select", "traits": ["I", "E"]},
+  {"id": "P3Q1", "phase": "P3", "type": "select", "traits": ["F", "I", "N"]},
+  {"id": "P3Q2", "phase": "P3", "type": "select", "traits": ["T", "F", "N"]},
+  {"id": "P3Q3", "phase": "P3", "type": "select", "traits": ["J", "F", "N"]},
+  {"id": "P4Q1", "phase": "P4", "type": "select", "traits": ["I", "E", "T"]},
+  {"id": "P4Q2", "phase": "P4", "type": "select", "traits": ["T", "N", "F"]},
+  {"id": "P5Q1", "phase": "P5", "type": "select", "traits": ["T", "P", "E"]},
+  {"id": "P5Q2", "phase": "P5", "type": "select", "traits": ["T", "P", "I"]},
+  {"id": "P6Q1", "phase": "P6", "type": "select", "traits": ["T", "F", "N"]},
+  {"id": "P6Q2", "phase": "P6", "type": "select", "traits": ["T", "N", "J"]},
+]
+
+QUESTION_MAPPING_BY_ID = {item["id"]: item for item in QUESTION_MAPPINGS}
