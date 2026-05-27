@@ -1145,7 +1145,7 @@ function normalizeResult(data) {
     T: clampMetric(rawMetrics?.T, fallbackResult.metrics.T),
     J: clampMetric(rawMetrics?.J, fallbackResult.metrics.J)
   };
-  const type = score?.type || buildTypeFromMetrics(metrics);
+  const type = data.type || score?.type || buildTypeFromMetrics(metrics);
   const generatedTitle = typeof getPersonalityTitle === "function"
     ? getPersonalityTitle(type)
     : (typeTitles[type] || `${type} Personality Profile`);
@@ -1156,7 +1156,7 @@ function normalizeResult(data) {
     ...data,
     metrics,
     type,
-    confidence: score?.confidence ?? data.confidence ?? fallbackResult.confidence,
+    confidence: data.confidence ?? score?.confidence ?? fallbackResult.confidence,
     breakdown: score?.breakdown || data.breakdown || fallbackResult.breakdown,
     warning: score?.warning ?? data.warning ?? fallbackResult.warning,
     title: shouldUseGeneratedTitle ? generatedTitle : data.title,
@@ -1227,19 +1227,29 @@ function buildProfileSummary(preferences) {
   const potentialLine = potential
     ? ` Your highest-scope zone is ${potential.focus.toLowerCase()}, where your natural pattern can turn into visible progress.`
     : "";
-  return `Your ${result.type} pattern suggests a ${result.title.toLowerCase()} style. You currently lean most toward ${primary.label.toLowerCase()} at ${primary.value}%, with ${secondary.label.toLowerCase()} close behind. In practice, that points to ${decision?.label.toLowerCase() || "balanced decision-making"} decisions and a ${lifestyle?.label.toLowerCase() || "balanced"} approach to planning.${potentialLine}`;
+  const backendSummary = result.source === "backend" && result.summary
+    ? result.summary
+    : `Your ${result.type} pattern suggests a ${result.title.toLowerCase()} style. You currently lean most toward ${primary.label.toLowerCase()} at ${primary.value}%, with ${secondary.label.toLowerCase()} close behind. In practice, that points to ${decision?.label.toLowerCase() || "balanced decision-making"} decisions and a ${lifestyle?.label.toLowerCase() || "balanced"} approach to planning.`;
+  const honestyLine = Number.isFinite(Number(result.honesty))
+    ? ` Honesty signal is ${Math.round(Number(result.honesty))}%.`
+    : "";
+  const maskLine = result.mask?.maskLikely
+    ? " A mask-vs-real split was detected, so confidence is intentionally more conservative."
+    : "";
+  return `${backendSummary}${honestyLine}${maskLine}${potentialLine}`;
 }
 
 function getProfileCapsules(preferences) {
   const ranked = [...preferences].sort((a, b) => b.value - a.value);
   const clarity = Number.isFinite(Number(result.confidence)) ? `${result.confidence}% clarity` : "Profile ready";
+  const honesty = Number.isFinite(Number(result.honesty)) ? `${Math.round(Number(result.honesty))}% honesty` : "Hybrid scan";
   const focus = potential?.topFields?.[0]?.shortTitle || "Potential map";
   return [
     { text: result.title, primary: true },
     { text: `${ranked[0].label} ${ranked[0].value}%` },
     { text: `${focus} scope` },
     { text: clarity },
-    { text: "Story-ready" }
+    { text: honesty }
   ];
 }
 

@@ -1,4 +1,6 @@
-﻿const phaseDefinitions = window.COGNILENS_PHASES || window.COGNILENS_PHASE_DEFINITIONS || [];
+const ACTIVE_PHASE_IDS = new Set(["P1", "P2", "P3", "P4"]);
+const loadedPhaseDefinitions = window.COGNILENS_PHASES || window.COGNILENS_PHASE_DEFINITIONS || [];
+const phaseDefinitions = loadedPhaseDefinitions.filter((phase) => ACTIVE_PHASE_IDS.has(phase.id));
 if (!phaseDefinitions.length) { throw new Error('CogniLens phase files were not loaded.'); }
 const RESULT_PAGE_PATH = window.COGNILENS_RESULT_PATH
   || (window.location.pathname.includes("/mbti-system/")
@@ -20,7 +22,9 @@ let focusedOption = 0;
 let answers = [];
 let timerId = null;
 let timerRemaining = 0;
+let questionStartedAt = 0;
 let isRestoringHistory = false;
+let isFinishing = false;
 let maxUnlockedPhaseIndex = 0;
 const COGNILENS_ASSESSMENT_PROGRESS_KEY = "cognilensAssessmentProgress";
 
@@ -119,6 +123,10 @@ function currentPhase() {
   return phaseDefinitions[questions[current]?.phaseIndex || 0];
 }
 
+function isRapidFirePhase(phase = currentPhase()) {
+  return phase?.id === "P4";
+}
+
 function getMaxUnlockedPhaseIndex() {
   return maxUnlockedPhaseIndex;
 }
@@ -127,7 +135,8 @@ function renderPipeline() {
   pipeline.innerHTML = phaseDefinitions.map((phase, index) => {
     const start = phaseStarts[index];
     const end = start + phase.data.length;
-    const isUnlocked = index <= getMaxUnlockedPhaseIndex();
+    const lockedByRapidFire = isRapidFirePhase() && index !== (questions[current]?.phaseIndex || 0);
+    const isUnlocked = index <= getMaxUnlockedPhaseIndex() && !lockedByRapidFire;
     let cls = "";
     if (current >= end) cls = "done";
     else if (current >= start) cls = "active";
@@ -176,7 +185,10 @@ function startTimer(seconds) {
 
     if (timerRemaining <= 0) {
       stopTimer();
-      if (selected === null) selectOption(2);
+      if (selected === null) {
+        const optionCount = questions[current]?.options?.length || 1;
+        selectOption(Math.min(focusedOption, optionCount - 1));
+      }
       nextQuestion(true);
     }
   }, 1000);
@@ -184,7 +196,7 @@ function startTimer(seconds) {
 
 function getPhaseIntroText(phase, isInitial) {
   if (isInitial) {
-    return "You will move through 6 short phases. Each phase unlocks after you complete the previous one, and you can come back to completed phases from the phase buttons.";
+    return "You will move through 4 phases: self-image, hidden preferences, contradiction checks, and rapid instinct choices. Phase 4 locks navigation so answers stay instinctive.";
   }
 
   const timedQuestions = phase.data.filter((item) => item.timeLimit);
@@ -203,7 +215,7 @@ function getPhaseIntroText(phase, isInitial) {
 function showPhaseOverlay(phase, isInitial = false) {
   app.classList.add("blur");
   phaseScreen.classList.add("active");
-  phaseBigTitle.textContent = isInitial ? "6 smooth phases" : `${phase.id} starting`;
+  phaseBigTitle.textContent = isInitial ? "4 analysis phases" : `${phase.id} starting`;
   phaseSubtitle.textContent = getPhaseIntroText(phase, isInitial);
   phaseStartButton.textContent = isInitial ? "Start Phase 1" : `Continue to ${phase.id}`;
   phaseStartButton.hidden = false;
@@ -239,6 +251,7 @@ function loadQuestion(showTransition = false) {
 
   renderPipeline();
   updateProgress();
+  questionStartedAt = performance.now();
 
   questionTitle.textContent = `Q${current + 1}`;
   questionText.textContent = q.q;
@@ -248,11 +261,12 @@ function loadQuestion(showTransition = false) {
 
   restoreAnswerForCurrentQuestion();
 
-  if (q.timeLimit) startTimer(10);
+  if (q.timeLimit) startTimer(q.timeLimit);
 }
 
 function goToPhase(phaseIndex) {
   if (!Number.isFinite(phaseIndex) || phaseIndex > getMaxUnlockedPhaseIndex()) return;
+  if (isRapidFirePhase() && phaseIndex !== (questions[current]?.phaseIndex || 0)) return;
   const targetIndex = phaseStarts[phaseIndex];
   if (targetIndex === undefined) return;
   stopTimer();
@@ -493,28 +507,45 @@ function handleAllocationKeys(event, index, inputs) {
 function nextQuestion(fromTimer = false) {
   const q = questions[current];
   errorEl.textContent = "";
+  const reactionTimeMs = questionStartedAt ? Math.max(0, Math.round(performance.now() - questionStartedAt)) : null;
 
   if (q.type === "select") {
     if (selected === null) {
-      if (fromTimer) selectOption(2);
+      if (fromTimer) {
+        const optionCount = q.options?.length || 1;
+        selectOption(Math.min(focusedOption, optionCount - 1));
+      }
       else {
         errorEl.textContent = "Select one option to continue.";
         return;
       }
     }
     const hasCustomInput = q.customInput !== false;
-    const customAnswer = hasCustomInput ? getCustomTextForCurrentQuestion() : "";
+    const customOptionIndex = q.options.length;
+    const selectedCustomAnswer = hasCustomInput && selected === customOptionIndex;
+    const customAnswer = selectedCustomAnswer ? getCustomTextForCurrentQuestion() : "";
+    if (selectedCustomAnswer && !customAnswer) {
+      errorEl.textContent = "Type your custom answer before continuing.";
+      return;
+    }
     const savedOptions = hasCustomInput ? [...q.options, customAnswer || "Others"] : q.options;
     saveAnswerAtCurrent({
+      id: q.id,
       phase: q.phaseId,
       type: q.type,
       question: q.q,
       options: savedOptions,
       traits: q.traits,
       selected,
+      selectedLabel: savedOptions[selected] || "",
       values: savedOptions.map((_, index) => index === selected ? 10 : 0),
       customAnswer,
-      customTexts: hasCustomInput ? getCustomTextsForCurrentQuestion() : []
+      customTexts: hasCustomInput ? getCustomTextsForCurrentQuestion() : [],
+      reactionTimeMs,
+      timeLimitMs: q.timeLimit ? q.timeLimit * 1000 : null,
+      timedOut: Boolean(fromTimer && q.timeLimit),
+      questionIndex: current,
+      phaseIndex: q.phaseIndex
     });
   } else {
     const inputs = [...document.querySelectorAll("[data-allocation-index]")];
@@ -529,12 +560,18 @@ function nextQuestion(fromTimer = false) {
     }
 
     saveAnswerAtCurrent({
+      id: q.id,
       phase: q.phaseId,
       type: q.type,
       question: q.q,
       options: q.options,
       traits: q.traits,
-      values
+      values,
+      reactionTimeMs,
+      timeLimitMs: q.timeLimit ? q.timeLimit * 1000 : null,
+      timedOut: Boolean(fromTimer && q.timeLimit),
+      questionIndex: current,
+      phaseIndex: q.phaseIndex
     });
   }
 
@@ -555,6 +592,10 @@ function nextQuestion(fromTimer = false) {
 
 function goToQuestionFromHistory(index) {
   const safeIndex = Math.max(0, Math.min(Number(index) || 0, questions.length - 1));
+  if (isRapidFirePhase() && safeIndex < current) {
+    writeQuestionHistory(true);
+    return;
+  }
   isRestoringHistory = true;
   stopTimer();
   hidePhaseOverlay();
@@ -570,19 +611,38 @@ function buildResult() {
   return window.CogniLensCollector.buildResult(answers);
 }
 
-function finishTest() {
+async function analyzeResult() {
+  const localResult = buildResult();
+  if (!window.CogniLensCollector?.analyzeWithBackend) return localResult;
+
+  try {
+    return await window.CogniLensCollector.analyzeWithBackend(answers, localResult);
+  } catch (error) {
+    return {
+      ...localResult,
+      source: "local-fallback",
+      apiWarning: error?.message || "Backend analysis unavailable.",
+      tags: [...(localResult.tags || []), "Local fallback"]
+    };
+  }
+}
+
+async function finishTest() {
+  if (isFinishing) return;
+  isFinishing = true;
   stopTimer();
-  saveCogniLensResult(buildResult());
+  app.innerHTML = `
+    <section class="question-card" style="text-align:center">
+      <div class="question-kicker">Analyzing</div>
+      <h1 id="question-text">Building your MBTI signal.</h1>
+      <p style="color:#64748b;line-height:1.6">Combining MCQ scores, reaction time, contradiction checks, and custom answer analysis...</p>
+    </section>
+  `;
+  const result = await analyzeResult();
+  saveCogniLensResult(result);
   try {
     window.localStorage?.removeItem(COGNILENS_ASSESSMENT_PROGRESS_KEY);
   } catch (error) {}
-  app.innerHTML = `
-    <section class="question-card" style="text-align:center">
-      <div class="question-kicker">Completed</div>
-      <h1 id="question-text">Your result is ready.</h1>
-      <p style="color:#64748b;line-height:1.6">Opening your CogniLens result dashboard...</p>
-    </section>
-  `;
   setTimeout(() => {
     window.location.href = RESULT_PAGE_PATH;
   }, 650);

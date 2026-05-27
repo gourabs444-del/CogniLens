@@ -6,6 +6,7 @@
     displayCount: "5 Questions",
     data: [
       {
+        id: "P2Q1",
         type: "select",
         q: "What do you usually prefer to watch?",
         options: ["Crime, strategy, mind games", "Love, emotions, relationships", "Real-life / realistic stories"],
@@ -13,6 +14,7 @@
         explain: "Simple meaning:\nThis checks what naturally holds your attention. Real-life analogy: when you open a streaming app, your first choice can show your mental flavor. Strategy and mind games point toward analysis, emotional stories point toward people and feelings, and realistic stories point toward practical real-world interest."
       },
       {
+        id: "P2Q2",
         type: "select",
         q: "What do you usually do when you get free time?",
         options: ["Do something on your own (gaming, music, coding, etc.)", "Talk to someone or socialize"],
@@ -20,6 +22,7 @@
         explain: "Simple meaning:\nThis checks where your energy naturally goes when nobody is forcing you. Real-life analogy: after school or work, some people instantly wear headphones, open a game, learn something, or create alone. Others feel better by messaging, calling, or meeting people."
       },
       {
+        id: "P2Q3",
         type: "select",
         q: "What kind of topics feel more interesting to you?",
         options: ["Future, ideas, possibilities", "Real life, practical things"],
@@ -27,6 +30,7 @@
         explain: "Simple meaning:\nThis checks whether your mind enjoys imagination and patterns or practical reality. Real-life analogy: in a conversation, one person enjoys discussing future technology, theories, and what could happen. Another enjoys useful tips, real examples, and what can be done right now."
       },
       {
+        id: "P2Q4",
         type: "select",
         q: "What type of content feels boring to you?",
         options: ["Slow emotional stories", "Simple real-life / daily stuff"],
@@ -34,6 +38,7 @@
         explain: "Simple meaning:\nThis is a reverse signal. It checks what your mind naturally rejects when content feels too slow or too ordinary. Real-life analogy: some people get bored when a movie spends too much time on feelings. Others get bored when the story is too normal and want bigger ideas, twists, or imagination."
       },
       {
+        id: "P2Q5",
         type: "select",
         q: "What do you prefer more?",
         options: ["Solo activities (gaming, editing, learning)", "Group activities (friends, chatting)"],

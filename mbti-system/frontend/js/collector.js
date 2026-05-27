@@ -46,19 +46,67 @@
     return {
       type,
       confidence: score.confidence,
+      honesty: null,
       breakdown: score.breakdown,
       warning: score.warning,
       metrics,
       totals,
       answers,
       title,
-      summary: `Your result is generated from six assessment phases with ${score.confidence}% confidence. The strongest current signal is ${strongest[0]} at ${strongest[1]}%.`,
-      tags: ["Six-phase", "Self-aware", "Story-ready"]
+      source: "local",
+      summary: `Your result is generated from four assessment phases with ${score.confidence}% local clarity. The strongest current signal is ${strongest[0]} at ${strongest[1]}%.`,
+      tags: ["Four-phase", "Self-aware", "Story-ready"]
     };
+  }
+
+  function getApiBaseUrl() {
+    const fromWindow = window.COGNILENS_API_BASE_URL;
+    const fromStorage = (() => {
+      try {
+        return window.localStorage?.getItem("cognilensApiBaseUrl");
+      } catch (error) {
+        return "";
+      }
+    })();
+    return String(fromWindow || fromStorage || "http://localhost:8000").replace(/\/+$/, "");
+  }
+
+  function normalizeBackendResult(result, answers, fallbackResult) {
+    const summary = result.summary || result.insight?.summary || fallbackResult.summary;
+    const tags = result.tags?.length
+      ? result.tags
+      : ["Hybrid engine", `${Math.round(result.honesty ?? 0)}% honesty`, "Four-phase"];
+
+    return {
+      ...fallbackResult,
+      ...result,
+      answers,
+      summary,
+      tags,
+      source: result.source || "backend",
+      backendUrl: getApiBaseUrl()
+    };
+  }
+
+  async function analyzeWithBackend(answers = [], fallbackResult = buildResult(answers)) {
+    const response = await fetch(`${getApiBaseUrl()}/api/mbti/analyze`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers })
+    });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      throw new Error(body || `Backend analysis failed with HTTP ${response.status}.`);
+    }
+
+    const result = await response.json();
+    return normalizeBackendResult(result, answers, fallbackResult);
   }
 
   window.CogniLensCollector = {
     collectDimensionTotals,
-    buildResult
+    buildResult,
+    analyzeWithBackend
   };
 })();

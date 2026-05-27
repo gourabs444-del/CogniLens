@@ -6,6 +6,7 @@
     displayCount: "6 Questions",
     data: [
       {
+        id: "P1Q1",
         type: "select",
         customInput: true,
         q: "When starting a task, you usually:",
@@ -14,6 +15,7 @@
         explain: "Simple meaning:\nThis checks whether you feel safer with structure or whether you learn better by starting. Real-life analogy: before a trip, some people make a route, packing list, and timing plan first. Others start the journey and adjust when they see traffic, weather, or new options."
       },
       {
+        id: "P1Q2",
         type: "select",
         customInput: true,
         q: "When making decisions, you rely more on:",
@@ -22,6 +24,7 @@
         explain: "Simple meaning:\nThis checks whether your first filter is objective reasoning or emotional context. Real-life analogy: when buying a phone, a logic-first person compares price, battery, camera, and performance. A feelings-first person also asks whether it feels comfortable, suits their lifestyle, or makes them happy."
       },
       {
+        id: "P1Q3",
         type: "select",
         customInput: true,
         q: "You're more interested in:",
@@ -30,6 +33,7 @@
         explain: "Simple meaning:\nThis checks whether your mind first looks for practical use or future possibilities. Real-life analogy: if someone shows you a new gadget, one person asks, 'How will this help me today?' Another asks, 'What could this become in the future?'"
       },
       {
+        id: "P1Q4",
         type: "select",
         customInput: true,
         q: "In your free time, you naturally:",
@@ -38,6 +42,7 @@
         explain: "Simple meaning:\nThis checks how your social battery usually recharges. Real-life analogy: after a busy week, some people recover by gaming, music, coding, or being alone. Others feel alive again after calling friends, chatting, or going out."
       },
       {
+        id: "P1Q5",
         type: "select",
         customInput: true,
         q: "When there's a deadline:",
@@ -46,6 +51,7 @@
         explain: "Simple meaning:\nThis checks your natural deadline style. Real-life analogy: before an exam or project, some people finish early so their mind feels clear. Others work best when the deadline is close because pressure gives them speed and focus."
       },
       {
+        id: "P1Q6",
         type: "select",
         customInput: true,
         q: "When something is unclear:",

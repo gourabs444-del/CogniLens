@@ -6,6 +6,7 @@
     displayCount: "5 Questions",
     data: [
       {
+        id: "P3Q1",
         type: "select",
         q: "After spending a long time with people, what do you usually feel?",
         options: ["I feel tired", "I feel energetic"],
@@ -13,6 +14,7 @@
         explain: "Simple meaning:\nThis checks what social interaction does to your energy. Real-life analogy: after a long family function or hangout, some people need silence and personal space to recover. Others come home more excited and feel like the interaction charged them."
       },
       {
+        id: "P3Q2",
         type: "select",
         q: "Honestly, when do you usually complete most of your work?",
         options: ["Before the deadline", "At the last moment"],
@@ -20,6 +22,7 @@
         explain: "Simple meaning:\nThis checks your real working rhythm, not your ideal answer. Real-life analogy: for an assignment, some people finish early and relax later. Others wait until the pressure is real, then suddenly become fast and focused."
       },
       {
+        id: "P3Q3",
         type: "select",
         q: "When making a decision, what do you depend on more?",
         options: ["Logic", "Feelings"],
@@ -27,6 +30,7 @@
         explain: "Simple meaning:\nThis checks what you trust first when both facts and emotions are present. Real-life analogy: if two friends are arguing, one person asks, 'What exactly happened and what is fair?' Another asks, 'Who is hurt and how can this be handled gently?'"
       },
       {
+        id: "P3Q4",
         type: "select",
         q: "If you started a company, what would you focus on more?",
         options: ["Profit, strategy, logical growth", "Employees, culture, people satisfaction"],
@@ -34,6 +38,7 @@
         explain: "Simple meaning:\nThis checks how you balance results and people when responsibility gets bigger. Real-life analogy: as a founder, one person first looks at revenue, market position, systems, and growth. Another first asks whether the team feels respected, motivated, and emotionally safe."
       },
       {
+        id: "P3Q5",
         type: "select",
         q: "If you led a political party, what would you focus on more?",
         options: ["Strong decisions, rules, system", "Public emotions, people connect"],
