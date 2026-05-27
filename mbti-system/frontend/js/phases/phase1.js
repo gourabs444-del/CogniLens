@@ -12,7 +12,7 @@
         q: "When starting a task, you usually:",
         options: ["Make a clear plan first", "Start and adjust as you go"],
         traits: ["J", "P"],
-        explain: "Simple meaning:\nThis checks whether you feel safer with structure or whether you learn better by starting. Real-life analogy: before a trip, some people make a route, packing list, and timing plan first. Others start the journey and adjust when they see traffic, weather, or new options."
+        explain: "Simple example:\nImagine you are going on a trip. Some people first make a route, packing list, and timing plan. Others start the journey and adjust when they see traffic, weather, or better options. Pick the one that feels closer to your normal style."
       },
       {
         id: "P1Q2",
@@ -21,7 +21,7 @@
         q: "When making decisions, you rely more on:",
         options: ["Logic and facts", "Feelings and situation"],
         traits: ["T", "F"],
-        explain: "Simple meaning:\nThis checks whether your first filter is objective reasoning or emotional context. Real-life analogy: when buying a phone, a logic-first person compares price, battery, camera, and performance. A feelings-first person also asks whether it feels comfortable, suits their lifestyle, or makes them happy."
+        explain: "Simple example:\nImagine you are buying a phone. One person first compares price, battery, camera, and performance. Another person also notices comfort, mood, look, and whether it fits their daily life. Choose what you usually do first."
       },
       {
         id: "P1Q3",
@@ -30,7 +30,7 @@
         q: "You're more interested in:",
         options: ["Practical things that are directly useful", "Ideas and possibilities"],
         traits: ["S", "N"],
-        explain: "Simple meaning:\nThis checks whether your mind first looks for practical use or future possibilities. Real-life analogy: if someone shows you a new gadget, one person asks, 'How will this help me today?' Another asks, 'What could this become in the future?'"
+        explain: "Simple example:\nIf someone shows you a new gadget, one person asks, 'How will this help me today?' Another asks, 'What could this become in the future?' Choose the reaction that feels more natural to you."
       },
       {
         id: "P1Q4",
@@ -39,7 +39,7 @@
         q: "In your free time, you naturally:",
         options: ["Stay engaged on your own", "Connect with others"],
         traits: ["I", "E"],
-        explain: "Simple meaning:\nThis checks how your social battery usually recharges. Real-life analogy: after a busy week, some people recover by gaming, music, coding, or being alone. Others feel alive again after calling friends, chatting, or going out."
+        explain: "Simple example:\nAfter a busy week, some people feel better with gaming, music, coding, or quiet time alone. Others feel fresh after calling friends, chatting, or going out. Choose what usually recharges you."
       },
       {
         id: "P1Q5",
@@ -48,7 +48,7 @@
         q: "When there's a deadline:",
         options: ["You finish early or on time", "You work best close to the deadline"],
         traits: ["J", "P"],
-        explain: "Simple meaning:\nThis checks your natural deadline style. Real-life analogy: before an exam or project, some people finish early so their mind feels clear. Others work best when the deadline is close because pressure gives them speed and focus."
+        explain: "Simple example:\nBefore an exam or project, some people finish early so their mind feels clear. Others work best when the deadline is close because pressure gives them speed and focus. Choose your real pattern, not the ideal one."
       },
       {
         id: "P1Q6",
@@ -57,7 +57,7 @@
         q: "When something is unclear:",
         options: ["You decide quickly and move on", "You explore more before deciding"],
         traits: ["J", "P"],
-        explain: "Simple meaning:\nThis checks whether you prefer quick closure or deeper exploration. Real-life analogy: when choosing a restaurant, one person quickly picks a decent place and moves on. Another checks reviews, menu, distance, and mood before deciding."
+        explain: "Simple example:\nWhen choosing a restaurant, one person quickly picks a decent place and moves on. Another looks at reviews, menu, distance, and mood before deciding. Choose the style that happens most often with you."
       }
     ]
   });

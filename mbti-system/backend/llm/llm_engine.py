@@ -3,6 +3,7 @@ import re
 
 from config.weights import DIMENSIONS
 from config.mapping import QUESTION_MAPPING_BY_ID
+from engine.behavior_engine import is_non_informative_text
 from engine.mcq_engine import empty_totals, merge_totals
 from llm.prompt import build_result_prompt, build_trait_prompt
 from llm.router import provider_configs, route_for_result
@@ -119,7 +120,7 @@ def custom_answers(answers):
     mapping = QUESTION_MAPPING_BY_ID.get(answer.get("id"), {})
     option_count = len(mapping.get("options") or answer.get("traits") or [])
     selected = answer.get("selected")
-    if text and isinstance(selected, int) and selected >= option_count:
+    if text and not is_non_informative_text(text) and isinstance(selected, int) and selected >= option_count:
       selected_custom.append({**answer, "_index": index})
   return selected_custom
 

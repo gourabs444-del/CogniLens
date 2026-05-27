@@ -248,7 +248,8 @@ function getMetricPreference(metrics = {}, letter) {
 }
 
 function getPotentialType(result = {}) {
-  if (result.type && String(result.type).length === 4) return String(result.type).toUpperCase();
+  const explicitType = String(result.type || "").toUpperCase();
+  if (COGNILENS_TYPE_POTENTIAL[explicitType]) return explicitType;
   if (typeof getPersonalityTypeFromMetrics === "function") return getPersonalityTypeFromMetrics(result.metrics || {});
   const metrics = result.metrics || {};
   return `${getMetricPreference(metrics, "I") >= 50 ? "I" : "E"}${getMetricPreference(metrics, "N") >= 50 ? "N" : "S"}${getMetricPreference(metrics, "T") >= 50 ? "T" : "F"}${getMetricPreference(metrics, "J") >= 50 ? "J" : "P"}`;
@@ -271,6 +272,7 @@ function buildPotentialPlan(topField) {
 }
 
 function getCogniLensPotential(result = {}) {
+  if (result.isInconclusive || String(result.type || "").toUpperCase() === "UNCL") return null;
   const metrics = result.metrics || { I: 50, N: 50, T: 50, J: 50 };
   const type = getPotentialType(result);
   const profile = COGNILENS_TYPE_POTENTIAL[type] || COGNILENS_TYPE_POTENTIAL.INTJ;

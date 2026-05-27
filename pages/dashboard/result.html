@@ -1244,13 +1244,17 @@ function getProfileCapsules(preferences) {
   const clarity = Number.isFinite(Number(result.confidence)) ? `${result.confidence}% clarity` : "Profile ready";
   const honesty = Number.isFinite(Number(result.honesty)) ? `${Math.round(Number(result.honesty))}% honesty` : "Hybrid scan";
   const focus = potential?.topFields?.[0]?.shortTitle || "Potential map";
+  const behaviorCapsules = (result.behavioralTraits?.strongest || [])
+    .slice(0, 2)
+    .map((item) => ({ text: `${item.label} ${item.value}%` }));
   return [
     { text: result.title, primary: true },
     { text: `${ranked[0].label} ${ranked[0].value}%` },
-    { text: `${focus} scope` },
+    ...(potential ? [{ text: `${focus} scope` }] : []),
+    ...behaviorCapsules,
     { text: clarity },
     { text: honesty }
-  ];
+  ].slice(0, 6);
 }
 
 function normalizeProfileLink(value) {

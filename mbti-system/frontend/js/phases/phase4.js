@@ -2,7 +2,7 @@
   window.COGNILENS_PHASES = window.COGNILENS_PHASES || [];
   window.COGNILENS_PHASES.push({
     id: "P4",
-    name: "Phase 4 - Rapid Fire",
+    name: "Phase 4 - Quick Choices",
     displayCount: "5 Timed Questions",
     data: [
       {

@@ -196,7 +196,7 @@ function startTimer(seconds) {
 
 function getPhaseIntroText(phase, isInitial) {
   if (isInitial) {
-    return "You will move through 4 phases: self-image, hidden preferences, contradiction checks, and rapid instinct choices. Phase 4 locks navigation so answers stay instinctive.";
+    return "You will move through 4 short phases with daily choices, interests, real-life situations, and quick two-option questions. Answer naturally and do not overthink.";
   }
 
   const timedQuestions = phase.data.filter((item) => item.timeLimit);
@@ -215,7 +215,7 @@ function getPhaseIntroText(phase, isInitial) {
 function showPhaseOverlay(phase, isInitial = false) {
   app.classList.add("blur");
   phaseScreen.classList.add("active");
-  phaseBigTitle.textContent = isInitial ? "4 analysis phases" : `${phase.id} starting`;
+  phaseBigTitle.textContent = isInitial ? "4 simple phases" : `${phase.id} starting`;
   phaseSubtitle.textContent = getPhaseIntroText(phase, isInitial);
   phaseStartButton.textContent = isInitial ? "Start Phase 1" : `Continue to ${phase.id}`;
   phaseStartButton.hidden = false;
@@ -621,7 +621,7 @@ async function analyzeResult() {
     return {
       ...localResult,
       source: "local-fallback",
-      apiWarning: error?.message || "Backend analysis unavailable.",
+      apiWarning: error?.message || "Server result unavailable.",
       tags: [...(localResult.tags || []), "Local fallback"]
     };
   }
@@ -635,7 +635,7 @@ async function finishTest() {
     <section class="question-card" style="text-align:center">
       <div class="question-kicker">Analyzing</div>
       <h1 id="question-text">Building your MBTI signal.</h1>
-      <p style="color:#64748b;line-height:1.6">Combining MCQ scores, reaction time, contradiction checks, and custom answer analysis...</p>
+      <p style="color:#64748b;line-height:1.6">Reviewing your answers and preparing your result...</p>
     </section>
   `;
   const result = await analyzeResult();

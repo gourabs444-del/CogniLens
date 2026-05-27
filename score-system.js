@@ -5,6 +5,7 @@
  */
 
 const COGNILENS_TYPE_TITLES = {
+  UNCL: "Not Enough Clear Signal",
   ISTJ: "Practical Systems Guardian",
   ISFJ: "Supportive Detail Keeper",
   INFJ: "Insightful Purpose Builder",
@@ -73,6 +74,29 @@ function normalizePersonalityScores(scores = {}) {
 
 function getPersonalityResult(scores = {}) {
   const cleanScores = normalizePersonalityScores(scores);
+  const axisTotals = {
+    EI: cleanScores.E + cleanScores.I,
+    SN: cleanScores.S + cleanScores.N,
+    TF: cleanScores.T + cleanScores.F,
+    JP: cleanScores.J + cleanScores.P
+  };
+  const totalSignal = Object.values(cleanScores).reduce((sum, value) => sum + value, 0);
+  const coveredAxes = Object.values(axisTotals).filter((value) => value > 0).length;
+  const enoughSignal = totalSignal >= 18 && coveredAxes >= 4;
+
+  if (!enoughSignal) {
+    return {
+      type: "UNCL",
+      confidence: Math.max(0, Math.min(28, Math.round(totalSignal))),
+      breakdown: {
+        EI: { E: cleanScores.E, I: cleanScores.I },
+        SN: { S: cleanScores.S, N: cleanScores.N },
+        TF: { T: cleanScores.T, F: cleanScores.F },
+        JP: { J: cleanScores.J, P: cleanScores.P }
+      },
+      warning: "Not enough usable answers for a reliable type."
+    };
+  }
   const safe = (a, b) => cleanScores[a] - cleanScores[b];
 
   const EI = safe("E", "I") > 0 ? "E" : "I";
@@ -128,6 +152,8 @@ function getPersonalityTypeFromMetrics(metrics = {}) {
     return Number.isFinite(numeric) ? Math.max(0, Math.min(100, numeric)) : 50;
   };
 
+  const values = ["I", "N", "T", "J"].map(value);
+  if (values.every((item) => item === 50)) return "UNCL";
   return `${value("I") >= 50 ? "I" : "E"}${value("N") >= 50 ? "N" : "S"}${value("T") >= 50 ? "T" : "F"}${value("J") >= 50 ? "J" : "P"}`;
 }
 

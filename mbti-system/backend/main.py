@@ -3,6 +3,7 @@ import json
 import sys
 
 from engine.contradiction_engine import analyze_contradictions
+from engine.behavior_engine import analyze_behavior_traits
 from engine.decision_engine import build_decision
 from engine.fusion_engine import fuse_dimension_totals
 from engine.mcq_engine import score_answers
@@ -37,6 +38,7 @@ async def analyze(payload):
   scoring = score_answers(answers, llm_result.get("answerScores"))
   fused_totals = fuse_dimension_totals(scoring, llm_result.get("aggregateScores"))
   contradiction = analyze_contradictions(answers, scoring, llm_result)
+  behavior = analyze_behavior_traits(answers)
   result = build_decision(
     fused_totals,
     contradiction=contradiction,
@@ -47,6 +49,13 @@ async def analyze(payload):
   result["phaseTotals"] = scoring.get("phaseTotals")
   result["reaction"] = scoring.get("reaction")
   result["contradictions"] = contradiction
+  result["behavioralTraits"] = behavior
+  if behavior.get("strongest"):
+    result["tags"] = [
+      *result.get("tags", []),
+      *[f"{item['label']} {item['value']}%" for item in behavior["strongest"][:2]],
+    ]
+    result["summary"] = f"{result['summary']} {behavior.get('summary')}"
   result["llm"] = {
     "used": llm_result.get("used", False),
     "analyzedCustomAnswers": len(llm_result.get("analyses", [])),
