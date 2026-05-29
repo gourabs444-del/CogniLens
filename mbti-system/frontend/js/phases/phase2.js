@@ -6,44 +6,74 @@
     displayCount: "5 Questions",
     data: [
       {
-        id: "P2Q1",
+        id: "P2-Q1",
         type: "select",
-        q: "What do you usually prefer to watch?",
-        options: ["Crime, strategy, mind games", "Love, emotions, relationships", "Real-life / realistic stories"],
-        traits: ["T", "F", "S"],
-        explain: "Simple example:\nWhen you open a streaming app, notice what you click without thinking too much. Some people enjoy strategy and mind games, some enjoy emotional stories, and some prefer realistic stories. Choose what you usually pick on your own."
+        q: "You are leading a group project. One incompetent person is slowing everything down. Realistically, what would you do?",
+        options: [
+          "Quietly replace them",
+          "Finish the work yourself",
+          "Try to help them improve",
+          "Ignore them and improve the system"
+        ],
+        traits: [],
+        customInput: false,
+        explain: "This means: if one teammate is making the work slow, what would you most likely do?"
       },
       {
-        id: "P2Q2",
+        id: "P2-Q2",
         type: "select",
-        q: "What do you usually do when you get free time?",
-        options: ["Do something on your own (gaming, music, coding, etc.)", "Talk to someone or socialize"],
-        traits: ["I", "E"],
-        explain: "Simple example:\nAfter school or work, some people instantly wear headphones, open a game, learn something, or create alone. Others feel better by messaging, calling, or meeting people. Choose your natural free-time habit."
+        q: "Which type of people irritate you most?",
+        options: [
+          "People who overreact emotionally",
+          "People who act superior without real skill",
+          "People who manipulate others",
+          "People who follow rules without thinking"
+        ],
+        traits: [],
+        customInput: false,
+        explain: "This means: which kind of person makes you annoyed the fastest?"
       },
       {
-        id: "P2Q3",
+        id: "P2-Q3",
         type: "select",
-        q: "What kind of topics feel more interesting to you?",
-        options: ["Future, ideas, possibilities", "Real life, practical things"],
-        traits: ["N", "S"],
-        explain: "Simple example:\nIn a conversation, one person enjoys future technology, theories, and what could happen. Another enjoys useful tips, real examples, and what can be done right now. Choose the topic style that pulls your attention more."
+        q: "If your prediction turns out wrong, what do you do?",
+        options: [
+          "Admit it openly",
+          "Re-analyze it privately",
+          "Try to justify it",
+          "Build a new framework immediately"
+        ],
+        traits: [],
+        customInput: false,
+        explain: "This means: when your guess is wrong, what do you usually do next?"
       },
       {
-        id: "P2Q4",
+        id: "P2-Q4",
         type: "select",
-        q: "What type of content feels boring to you?",
-        options: ["Slow emotional stories", "Simple real-life / daily stuff"],
-        traits: ["T", "N"],
-        explain: "Simple example:\nSome people get bored when a movie spends too much time on feelings. Others get bored when the story feels too normal and want bigger ideas, twists, or imagination. Choose the one that usually makes you lose interest faster."
+        q: "What secretly makes you feel validated?",
+        options: [
+          "You are intelligent.",
+          "You are reliable.",
+          "You are unique.",
+          "You understand people."
+        ],
+        traits: [],
+        customInput: false,
+        explain: "This means: which compliment makes you feel good inside?"
       },
       {
-        id: "P2Q5",
+        id: "P2-Q5",
         type: "select",
-        q: "What do you prefer more?",
-        options: ["Solo activities (gaming, editing, learning)", "Group activities (friends, chatting)"],
-        traits: ["I", "E"],
-        explain: "Simple example:\nOn a free evening, one person feels happiest improving a skill, editing, gaming, or learning alone. Another feels happiest when friends are involved and the moment becomes social. Choose what you would actually prefer."
+        q: "What is your biggest hidden fear?",
+        options: [
+          "Becoming average",
+          "Losing control",
+          "Being emotionally exposed",
+          "Choosing the wrong life"
+        ],
+        traits: [],
+        customInput: false,
+        explain: "This means: which worry quietly scares you the most?"
       }
     ]
   });

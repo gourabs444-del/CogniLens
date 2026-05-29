@@ -44,6 +44,44 @@
     font-weight: 700;
     color: #64748b;
   }
+  .trait-card-button {
+    display: block;
+    cursor: pointer;
+  }
+  .trait-proof-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+  .trait-proof-modal.is-open {
+    display: flex;
+  }
+  .trait-proof-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.48);
+    backdrop-filter: blur(10px);
+  }
+  .trait-proof-panel {
+    position: relative;
+    width: min(100%, 760px);
+    max-height: min(86vh, 780px);
+    overflow: auto;
+    border-radius: 1.4rem;
+    border: 1px solid rgba(226,232,240,0.95);
+    background: rgba(255,255,255,0.98);
+    box-shadow: 0 30px 90px rgba(15,23,42,0.24);
+  }
+  .trait-proof-row {
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    padding: 0.9rem;
+  }
 </style>
 </head>
 <body class="dashboard-shell-body min-h-screen text-slate-700">
@@ -68,7 +106,7 @@
     <div class="dashboard-upgrade-card">
       <h3>Upgrade to Premium</h3>
       <p>Unlock deeper AI insights, advanced reports, and personalized recommendations.</p>
-      <a href="payment.html">Upgrade Now <span class="material-symbols-outlined !text-[16px]">arrow_forward</span></a>
+      <a href="#" data-premium-soon>Upgrade Now <span class="material-symbols-outlined !text-[16px]">arrow_forward</span></a>
     </div>
   </aside>
 
@@ -110,7 +148,7 @@
         </div>
       </article>
 
-      <article class="trait-card rounded-[1.6rem] p-6">
+      <article class="trait-card trait-card-button rounded-[1.6rem] p-6" data-trait-proof-key="betrayalRisk" role="button" tabindex="0">
         <p class="text-[10px] font-black uppercase tracking-[0.22em] text-rose-500">Betrayal risk model</p>
         <h2 class="mt-2 text-2xl font-black text-slate-950"><span data-betrayal-score>0%</span> estimated risk</h2>
         <p class="mt-3 text-sm leading-relaxed text-slate-500">Calculated from loyalty choices, truth handling, pressure reaction, stress behavior, and accountability answers.</p>
@@ -135,6 +173,38 @@
     </section>
   </main>
 </div>
+
+<div class="trait-proof-modal" data-trait-proof-modal aria-hidden="true">
+  <div class="trait-proof-backdrop" data-trait-proof-close></div>
+  <section class="trait-proof-panel p-6" role="dialog" aria-modal="true" aria-labelledby="trait-proof-title">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-500" data-proof-group>Trait evidence</p>
+        <h2 id="trait-proof-title" class="mt-2 text-2xl font-black text-slate-950" data-proof-title>Trait evidence</h2>
+      </div>
+      <button class="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-500 hover:text-slate-900" data-trait-proof-close type="button" aria-label="Close trait evidence">X</button>
+    </div>
+    <div class="mt-5 rounded-2xl bg-slate-950 p-4 text-white">
+      <div class="flex items-center justify-between gap-4">
+        <span class="text-xs font-bold text-slate-300">Score</span>
+        <span class="text-2xl font-black" data-proof-score>0%</span>
+      </div>
+      <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-800">
+        <div class="h-full rounded-full bg-indigo-400" data-proof-bar style="width:0%"></div>
+      </div>
+      <p class="mt-4 text-sm leading-relaxed text-slate-200" data-proof-summary></p>
+    </div>
+    <div class="mt-5">
+      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Answer evidence</p>
+      <div class="mt-3 grid gap-3" data-proof-evidence></div>
+    </div>
+    <div class="mt-5">
+      <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Model logic</p>
+      <div class="mt-3 grid gap-2 text-sm text-slate-600" data-proof-logic></div>
+    </div>
+  </section>
+</div>
+
 <script src="../../score-system.js"></script>
 <script src="../../script.js"></script>
 <script src="../Assets/eq-scoring.js"></script>
@@ -142,6 +212,53 @@
 const traitClamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Math.round(Number(value) || 0)));
 const average = (...values) => traitClamp(values.reduce((sum, value) => sum + (Number(value) || 0), 0) / Math.max(values.length, 1));
 const pct = (value) => `${traitClamp(value)}%`;
+
+function readJsonStorage(key, fallback = null) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "null");
+    return value ?? fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function resultAnswerCount(result) {
+  return Number(result?.answeredCount || result?.answersUsed || result?.answers?.length || result?.parsedAnswers?.length || result?.meta?.answersUsed || 0);
+}
+
+function hasScoreObject(source) {
+  return Boolean(source && typeof source === "object" && !Array.isArray(source) && Object.keys(source).length);
+}
+
+function hasCompletedTraitSource(result) {
+  if (!result || typeof result !== "object") return false;
+  const scoreSources = [
+    result.traits,
+    result.traitScores,
+    result.normalizedTraits,
+    result.fullTraitScores,
+    result.eq,
+    result.behavioralTraits?.scores
+  ];
+  return Boolean(
+    (result.type && result.type !== "UNCL") ||
+    resultAnswerCount(result) > 0 ||
+    scoreSources.some(hasScoreObject) ||
+    (Array.isArray(result.behavioralTraits) && result.behavioralTraits.length) ||
+    (Array.isArray(result.behavioralTraits?.strongest) && result.behavioralTraits.strongest.length) ||
+    (Array.isArray(result.topTraits) && result.topTraits.length)
+  );
+}
+
+function confidenceValue(result) {
+  const candidates = [
+    result?.confidenceScore,
+    result?.modelConfidence,
+    typeof result?.confidence === "object" ? result.confidence?.score : result?.confidence
+  ];
+  const value = candidates.find((item) => Number.isFinite(Number(item)));
+  return traitClamp(value || 0);
+}
 
 function readProgressAnswers() {
   try {
@@ -160,7 +277,7 @@ function buildPartialResultFromAnswers(answers) {
       if (trait && totals[trait] !== undefined) totals[trait] += Number(value) || 0;
     });
   });
-  const score = typeof getPersonalityResult === "function" ? getPersonalityResult(totals) : { type: "INTJ", confidence: 0 };
+  const score = typeof getPersonalityResult === "function" ? getPersonalityResult(totals) : { type: "UNCL", confidence: 0 };
   const metrics = typeof getPersonalityMetrics === "function" ? getPersonalityMetrics(totals) : { I: 50, N: 50, T: 50, J: 50 };
   return {
     type: score.type,
@@ -173,10 +290,31 @@ function buildPartialResultFromAnswers(answers) {
 }
 
 function getTraitSource() {
-  const saved = typeof getCogniLensResult === "function" ? getCogniLensResult() : null;
-  if (saved?.answers?.length) return saved;
+  const saved = typeof getCogniLensResult === "function"
+    ? getCogniLensResult()
+    : readJsonStorage("cognilensResult", null);
+  if (hasCompletedTraitSource(saved)) return saved;
+
+  const history = typeof getCogniLensHistory === "function"
+    ? getCogniLensHistory()
+    : readJsonStorage("cognilensResultHistory", []);
+  if (Array.isArray(history)) {
+    const historicalResult = history.find(hasCompletedTraitSource);
+    if (historicalResult) return historicalResult;
+  }
+
   const progressAnswers = readProgressAnswers();
-  return buildPartialResultFromAnswers(progressAnswers);
+  if (progressAnswers.length) return buildPartialResultFromAnswers(progressAnswers);
+
+  return {
+    type: "UNCL",
+    confidence: 0,
+    metrics: { I: 50, N: 50, T: 50, J: 50 },
+    totals: { I: 0, E: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0 },
+    answers: [],
+    title: "Scoring pending",
+    summary: "Complete the assessment to calculate trait scores."
+  };
 }
 
 function answerByText(answers, text) {
@@ -191,12 +329,135 @@ function selectedOption(answer) {
     const topIndex = values.indexOf(Math.max(...values));
     return `${answer.options?.[topIndex] || "Highest"} (${values[topIndex] || 0}/10)`;
   }
+  if (answer.optionText) return answer.optionText;
+  if (answer.selectedLabel) return answer.selectedLabel;
+  if (answer.answerText) return answer.answerText;
+  if (answer.answer && answer.options?.[answer.answer]) return answer.options[answer.answer];
+  if (typeof answer.answer === "string" && answer.answer.trim()) return answer.answer;
   return answer.options?.[answer.selected] || "Not answered";
+}
+
+function hasEngineTraitSignals(result) {
+  if (!result || typeof result !== "object") return false;
+  return [
+    result.traits,
+    result.traitScores,
+    result.normalizedTraits,
+    result.fullTraitScores,
+    result.eq,
+    result.behavioralTraits?.scores,
+    result.cognitiveFunctions,
+    result.functionScores,
+    result.functionRatios
+  ].some(hasScoreObject);
+}
+
+function scoreFromSources(result, keys) {
+  const sources = [
+    result?.traits,
+    result?.traitScores,
+    result?.normalizedTraits,
+    result?.fullTraitScores,
+    result?.eq,
+    result?.behavioralTraits?.scores,
+    result?.cognitiveFunctions,
+    result?.functionScores,
+    result?.functionRatios
+  ];
+  for (const source of sources) {
+    if (!source || typeof source !== "object") continue;
+    for (const key of keys) {
+      if (Number.isFinite(Number(source[key]))) {
+        const raw = Number(source[key]);
+        return raw <= 1 && raw >= 0 ? traitClamp(raw * 100) : traitClamp(raw);
+      }
+    }
+  }
+
+  const rankedTraits = [
+    ...(Array.isArray(result?.topTraits) ? result.topTraits : []),
+    ...(Array.isArray(result?.behavioralTraits?.strongest) ? result.behavioralTraits.strongest : []),
+    ...(Array.isArray(result?.behavioralTraits) ? result.behavioralTraits : [])
+  ];
+  for (const item of rankedTraits) {
+    if (!item || !keys.includes(item.key)) continue;
+    const raw = item.score ?? item.value;
+    if (Number.isFinite(Number(raw))) return traitClamp(raw);
+  }
+  return null;
+}
+
+function blendScore(scores, evidence, target, value, weight, note) {
+  if (!Number.isFinite(Number(value))) return;
+  const current = Number.isFinite(Number(scores[target])) ? scores[target] : 50;
+  scores[target] = traitClamp(current * (1 - weight) + Number(value) * weight);
+  pushEvidence(evidence, target, note);
+}
+
+function applyEngineResultLayer(scores, evidence, result) {
+  if (!hasEngineTraitSignals(result)) return { used: false, label: "Engine" };
+
+  const links = {
+    trust: ["trust", "trustSensitivity", "empathy", "socialSensitivity", "Fe"],
+    loyalty: ["loyaltyBias", "attachmentNeed", "attachmentDepth", "commitment"],
+    honesty: ["honesty", "authenticity", "truthCourage", "Fi"],
+    empathy: ["empathy", "collectiveEmpathy", "Fe", "emotionalSensitivity"],
+    selfControl: ["emotionalRegulation", "emotionalControl", "controlNeed", "Si", "Te"],
+    aggressionControl: ["emotionalRegulation", "emotionalMaturity", "emotionalBalance"],
+    accountability: ["responsibility", "growthOrientation", "emotionalMaturity", "Te"],
+    loveLoyalty: ["attachmentNeed", "loyaltyBias", "emotionalDepth", "Fi"],
+    forgiveness: ["emotionalBalance", "emotionalMaturity", "empathy", "Fe"],
+    boundaries: ["autonomy", "controlResistance", "identityProtection", "Fi"],
+    patience: ["Si", "responsibility", "emotionalRegulation"],
+    riskAppetite: ["noveltySeeking", "Se", "Ne", "adaptability"],
+    adaptability: ["adaptability", "adaptiveCoping", "Ne", "Se"],
+    planning: ["strategicThinking", "systemsThinking", "Te", "Ni"],
+    socialWarmth: ["empathy", "Fe", "collectiveEmpathy", "socialSensitivity"],
+    conflictRecovery: ["adaptiveCoping", "emotionalMaturity", "emotionalBalance"],
+    fairness: ["collectiveEmpathy", "harmAvoidance", "contextDependence", "Ti"],
+    impulseControl: ["Si", "emotionalRegulation", "controlNeed"],
+    emotionalStability: ["emotionalControl", "emotionalRegulation", "adaptiveCoping"],
+    commitment: ["responsibility", "loyaltyBias", "Si"],
+    respect: ["competenceRespect", "empathy", "Fe"],
+    imageManagement: ["socialMasking", "egoDefense", "validationNeed"],
+    validationSeeking: ["validationNeed", "identityNeed", "socialMasking"],
+    authenticity: ["identityProtection", "Fi", "truthCourage"],
+    socialAdaptability: ["adaptability", "Fe", "socialSensitivity"],
+    directCommunication: ["Te", "Ti", "truthCourage"],
+    emotionalRegulation: ["emotionalRegulation", "emotionalControl", "emotionalMaturity"],
+    resilience: ["adaptability", "adaptiveCoping", "growthOrientation"],
+    compassion: ["empathy", "harmAvoidance", "collectiveEmpathy"],
+    logic: ["Ti", "Te", "logicalDetachment"],
+    consequentialThinking: ["Ni", "strategicThinking", "systemsThinking", "Te"],
+    justice: ["ruleOrientation", "harmAvoidance", "Fi"],
+    truthCourage: ["truthCourage", "Fi", "Te"],
+    guiltSensitivity: ["empathy", "attachmentNeed", "responsibility"],
+    ideologicalTolerance: ["contextDependence", "Ne", "empathy"],
+    attachmentPull: ["attachmentNeed", "attachmentDepth", "emotionalDepth"],
+    sacrifice: ["collectiveEmpathy", "harmAvoidance", "loyaltyBias"],
+    selfPreservation: ["autonomy", "controlNeed", "controlResistance"],
+    innerConflict: ["internalConflict", "egoDefense", "avoidance"]
+  };
+
+  Object.entries(links).forEach(([target, keys]) => {
+    const score = scoreFromSources(result, keys);
+    blendScore(scores, evidence, target, score, 0.45, "Engine trait signal");
+  });
+
+  const envySignal = scoreFromSources(result, ["envy", "validationNeed", "identityNeed"]);
+  blendScore(scores, evidence, "envy", envySignal, 0.35, "Engine comparison signal");
+  const greedSignal = scoreFromSources(result, ["dominance", "selfPreservation", "controlNeed"]);
+  blendScore(scores, evidence, "greed", greedSignal, 0.28, "Engine self-priority signal");
+  const lustSignal = scoreFromSources(result, ["sensuality", "noveltySeeking", "Se"]);
+  blendScore(scores, evidence, "lust", lustSignal, 0.28, "Engine romantic/impulse signal");
+
+  return { used: true, label: "Engine" };
 }
 
 function buildTraitModel(result) {
   const answers = result.answers || [];
-  if (!answers.length) {
+  const hasEngineSignals = hasEngineTraitSignals(result);
+  if (!answers.length && !hasEngineSignals) {
     const zeroScores = {
       trust: 0,
       loyalty: 0,
@@ -487,6 +748,8 @@ function buildTraitModel(result) {
     push("emotionalStability", 6, "Balances after mistake");
   }
 
+  applyEngineResultLayer(scores, evidence, result);
+
   scores.angerReactivity = traitClamp(100 - average(scores.aggressionControl, scores.impulseControl, scores.emotionalStability));
   scores.attachmentIntensity = average(scores.loveLoyalty, 100 - scores.emotionalStability + 32, 100 - scores.selfControl + 30);
   scores.egoControl = average(100 - scores.imageManagement, scores.emotionalStability, scores.selfControl);
@@ -522,7 +785,11 @@ function buildTraitModel(result) {
     + scores.riskAppetite * 0.08
   );
 
-  return { scores: { ...scores, betrayalRisk }, evidence, answersUsed: answers.length };
+  return {
+    scores: { ...scores, betrayalRisk },
+    evidence,
+    answersUsed: Math.max(answers.length, resultAnswerCount(result))
+  };
 }
 
 function selfSafe(value) {
@@ -537,10 +804,19 @@ function labelForScore(score, inverse = false) {
   return "Watch";
 }
 
+function escapeTraitHtml(value = "") {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function renderTraitCard(item) {
   const inverse = item.inverse === true;
   return `
-    <article class="trait-card rounded-[1.35rem] p-5">
+    <button class="trait-card trait-card-button rounded-[1.35rem] p-5 text-left w-full" type="button" data-trait-key="${item.key}" aria-label="View evidence for ${escapeTraitHtml(item.name)}">
       <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">${item.group}</p>
@@ -554,7 +830,7 @@ function renderTraitCard(item) {
         <span>${labelForScore(item.score, inverse)}</span>
         <span>${item.source}</span>
       </div>
-    </article>
+    </button>
   `;
 }
 
@@ -763,7 +1039,7 @@ function buildUnifiedTraitModel(result, baseModel) {
   }
 
   const sources = [];
-  if (baseModel.answersUsed) sources.push("MBTI");
+  if (baseModel.answersUsed || hasEngineTraitSignals(result)) sources.push(hasEngineTraitSignals(result) ? "Engine" : "MBTI");
   if (eqLayer.used) sources.push("EQ");
   if (iqLayer.used) sources.push("IQ");
   if (!sources.length) sources.push("Baseline");
@@ -776,6 +1052,204 @@ function buildUnifiedTraitModel(result, baseModel) {
     eqResult,
     iqResult
   };
+}
+
+const TRAIT_CARD_KEYS = {
+  "Trust Readiness": "trust",
+  "Betrayal Risk Estimate": "betrayalRisk",
+  "Anger Reactivity": "angerReactivity",
+  "Aggression Control": "aggressionControl",
+  "Love Loyalty": "loveLoyalty",
+  "Envy Signal": "envy",
+  "Greed / Self-Priority": "greed",
+  "Lust / Romantic Impulse": "lust",
+  "Honesty Under Pressure": "honesty",
+  "Empathy Signal": "empathy",
+  "Self-Control": "selfControl",
+  "Accountability": "accountability",
+  "Forgiveness": "forgiveness",
+  "Boundary Strength": "boundaries",
+  "Patience": "patience",
+  "Risk Appetite": "riskAppetite",
+  "Image Management": "imageManagement",
+  "Validation Seeking": "validationSeeking",
+  "Attachment Intensity": "attachmentIntensity",
+  "Adaptability": "adaptability",
+  "Planning Discipline": "planning",
+  "Social Warmth": "socialWarmth",
+  "Conflict Recovery": "conflictRecovery",
+  "Fairness": "fairness",
+  "Impulse Control": "impulseControl",
+  "Emotional Stability": "emotionalStability",
+  "Commitment": "commitment",
+  "Respect Signal": "respect",
+  "Ego Control": "egoControl",
+  "Authenticity": "authenticity",
+  "Social Adaptability": "socialAdaptability",
+  "Closure Seeking": "closureSeeking",
+  "Rumination": "rumination",
+  "Avoidance": "avoidance",
+  "Direct Communication": "directCommunication",
+  "Emotional Regulation": "emotionalRegulation",
+  "Resilience": "resilience",
+  "Compassion": "compassion",
+  "Logic": "logic",
+  "Consequence Thinking": "consequentialThinking",
+  "Justice Strictness": "justice",
+  "Truth Courage": "truthCourage",
+  "Guilt Sensitivity": "guiltSensitivity",
+  "Ideological Tolerance": "ideologicalTolerance",
+  "Attachment Pull": "attachmentPull",
+  "Sacrifice Tendency": "sacrifice",
+  "Self-Preservation": "selfPreservation",
+  "Inner Conflict": "innerConflict"
+};
+
+const TRAIT_PROOF_SOURCE_KEYS = {
+  betrayalRisk: ["loyaltyBias", "attachmentNeed", "emotionalDepth", "empathy", "harmAvoidance", "utilitarianism", "controlNeed", "socialMasking", "egoDefense", "validationNeed", "emotionalEscape", "avoidance", "trustSensitivity", "ruleOrientation", "Fi", "Fe", "Te"],
+  lust: ["sensuality", "noveltySeeking", "Se", "validationNeed", "socialMasking", "emotionalIntensity", "adaptability", "Ne"],
+  greed: ["dominance", "selfPreservation", "controlNeed", "logicalDetachment", "Te"],
+  envy: ["validationNeed", "identityNeed", "competenceRespect", "socialMasking"],
+  angerReactivity: ["emotionalGuardedness", "egoDefense", "controlNeed", "emotionalIntensity"],
+  aggressionControl: ["emotionalMaturity", "emotionalBalance", "emotionalRegulation", "Si"],
+  honesty: ["truthCourage", "identityProtection", "ruleOrientation", "Fi", "Te"],
+  empathy: ["empathy", "collectiveEmpathy", "harmAvoidance", "Fe", "Fi"],
+  selfControl: ["controlNeed", "responsibility", "emotionalMaturity", "Si", "Te"],
+  loveLoyalty: ["attachmentNeed", "loyaltyBias", "attachmentDepth", "emotionalDepth", "Fi"],
+  accountability: ["responsibility", "growthOrientation", "emotionalMaturity", "Te"],
+  boundaries: ["autonomy", "controlResistance", "identityProtection", "ruleOrientation"],
+  planning: ["strategicThinking", "systemsThinking", "Te", "Ni"],
+  riskAppetite: ["noveltySeeking", "adaptability", "Se", "Ne"],
+  logic: ["Ti", "Te", "logicalDetachment"],
+  consequentialThinking: ["Ni", "strategicThinking", "systemsThinking", "utilitarianism"],
+  innerConflict: ["internalConflict", "egoDefense", "avoidance"]
+};
+
+function traitKeyFromName(name) {
+  return TRAIT_CARD_KEYS[name] || String(name || "").replace(/[^a-zA-Z0-9]+(.)/g, (_, char) => char.toUpperCase()).replace(/^./, (char) => char.toLowerCase());
+}
+
+function sourceKeysForTrait(key) {
+  return [...new Set([key, ...(TRAIT_PROOF_SOURCE_KEYS[key] || [])])];
+}
+
+function traitLogicSummary(item, model) {
+  const score = traitClamp(item.score);
+  if (item.key === "betrayalRisk") {
+    return `This is not saying you are disloyal. A ${score}% betrayal-risk estimate means the model saw pressure patterns that can make self-protection, avoidance, anger, image-control, or short-term benefit compete with loyalty when the situation becomes stressful.`;
+  }
+  if (item.key === "lust") {
+    return `This is not a moral judgment. A ${score}% romantic-impulse signal means the model saw answers connected with attraction energy, novelty, validation, social pull, or sensory/action orientation.`;
+  }
+  if (item.inverse) {
+    return `A ${score}% signal means this pattern appeared in the answer mix, but it should be read as a situational tendency under pressure, not a fixed identity.`;
+  }
+  return `A ${score}% score means this trait was supported by repeated answer signals and the broader MBTI/EQ balance. It is probabilistic, not an absolute claim.`;
+}
+
+function evidenceReasonLine(item, evidence) {
+  const label = evidence.label || evidence.sourceTrait || evidence.trait || "signal";
+  if (item.key === "betrayalRisk") {
+    return `This answer fed the ${escapeTraitHtml(label)} signal. In this model, risk rises only when pressure-related signals combine with lower protective signals like honesty, empathy, self-control, accountability, loyalty, and respect.`;
+  }
+  if (item.key === "lust") {
+    return `This answer fed the ${escapeTraitHtml(label)} signal. In this model, that can point toward attraction/novelty/validation energy rather than anything negative about character.`;
+  }
+  return `This answer fed the ${escapeTraitHtml(label)} signal and moved the score ${evidence.direction === "decrease" ? "down" : "up"} in the weighted model.`;
+}
+
+function collectTraitEvidence(item, result) {
+  const keys = new Set(sourceKeysForTrait(item.key));
+  const trail = Array.isArray(result.reasonTrail) ? result.reasonTrail : [];
+  return trail
+    .filter((entry) => keys.has(entry.trait) || keys.has(entry.sourceTrait))
+    .sort((a, b) => Math.abs(Number(b.impact) || 0) - Math.abs(Number(a.impact) || 0))
+    .slice(0, 7)
+    .map((entry) => ({
+      question: entry.question || "Question",
+      answer: entry.optionText || entry.answer || "Selected answer",
+      impact: Math.abs(Number(entry.impact) || 0),
+      direction: entry.direction,
+      trait: entry.trait,
+      label: entry.label || entry.sourceTrait || entry.trait
+    }));
+}
+
+function derivedRiskLogic(scores) {
+  return [
+    `Betrayal risk is derived, not directly selected from one option.`,
+    `Protective signals lower it: loyalty ${pct(scores.loyalty)}, honesty ${pct(scores.honesty)}, empathy ${pct(scores.empathy)}, self-control ${pct(scores.selfControl)}, accountability ${pct(scores.accountability)}, commitment ${pct(scores.commitment)}, respect ${pct(scores.respect)}.`,
+    `Pressure signals can raise it: anger reactivity ${pct(scores.angerReactivity)}, envy ${pct(scores.envy)}, self-priority ${pct(scores.greed)}, romantic impulse ${pct(scores.lust)}, and image management ${pct(scores.imageManagement)}.`
+  ];
+}
+
+function traitProofLogic(item, model) {
+  if (item.key === "betrayalRisk") return derivedRiskLogic(model.scores);
+  const notes = model.evidence?.[item.key] || [];
+  const base = notes.length ? notes.slice(0, 4) : [`${item.name} combines direct answer evidence with related MBTI/EQ signals.`];
+  if (item.key === "lust") {
+    return [
+      "Romantic impulse is calculated from attraction/novelty/validation signals, social warmth, and impulse-control balance.",
+      ...base
+    ];
+  }
+  return base;
+}
+
+function renderProofEvidence(item, evidence) {
+  if (!evidence.length) {
+    return `<div class="trait-proof-row text-sm text-slate-600">Exact answer-level evidence is not saved for this older result. Retake the assessment once to generate the full reason trail.</div>`;
+  }
+  return evidence.map((entry) => `
+    <div class="trait-proof-row">
+      <p class="text-sm font-black text-slate-900">${escapeTraitHtml(entry.question)}</p>
+      <p class="mt-1 text-sm text-slate-600">Answer: <strong>${escapeTraitHtml(entry.answer)}</strong></p>
+      <p class="mt-2 text-xs leading-relaxed text-slate-500">${evidenceReasonLine(item, entry)}</p>
+    </div>
+  `).join("");
+}
+
+function openTraitProof(item, result, model) {
+  const modal = document.querySelector("[data-trait-proof-modal]");
+  if (!modal) return;
+  const evidence = collectTraitEvidence(item, result);
+  modal.querySelector("[data-proof-group]").textContent = item.group || "Trait evidence";
+  modal.querySelector("[data-proof-title]").textContent = item.name;
+  modal.querySelector("[data-proof-score]").textContent = pct(item.score);
+  modal.querySelector("[data-proof-bar]").style.width = pct(item.score);
+  modal.querySelector("[data-proof-bar]").style.background = item.color || "#6366f1";
+  modal.querySelector("[data-proof-summary]").textContent = traitLogicSummary(item, model);
+  modal.querySelector("[data-proof-evidence]").innerHTML = renderProofEvidence(item, evidence);
+  modal.querySelector("[data-proof-logic]").innerHTML = traitProofLogic(item, model)
+    .map((line) => `<p class="rounded-xl bg-slate-50 px-3 py-2">${escapeTraitHtml(line)}</p>`)
+    .join("");
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+function closeTraitProof() {
+  const modal = document.querySelector("[data-trait-proof-modal]");
+  if (!modal) return;
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden", "true");
+}
+
+function wireTraitProof(result, model, traitItems) {
+  const byKey = Object.fromEntries(traitItems.map((item) => [item.key, item]));
+  document.querySelectorAll("[data-trait-key], [data-trait-proof-key]").forEach((element) => {
+    const key = element.dataset.traitKey || element.dataset.traitProofKey;
+    const item = byKey[key] || traitItems.find((trait) => trait.key === key);
+    if (!item) return;
+    element.addEventListener("click", () => openTraitProof(item, result, model));
+    element.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      openTraitProof(item, result, model);
+    });
+  });
+  document.querySelectorAll("[data-trait-proof-close]").forEach((element) => {
+    element.addEventListener("click", closeTraitProof);
+  });
 }
 
 function renderTraits() {
@@ -833,6 +1307,9 @@ function renderTraits() {
     ,{ name: "Self-Preservation", score: s.selfPreservation, group: "Defense", color: "#111827", source: "Self-protection", copy: "Drive to protect your own stability, safety, or happiness." }
     ,{ name: "Inner Conflict", score: s.innerConflict, group: "Consistency", color: "#f59e0b", source: "Contradiction signals", copy: "Tension between values across similar emotional or moral situations.", inverse: true }
   ];
+  traitItems.forEach((item) => {
+    item.key = item.key || traitKeyFromName(item.name);
+  });
 
   document.querySelector("[data-trait-type]").textContent = result.type || "TYPE";
   document.querySelector("[data-trait-title]").textContent = result.title || "Personality profile";
@@ -841,7 +1318,7 @@ function renderTraits() {
     ? `Unified model active: ${model.sources.join(" + ")}. Same trait cards stay fixed; only percentages update as more tests are completed.`
     : "No completed assessment found yet. Take the test to calculate real trait scores.";
   document.querySelector("[data-answer-count]").textContent = unifiedAnswersUsed;
-  document.querySelector("[data-clarity-score]").textContent = pct(model.eqResult?.modelConfidence || result.confidence || 0);
+  document.querySelector("[data-clarity-score]").textContent = pct(model.eqResult?.modelConfidence || confidenceValue(result));
   document.querySelector("[data-risk-score]").textContent = pct(s.betrayalRisk);
   document.querySelector("[data-betrayal-score]").textContent = pct(s.betrayalRisk);
   document.querySelector("[data-betrayal-bar]").style.setProperty("--score", s.betrayalRisk);
@@ -854,6 +1331,7 @@ function renderTraits() {
     "Lust"
   ].map((label) => `<span class="signal-chip">${label}</span>`).join("");
   document.querySelector("[data-trait-grid]").innerHTML = traitItems.map(renderTraitCard).join("");
+  wireTraitProof(result, model, traitItems);
 
   document.querySelector("[data-scoring-breakdown]").innerHTML = `
     <p><strong class="text-slate-900">MBTI axis scores:</strong> I ${pct(result.metrics?.I || 50)}, N ${pct(result.metrics?.N || 50)}, T ${pct(result.metrics?.T || 50)}, J ${pct(result.metrics?.J || 50)}.</p>
@@ -878,7 +1356,12 @@ function renderTraits() {
   `;
 }
 
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeTraitProof();
+});
+
 renderTraits();
 </script>
+<script src="premium-coming-soon.js"></script>
 </body>
 </html>

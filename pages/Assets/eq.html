@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -714,6 +714,18 @@
     font-weight: 760;
   }
 
+  .question-brief {
+    margin-top: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(255, 255, 255, 0.72);
+    color: #475569;
+    padding: 13px 15px;
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.5;
+  }
+
   .controls {
     margin-top: auto;
     padding-top: 24px;
@@ -936,9 +948,11 @@
           <span class="question-kicker" id="questionKicker">Q1</span>
           <h2 class="question-title" id="questionText">Question loading...</h2>
           <div class="options" id="options"></div>
+          <div class="question-brief" id="questionBrief" hidden></div>
 
           <div class="controls">
             <button class="control-button secondary" id="prevButton" type="button">Previous</button>
+            <button class="control-button secondary" id="explainButton" type="button" aria-expanded="false">Explain simply</button>
             <button class="control-button primary" id="nextButton" type="button" disabled>Next</button>
           </div>
         </article>
@@ -946,6 +960,7 @@
     </section>
   </main>
 
+<script type="module" src="../../api/submitTest.js"></script>
 <script src="eq-scoring.js"></script>
 <script>
 const EQ_STORAGE_KEY = "cognilensEqAnswers";
@@ -960,213 +975,172 @@ const eqQuestions = [
   {
     id: "EQ1",
     phase: "P1",
-    stage: "Morning after",
-    title: "The pinned chat",
+    stage: "Emotional risk",
+    title: "Danger signal",
     story: [
-      "You are lying on your bed.",
-      "The fan is spinning slowly. The room is quiet.",
-      "You open WhatsApp. Their chat is still pinned at the top.",
-      "No fight before this. No big argument. Just this message."
+      "Some people feel safe from far away.",
+      "Some people feel dangerous before they do anything.",
+      "Your instinct usually notices a specific emotional pattern first."
     ],
-    message: "Let's just end this. It's better for both of us.",
-    meta: "Last seen: 2:17 AM",
-    question: "What do you do first?",
+    question: "Which type of person feels emotionally dangerous to you?",
     options: [
-      "Open the chat and start reading old messages",
-      "Feel like replying immediately",
-      "Put the phone aside and don't react instantly"
-    ]
+      "Too charming",
+      "Too logical",
+      "Too emotional",
+      "Too quiet"
+    ],
+    explain: "This means: which kind of person makes your heart feel careful or unsafe?"
   },
   {
     id: "EQ2",
     phase: "P1",
-    stage: "Scrolling back",
-    title: "Everything looked normal",
+    stage: "Mood climate",
+    title: "Weather inside",
     story: [
-      "You start scrolling.",
-      "Good mornings, random conversations, late night talks.",
-      "Everything looks normal. Nothing clearly broken.",
-      "And yet, it ended."
+      "Weather can feel like a personality.",
+      "Some moods pull you in because they match something inside you.",
+      "Choose the atmosphere that feels emotionally attractive."
     ],
-    question: "What's going on in your mind right now?",
+    question: "Which weather feels emotionally attractive to you?",
     options: [
-      "Trying to figure out where things changed",
-      "Feeling emotions but trying to stay composed",
-      "Wanting to distract yourself and avoid thinking too much"
-    ]
+      "Thunderstorm",
+      "Cold winter",
+      "Bright sunlight",
+      "Fog"
+    ],
+    explain: "This means: which weather feels nice or interesting to your feelings?"
   },
   {
     id: "EQ3",
     phase: "P1",
-    stage: "Unsent messages",
-    title: "You type, then delete",
+    stage: "Discomfort trigger",
+    title: "The pressure point",
     story: [
-      "You type a message: \"Why?\"",
-      "Then delete it.",
-      "You type again: \"Can we talk?\"",
-      "You stop again. Nothing feels right."
+      "Not every discomfort hurts the same way.",
+      "Some people hate judgment. Some hate silence. Some hate control.",
+      "Your answer shows what your emotions protect first."
     ],
-    question: "What do you decide to do?",
+    question: "What feels more uncomfortable to you?",
     options: [
-      "Ask directly for clarity",
-      "Wait until your emotions settle",
-      "Send a short, simple message"
-    ]
+      "Being judged",
+      "Being ignored",
+      "Being controlled",
+      "Being misunderstood"
+    ],
+    explain: "This means: which situation makes you feel bad or uneasy the fastest?"
   },
   {
     id: "EQ4",
     phase: "P1",
-    stage: "The reply",
-    title: "No blame, just distance",
+    stage: "Memory loop",
+    title: "What comes back",
     story: [
-      "After a while, they reply:",
-      "\"I didn't feel the same anymore. I didn't want to force it.\"",
-      "No anger. No blame.",
-      "Just distance."
+      "Some memories leave quietly.",
+      "Some keep returning when your mind is idle.",
+      "The type of memory matters more than the memory itself."
     ],
-    question: "How do you respond now?",
+    question: "What kind of memories does your brain revisit?",
     options: [
-      "Try to understand their perspective",
-      "Express your feelings honestly",
-      "Accept it and keep your reply minimal"
-    ]
+      "Embarrassing moments",
+      "Emotional moments",
+      "Missed opportunities",
+      "Unsolved situations"
+    ],
+    explain: "This means: what old moments come back into your mind again and again?"
   },
   {
     id: "EQ5",
     phase: "P1",
-    stage: "Final moment",
-    title: "The screen goes dark",
+    stage: "Energy drain",
+    title: "What exhausts you",
     story: [
-      "The conversation ends.",
-      "No more typing. No more notifications. Just silence.",
-      "You are still sitting there, phone in your hand.",
-      "Same room. Different feeling."
+      "Emotional energy does not drain randomly.",
+      "Certain patterns take more from you than others.",
+      "Pick the energy that naturally exhausts you."
     ],
-    question: "What stays with you the most?",
+    question: "What kind of energy naturally drains you?",
     options: [
-      "Understanding what actually happened",
-      "Processing your own emotions",
-      "Letting go and moving forward"
-    ]
+      "Fake positivity",
+      "Emotional dependency",
+      "Constant unpredictability",
+      "Lack of meaning"
+    ],
+    explain: "This means: what kind of mood or behavior makes you feel tired inside?"
   },
   {
     id: "EQ6",
     phase: "P2",
-    stage: "Close friend comparison",
-    title: "A close friend moves ahead",
-    story: [
-      "A close friend reaches a place you wanted to reach.",
-      "You are happy for them, but you also notice your own reaction.",
-      "No one is asking you to explain it.",
-      "You still know what you feel first."
-    ],
-    question: "If a close friend gets ahead of you in life, do you feel jealous?",
+    stage: "Hidden wound",
+    title: "The line that lands",
+    story: [],
+    question: "Which line hurts you the most?",
     options: [
-      "Yes",
-      "No"
-    ]
+      "You're useless.",
+      "You're fake.",
+      "You're replaceable.",
+      "You don't matter."
+    ],
+    explain: "This means: which sentence would feel the most painful to hear?"
+  },
+  {
+    id: "EQ7",
+    phase: "P2",
+    stage: "Secret weakness",
+    title: "What feels weak",
+    story: [],
+    question: "What do you secretly see as weakness?",
+    options: [
+      "Emotional dependency",
+      "Lack of intelligence",
+      "Lack of control",
+      "Needing validation"
+    ],
+    explain: "This means: which thing feels like a weak point to you?"
   },
   {
     id: "EQ8",
     phase: "P2",
-    stage: "Honesty paradox",
-    title: "Safe truth",
-    story: [
-      "Someone gives you full permission to be honest.",
-      "They say there will be no judgment.",
-      "That sounds safe.",
-      "But safety can also make people more careful."
-    ],
-    question: "If someone says, \"Be completely honest, I will not judge you,\" do you become more honest or more careful?",
+    stage: "Room dynamic",
+    title: "When you are ahead",
+    story: [],
+    question: "If you are the smartest person in the room, how do you feel?",
     options: [
-      "More honest",
-      "More careful"
-    ]
+      "Excited",
+      "Bored",
+      "Suspicious",
+      "Responsible"
+    ],
+    explain: "This means: when you know more than everyone there, what feeling comes first?"
   },
   {
     id: "EQ9",
     phase: "P2",
-    stage: "Perfect image",
-    title: "The version people see",
-    story: [
-      "Sometimes people only see the polished version.",
-      "The calm reply. The confident face. The controlled answer.",
-      "But inside, things may be more complicated."
-    ],
-    question: "Do you sometimes try to appear more perfect to others than you actually are?",
+    stage: "Trust fracture",
+    title: "After trust breaks",
+    story: [],
+    question: "If you lose trust in someone, what do you do?",
     options: [
-      "Yes",
-      "No"
-    ]
+      "Disconnect instantly",
+      "Give one last chance",
+      "Quietly reduce attachment",
+      "Test them mentally"
+    ],
+    explain: "This means: when someone no longer feels safe to trust, what is your next move?"
   },
   {
     id: "EQ10",
     phase: "P2",
-    stage: "Impression style",
-    title: "Trying to be noticed",
-    story: [
-      "You want to impress your crush.",
-      "You care about how they see you.",
-      "The question is not what sounds best.",
-      "It is what you would naturally do."
-    ],
-    question: "If you wanted to impress your crush, what would you most naturally do?",
+    stage: "Empty world",
+    title: "When everyone is gone",
+    story: [],
+    question: "If everyone suddenly disappeared, how would you feel?",
     options: [
-      "Try to act cool and confident",
-      "Show your strengths or achievements",
-      "Talk normally, just the way you usually are",
-      "Understand their interests and spend time with them"
-    ]
-  },
-  {
-    id: "EQ11",
-    phase: "P2",
-    stage: "New people",
-    title: "Real self or adjusted self",
-    story: [
-      "You meet new people.",
-      "There is a first impression to manage.",
-      "Some people stay exactly the same.",
-      "Some adjust slightly to the room."
+      "Peaceful",
+      "Empty",
+      "Curious",
+      "Free"
     ],
-    question: "When you meet new people, do you speak as your real self or adjust your personality?",
-    options: [
-      "I am completely real",
-      "I adjust a little depending on the situation"
-    ]
-  },
-  {
-    id: "EQ12",
-    phase: "P2",
-    stage: "Value conflict",
-    title: "Different views",
-    story: [
-      "You and your partner have completely different political views.",
-      "The difference is not small.",
-      "It affects how both of you see people, society, and decisions."
-    ],
-    question: "If you and your partner had completely different political views, would you still choose to stay in the relationship?",
-    options: [
-      "Yes",
-      "No"
-    ]
-  },
-  {
-    id: "EQ13",
-    phase: "P2",
-    stage: "Honesty risk",
-    title: "Truth with consequences",
-    story: [
-      "Being fully honest about yourself could change how someone sees you.",
-      "You might keep the connection.",
-      "You might lose it.",
-      "The choice is between safety and truth."
-    ],
-    question: "If being completely honest about yourself meant risking losing someone important, would you still choose to be fully honest?",
-    options: [
-      "Yes",
-      "No"
-    ]
+    explain: "This means: if you were suddenly alone in the world, what feeling would come first?"
   },
   {
     id: "EQ14",
@@ -1183,7 +1157,8 @@ const eqQuestions = [
     options: [
       "Yes",
       "No"
-    ]
+    ],
+    explain: "This means: if you could save only one of them, would you save the child?"
   },
   {
     id: "EQ15",
@@ -1196,11 +1171,12 @@ const eqQuestions = [
       "Emotion still does not disappear.",
       "Your answer shows how you balance scale and attachment."
     ],
-    question: "If saving five children meant letting one elderly person die, would you still choose the five children?",
+    question: "If saving five children meant one elderly person would die, would you still save the five children?",
     options: [
       "Yes",
       "No"
-    ]
+    ],
+    explain: "This means: would you save five children if one older person could not be saved?"
   },
   {
     id: "EQ16",
@@ -1217,7 +1193,8 @@ const eqQuestions = [
     options: [
       "Yes",
       "No"
-    ]
+    ],
+    explain: "This means: if the choice changes, would you still save the child instead of five older people?"
   },
   {
     id: "EQ17",
@@ -1230,11 +1207,12 @@ const eqQuestions = [
       "The question is where your moral boundary stops.",
       "This is not about approval. It is about the right to live."
     ],
-    question: "Do you believe someone who has committed a serious crime, such as rape, still deserves the right to live?",
+    question: "Do you think someone who committed a very serious crime still has the right to live?",
     options: [
       "Yes",
       "No"
-    ]
+    ],
+    explain: "This means: even if someone did something very wrong, should they still be allowed to live?"
   },
   {
     id: "EQ18",
@@ -1247,11 +1225,12 @@ const eqQuestions = [
       "The truth could hurt them again.",
       "Silence could protect you from guilt."
     ],
-    question: "If you did something that deeply hurt your parents, would you choose to tell them the truth?",
+    question: "If you did something that deeply hurt your parents, would you tell them the truth?",
     options: [
       "Yes",
       "No"
-    ]
+    ],
+    explain: "This means: if you hurt your parents, would you tell them honestly?"
   },
   {
     id: "EQ19",
@@ -1264,11 +1243,12 @@ const eqQuestions = [
       "Now honesty is not just a virtue.",
       "It becomes a consequence."
     ],
-    question: "If telling the truth could destroy someone's life, would you still tell it?",
+    question: "If telling the truth could ruin someone's life, would you still tell it?",
     options: [
       "Yes",
       "No"
-    ]
+    ],
+    explain: "This means: if the truth could badly hurt someone's life, would you still say it?"
   },
   {
     id: "EQ20",
@@ -1281,11 +1261,12 @@ const eqQuestions = [
       "No one can force the choice.",
       "Your answer shows where sacrifice begins and ends."
     ],
-    question: "If sacrificing your own happiness could make multiple people happy, would you do it?",
+    question: "If giving up your own happiness could make many people happy, would you do it?",
     options: [
       "Yes",
       "No"
-    ]
+    ],
+    explain: "This means: would you become less happy so many other people could be happy?"
   }
 ];
 
@@ -1307,13 +1288,24 @@ const phaseRail = document.getElementById("phaseRail");
 const questionKicker = document.getElementById("questionKicker");
 const questionText = document.getElementById("questionText");
 const optionsEl = document.getElementById("options");
+const questionBrief = document.getElementById("questionBrief");
 const prevButton = document.getElementById("prevButton");
+const explainButton = document.getElementById("explainButton");
 const nextButton = document.getElementById("nextButton");
 
 function loadAnswers() {
   try {
     const saved = JSON.parse(localStorage.getItem(EQ_STORAGE_KEY) || "[]");
-    return Array.isArray(saved) ? saved : [];
+    if (!Array.isArray(saved)) return [];
+    return saved.map((answer, index) => {
+      const question = eqQuestions[index];
+      if (!answer || !question) return undefined;
+      const optionIndex = Number(answer.optionIndex);
+      if (!Number.isInteger(optionIndex)) return undefined;
+      if (answer.questionId !== question.id) return undefined;
+      if (question.options[optionIndex] !== answer.optionText) return undefined;
+      return answer;
+    });
   } catch (error) {
     return [];
   }
@@ -1371,10 +1363,13 @@ function renderQuestion() {
   progressFill.style.width = `${((currentQuestion + 1) / eqQuestions.length) * 100}%`;
   questionKicker.textContent = question.id;
   questionText.textContent = question.question;
+  questionBrief.textContent = question.explain || "";
+  questionBrief.hidden = true;
+  explainButton.hidden = !question.explain;
+  explainButton.setAttribute("aria-expanded", "false");
 
   optionsEl.innerHTML = question.options.map((option, optionIndex) => `
     <button class="option ${selected === optionIndex ? "is-selected" : ""}" data-option-index="${optionIndex}" type="button">
-      <span class="option-index">${optionIndex + 1}</span>
       <span class="option-text">${option}</span>
     </button>
   `).join("");
@@ -1434,6 +1429,13 @@ optionsEl.addEventListener("click", (event) => {
 
 prevButton.addEventListener("click", goToPreviousQuestion);
 
+explainButton.addEventListener("click", () => {
+  const question = eqQuestions[currentQuestion];
+  questionBrief.textContent = question.explain || "This question asks what feels right to you.";
+  questionBrief.hidden = !questionBrief.hidden;
+  explainButton.setAttribute("aria-expanded", String(!questionBrief.hidden));
+});
+
 nextButton.addEventListener("click", goToNextQuestion);
 
 document.addEventListener("keydown", (event) => {
@@ -1465,3 +1467,5 @@ renderQuestion();
 </script>
 </body>
 </html>
+
+

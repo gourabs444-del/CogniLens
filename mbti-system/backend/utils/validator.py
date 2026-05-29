@@ -13,6 +13,7 @@ def validate_answers(payload):
     raise ValueError("answers must be a list.")
 
   validated = []
+  mapping_configured = bool(QUESTION_MAPPING_BY_ID)
   for index, answer in enumerate(answers):
     if not isinstance(answer, dict):
       raise ValueError(f"answers[{index}] must be an object.")
@@ -24,9 +25,9 @@ def validate_answers(payload):
     answer_id = answer.get("id")
     mapping = QUESTION_MAPPING_BY_ID.get(answer_id, {})
     phase = answer.get("phase") or mapping.get("phase")
-    traits = answer.get("traits") or mapping.get("traits") or []
+    traits = (answer.get("traits") or mapping.get("traits") or []) if mapping_configured else []
 
-    if answer_id and answer_id not in QUESTION_MAPPING_BY_ID:
+    if mapping_configured and answer_id and answer_id not in QUESTION_MAPPING_BY_ID:
       raise ValueError(f"answers[{index}].id is not a known question.")
     if not isinstance(traits, list):
       raise ValueError(f"answers[{index}].traits must be a list.")

@@ -3,61 +3,77 @@
   window.COGNILENS_PHASES.push({
     id: "P1",
     name: "Phase 1 - Core",
-    displayCount: "6 Questions",
+    displayCount: "5 Questions",
     data: [
       {
-        id: "P1Q1",
+        id: "P1-Q1",
         type: "select",
-        customInput: true,
-        q: "When starting a task, you usually:",
-        options: ["Make a clear plan first", "Start and adjust as you go"],
-        traits: ["J", "P"],
-        explain: "Simple example:\nImagine you are going on a trip. Some people first make a route, packing list, and timing plan. Others start the journey and adjust when they see traffic, weather, or better options. Pick the one that feels closer to your normal style."
+        q: "If someone keeps making the same mistake again and again, what do you secretly assume?",
+        options: [
+          "They are internally conflicted",
+          "They are being irrational",
+          "They do not notice it",
+          "They have weak discipline"
+        ],
+        traits: [],
+        customInput: false,
+        explain: "This means: when someone repeats a mistake, what simple reason comes to your mind first?"
       },
       {
-        id: "P1Q2",
+        id: "P1-Q2",
         type: "select",
-        customInput: true,
-        q: "When making decisions, you rely more on:",
-        options: ["Logic and facts", "Feelings and situation"],
-        traits: ["T", "F"],
-        explain: "Simple example:\nImagine you are buying a phone. One person first compares price, battery, camera, and performance. Another person also notices comfort, mood, look, and whether it fits their daily life. Choose what you usually do first."
+        q: "What disturbs you more?",
+        options: [
+          "A meaningless life",
+          "Losing control",
+          "Emotional betrayal",
+          "Being stuck in the same place"
+        ],
+        traits: [],
+        customInput: false,
+        explain: "This means: which feeling bothers your heart or mind the most?"
       },
       {
-        id: "P1Q3",
+        id: "P1-Q3",
         type: "select",
-        customInput: true,
-        q: "You're more interested in:",
-        options: ["Practical things that are directly useful", "Ideas and possibilities"],
-        traits: ["S", "N"],
-        explain: "Simple example:\nIf someone shows you a new gadget, one person asks, 'How will this help me today?' Another asks, 'What could this become in the future?' Choose the reaction that feels more natural to you."
+        q: "Someone criticizes you. What is your first inner reaction?",
+        options: [
+          "Is their logic valid?",
+          "They did not understand me",
+          "Interesting... what is their motive?",
+          "Fine. I can improve."
+        ],
+        traits: [],
+        customInput: false,
+        explain: "This means: when someone says something negative about you, what is your first thought inside?"
       },
       {
-        id: "P1Q4",
+        id: "P1-Q4",
         type: "select",
-        customInput: true,
-        q: "In your free time, you naturally:",
-        options: ["Stay engaged on your own", "Connect with others"],
-        traits: ["I", "E"],
-        explain: "Simple example:\nAfter a busy week, some people feel better with gaming, music, coding, or quiet time alone. Others feel fresh after calling friends, chatting, or going out. Choose what usually recharges you."
+        q: "What does freedom mean to you?",
+        options: [
+          "Not being controlled by anyone",
+          "Being able to think freely",
+          "Keeping your own identity",
+          "Exploring without restrictions"
+        ],
+        traits: [],
+        customInput: false,
+        explain: "This means: what makes you feel free, like you can be yourself?"
       },
       {
-        id: "P1Q5",
+        id: "P1-Q5",
         type: "select",
-        customInput: true,
-        q: "When there's a deadline:",
-        options: ["You finish early or on time", "You work best close to the deadline"],
-        traits: ["J", "P"],
-        explain: "Simple example:\nBefore an exam or project, some people finish early so their mind feels clear. Others work best when the deadline is close because pressure gives them speed and focus. Choose your real pattern, not the ideal one."
-      },
-      {
-        id: "P1Q6",
-        type: "select",
-        customInput: true,
-        q: "When something is unclear:",
-        options: ["You decide quickly and move on", "You explore more before deciding"],
-        traits: ["J", "P"],
-        explain: "Simple example:\nWhen choosing a restaurant, one person quickly picks a decent place and moves on. Another looks at reviews, menu, distance, and mood before deciding. Choose the style that happens most often with you."
+        q: "If you built an AI, what would you prioritize first?",
+        options: [
+          "Independent reasoning",
+          "Efficiency and output",
+          "Understanding humans",
+          "Creativity and adaptation"
+        ],
+        traits: [],
+        customInput: false,
+        explain: "This means: if you made a smart helper, what would you want it to be best at first?"
       }
     ]
   });

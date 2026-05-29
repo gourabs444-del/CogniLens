@@ -270,6 +270,86 @@
     color: #8d8aa3;
   }
 
+  .turnstile-panel {
+    width: 100%;
+    margin: 2px 0 12px;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1.5px solid #e3e6f4;
+    background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.92));
+    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  }
+
+  .turnstile-panel:hover,
+  .turnstile-panel:focus-within {
+    border-color: rgba(108,92,231,0.42);
+    box-shadow: 0 12px 26px rgba(108,92,231,0.11);
+    transform: translateY(-1px);
+  }
+
+  .turnstile-panel.is-verified {
+    border-color: rgba(16,185,129,0.36);
+    background: linear-gradient(180deg, rgba(236,253,245,0.88), rgba(255,255,255,0.94));
+  }
+
+  .turnstile-copy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .turnstile-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 900;
+    color: #242236;
+    line-height: 1.15;
+  }
+
+  .turnstile-subtitle,
+  .turnstile-status {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #8d8aa3;
+  }
+
+  .turnstile-provider {
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #6c5ce7;
+    padding: 5px 8px;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .turnstile-widget {
+    min-height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .turnstile-status {
+    margin-top: 8px;
+  }
+
+  .bot-trap {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
   /* Login button */
   .login-btn {
   width: 100%;              /* full width */
@@ -745,6 +825,22 @@
         <p class="password-policy" id="password-policy">Use 8+ characters with uppercase, lowercase, number, and symbol.</p>
       </div>
 
+      <div class="turnstile-panel" data-turnstile-panel>
+        <div class="turnstile-copy">
+          <span>
+            <span class="turnstile-title">I'm not a robot</span>
+            <span class="turnstile-subtitle">Real Cloudflare Turnstile verification.</span>
+          </span>
+          <span class="turnstile-provider">Protected</span>
+        </div>
+        <div id="turnstile-widget" class="turnstile-widget" data-turnstile-widget></div>
+        <p class="turnstile-status" data-turnstile-status>Complete the security check before continuing.</p>
+      </div>
+      <div class="bot-trap" aria-hidden="true">
+        <label for="auth-website">Website</label>
+        <input id="auth-website" data-bot-trap type="text" tabindex="-1" autocomplete="off"/>
+      </div>
+
       <button class="login-btn" id="auth-submit" type="submit">Create Account</button>
       <p class="status-message hidden" id="auth-error"></p>
     </form>
@@ -770,7 +866,7 @@
       </button>
     </div>
     <div class="security-note">
-      Protected with Firebase Authentication, provider-based sign-in, and policy-level password validation. Session access is routed through a secure app connection.
+      Protected with Firebase Authentication, Cloudflare Turnstile verification, provider-based sign-in, and policy-level password validation. Session access is routed through a secure app connection.
     </div>
   </div>
 
@@ -782,6 +878,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="../firebase-config.js"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onCogniLensTurnstileLoad" defer></script>
 
 <!-- Firebase Init -->
 <script>
@@ -811,6 +908,14 @@ const authTabs = document.querySelectorAll("[data-auth-mode]");
 const authError = document.getElementById("auth-error");
 const passwordStrength = document.getElementById("password-strength");
 const passwordPolicy = document.getElementById("password-policy");
+const turnstilePanel = document.querySelector("[data-turnstile-panel]");
+const turnstileWidget = document.querySelector("[data-turnstile-widget]");
+const turnstileStatus = document.querySelector("[data-turnstile-status]");
+const botTrapField = document.querySelector("[data-bot-trap]");
+const humanCheckStartedAt = Date.now();
+const turnstileConfig = window.COGNILENS_APP_CONFIG?.turnstile || {};
+let turnstileWidgetId = null;
+let turnstileToken = "";
 
 function getHomepageUrl() {
   return new URL("../pages/dashboard/homepage.html", window.location.href).href;
@@ -847,6 +952,103 @@ function showAuthMessage(message, tone = "warning") {
 function hideAuthMessage() {
   authError.classList.add("hidden");
   authError.textContent = "";
+}
+
+function setTurnstileStatus(message, verified = false) {
+  if (turnstileStatus) turnstileStatus.textContent = message;
+  turnstilePanel?.classList.toggle("is-verified", verified);
+}
+
+function getTurnstileSiteKey() {
+  return String(turnstileConfig.siteKey || "").trim();
+}
+
+function getTurnstileVerifyEndpoint() {
+  const configured = String(turnstileConfig.verifyEndpoint || "").trim();
+  if (configured) return configured;
+  const isLocalStatic = ["localhost", "127.0.0.1"].includes(window.location.hostname) && window.location.port !== "8000";
+  return isLocalStatic ? "http://localhost:8000/api/verify-turnstile" : "/api/verify-turnstile";
+}
+
+function resetTurnstile() {
+  turnstileToken = "";
+  setTurnstileStatus("Complete the security check before continuing.", false);
+  if (window.turnstile && turnstileWidgetId !== null) {
+    window.turnstile.reset(turnstileWidgetId);
+  }
+}
+
+function renderTurnstile() {
+  if (!turnstileWidget || !window.turnstile || turnstileWidgetId !== null) return;
+  const sitekey = getTurnstileSiteKey();
+  if (!sitekey) {
+    setTurnstileStatus("Turnstile site key is missing.");
+    return;
+  }
+
+  turnstileWidgetId = window.turnstile.render("#turnstile-widget", {
+    sitekey,
+    theme: "light",
+    size: "normal",
+    callback(token) {
+      turnstileToken = token;
+      setTurnstileStatus("Security check complete.", true);
+    },
+    "expired-callback"() {
+      turnstileToken = "";
+      setTurnstileStatus("Security check expired. Please verify again.", false);
+    },
+    "error-callback"() {
+      turnstileToken = "";
+      setTurnstileStatus("Security check failed to load. Please retry.", false);
+    }
+  });
+}
+
+window.onCogniLensTurnstileLoad = renderTurnstile;
+window.addEventListener("DOMContentLoaded", renderTurnstile);
+
+async function verifyTurnstileToken() {
+  if (!turnstileToken) {
+    showAuthMessage("Please complete the real Cloudflare security check before continuing.");
+    return false;
+  }
+
+  const response = await fetch(getTurnstileVerifyEndpoint(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token: turnstileToken, action: authMode })
+  }).catch(() => null);
+
+  if (!response) {
+    showAuthMessage("Security verification server is not reachable. Start the CogniLens server and try again.");
+    resetTurnstile();
+    return false;
+  }
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || !result.success) {
+    showAuthMessage("Security verification failed. Please try again.");
+    resetTurnstile();
+    return false;
+  }
+
+  resetTurnstile();
+  return true;
+}
+
+async function validateHumanCheck() {
+  if (botTrapField?.value.trim()) {
+    showAuthMessage("Security check failed. Refresh the page and try again.");
+    return false;
+  }
+
+  if (Date.now() - humanCheckStartedAt < 700) {
+    showAuthMessage("Please wait a moment, then try again.");
+    return false;
+  }
+
+  return verifyTurnstileToken();
 }
 
 function getPasswordScore(password) {
@@ -939,6 +1141,7 @@ function setAuthMode(mode) {
   authPassword.setAttribute("autocomplete", isLogin ? "current-password" : "new-password");
   passwordStrength.style.display = isLogin ? "none" : "grid";
   passwordPolicy.hidden = isLogin;
+  resetTurnstile();
   hideAuthMessage();
 }
 
@@ -962,7 +1165,7 @@ authPassword.addEventListener("input", updatePasswordStrength);
 setAuthMode(authMode);
 updatePasswordStrength();
 
-authForm.addEventListener("submit", function(e) {
+authForm.addEventListener("submit", async function(e) {
   e.preventDefault();
   hideAuthMessage();
   if (isAuthSubmitting) return;
@@ -975,6 +1178,8 @@ authForm.addEventListener("submit", function(e) {
     showAuthMessage("Please use a secure HTTPS connection before signing in.");
     return;
   }
+
+  if (!(await validateHumanCheck())) return;
 
   if (!email || !password || (authMode === "register" && !name)) {
     showAuthMessage("Please fill all required fields.");
@@ -1189,6 +1394,8 @@ window.addEventListener("DOMContentLoaded", () => {
       showAuthMessage("Please use HTTPS before starting provider sign-in.");
       return;
     }
+
+    if (!(await validateHumanCheck())) return;
 
     const provider = getProvider(providerName);
     const auth = firebase.auth();

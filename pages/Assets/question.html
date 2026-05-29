@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -20,8 +20,8 @@
 
   <section class="progress-shell">
     <div class="progress-meta">
-      <span id="progressText">Question 1 / 26</span>
-      <span id="phaseProgressText">P1</span>
+      <span id="progressText">Question 0 / 0</span>
+      <span id="phaseProgressText">No questions</span>
     </div>
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
@@ -37,8 +37,8 @@
   </section>
 
   <section class="question-card" id="questionCard">
-    <div class="question-kicker" id="question-title">Q1</div>
-    <h1 id="question-text">Loading question...</h1>
+    <div class="question-kicker" id="question-title">Draft</div>
+    <h1 id="question-text">No MBTI questions are configured yet.</h1>
     <div id="options" class="options"></div>
     <div class="total-panel" id="totalPanel" hidden>
       <span>Total</span>
@@ -56,13 +56,14 @@
 <section id="phase-screen" class="phase-screen active" aria-modal="true" role="dialog">
   <div id="phase-screen-content">
     <div class="intro-badge">CogniLens Assessment</div>
-    <h2 id="phase-big-title">4 simple phases</h2>
-    <p id="phase-subtitle">You will move through daily choices, interests, real-life situations, and quick two-option questions.</p>
+    <h2 id="phase-big-title">Assessment draft</h2>
+    <p id="phase-subtitle">No questions are configured for this assessment yet.</p>
     <div class="phase-overview" id="phaseOverview"></div>
     <button id="phaseStartButton" class="phase-start-button" type="button">Start Phase 1</button>
   </div>
 </section>
 
+<script type="module" src="../../api/submitTest.js"></script>
 <script src="../../score-system.js"></script>
 <script src="../../script.js"></script>
 <script src="../../mbti-system/frontend/js/phases/phase1.js"></script>
@@ -73,3 +74,5 @@
 <script src="../../mbti-system/frontend/js/driver.js"></script>
 </body>
 </html>
+
+

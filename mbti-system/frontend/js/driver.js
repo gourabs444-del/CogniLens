@@ -1,7 +1,7 @@
 const ACTIVE_PHASE_IDS = new Set(["P1", "P2", "P3", "P4"]);
 const loadedPhaseDefinitions = window.COGNILENS_PHASES || window.COGNILENS_PHASE_DEFINITIONS || [];
 const phaseDefinitions = loadedPhaseDefinitions.filter((phase) => ACTIVE_PHASE_IDS.has(phase.id));
-if (!phaseDefinitions.length) { throw new Error('CogniLens phase files were not loaded.'); }
+if (!phaseDefinitions.length) console.warn("CogniLens phase files are blank.");
 const RESULT_PAGE_PATH = window.COGNILENS_RESULT_PATH
   || (window.location.pathname.includes("/mbti-system/")
     ? "../../../pages/dashboard/result.html"
@@ -91,6 +91,7 @@ function canRestoreAnswer(answer, question) {
 }
 
 function restoreAssessmentProgress() {
+  if (!questions.length) return false;
   if (!isQuestionSettingEnabled("autosaveProgress", true)) return false;
   try {
     const saved = JSON.parse(window.localStorage?.getItem(COGNILENS_ASSESSMENT_PROGRESS_KEY)) || null;
@@ -101,7 +102,7 @@ function restoreAssessmentProgress() {
       restoredAnswers.push(saved.answers[index]);
     }
     answers = restoredAnswers;
-    current = Math.max(0, Math.min(Number(saved.current) || 0, answers.length, questions.length - 1));
+    current = Math.max(0, Math.min(Number(saved.current) || 0, answers.length, Math.max(0, questions.length - 1)));
     maxUnlockedPhaseIndex = Math.max(0, Math.min(Number(saved.maxUnlockedPhaseIndex) || 0, questions[current]?.phaseIndex || 0));
     selected = null;
     return answers.length > 0 || current > 0;
@@ -120,7 +121,7 @@ function renderOverview() {
 }
 
 function currentPhase() {
-  return phaseDefinitions[questions[current]?.phaseIndex || 0];
+  return phaseDefinitions[questions[current]?.phaseIndex || 0] || phaseDefinitions[0] || { id: "Draft", name: "Assessment", data: [] };
 }
 
 function isRapidFirePhase(phase = currentPhase()) {
@@ -150,6 +151,14 @@ function renderPipeline() {
 }
 
 function updateProgress() {
+  if (!questions.length) {
+    progressFill.style.width = "0%";
+    progressText.textContent = "Question 0 / 0";
+    phaseProgressText.textContent = "No questions";
+    phaseName.textContent = "Assessment";
+    return;
+  }
+
   const phase = currentPhase();
   const percent = current >= questions.length ? 100 : (current / questions.length) * 100;
   progressFill.style.width = `${percent}%`;
@@ -169,6 +178,23 @@ function stopTimer() {
   if (timerId) clearInterval(timerId);
   timerId = null;
   timerPanel.hidden = true;
+}
+
+function renderEmptyAssessmentState() {
+  stopTimer();
+  hidePhaseOverlay();
+  renderPipeline();
+  updateProgress();
+  selected = null;
+  questionTitle.textContent = "Draft";
+  questionText.textContent = "No MBTI questions are configured yet.";
+  optionsEl.innerHTML = "";
+  totalPanel.hidden = true;
+  errorEl.textContent = "Add your new question set and scoring algorithm to activate this assessment.";
+  explainBox.textContent = "";
+  explainBox.style.display = "none";
+  helpButton.hidden = true;
+  nextButton.hidden = true;
 }
 
 function startTimer(seconds) {
@@ -195,6 +221,10 @@ function startTimer(seconds) {
 }
 
 function getPhaseIntroText(phase, isInitial) {
+  if (!phase || !phase.data?.length) {
+    return "No questions are configured for this assessment yet.";
+  }
+
   if (isInitial) {
     return "You will move through 4 short phases with daily choices, interests, real-life situations, and quick two-option questions. Answer naturally and do not overthink.";
   }
@@ -227,6 +257,11 @@ function hidePhaseOverlay() {
 }
 
 function loadQuestion(showTransition = false) {
+  if (!questions.length) {
+    renderEmptyAssessmentState();
+    return;
+  }
+
   if (current >= questions.length) {
     finishTest();
     return;
@@ -611,7 +646,27 @@ function buildResult() {
   return window.CogniLensCollector.buildResult(answers);
 }
 
+function waitForLocalEngine(timeoutMs = 1800) {
+  if (window.CogniLensAPI?.submitTest) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    const startedAt = performance.now();
+    const tick = () => {
+      if (window.CogniLensAPI?.submitTest) {
+        resolve(true);
+        return;
+      }
+      if (performance.now() - startedAt >= timeoutMs) {
+        resolve(false);
+        return;
+      }
+      setTimeout(tick, 40);
+    };
+    tick();
+  });
+}
+
 async function analyzeResult() {
+  await waitForLocalEngine();
   const localResult = buildResult();
   if (!window.CogniLensCollector?.analyzeWithBackend) return localResult;
 
@@ -709,5 +764,9 @@ window.addEventListener("popstate", (event) => {
 const restoredAssessmentProgress = restoreAssessmentProgress();
 renderOverview();
 writeQuestionHistory(true);
-showPhaseOverlay(phaseDefinitions[questions[current]?.phaseIndex || 0], current === 0 && !restoredAssessmentProgress);
+if (questions.length) {
+  showPhaseOverlay(phaseDefinitions[questions[current]?.phaseIndex || 0], current === 0 && !restoredAssessmentProgress);
+} else {
+  renderEmptyAssessmentState();
+}
 

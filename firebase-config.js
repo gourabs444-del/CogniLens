@@ -14,5 +14,10 @@ window.COGNILENS_APP_CONFIG = {
       google: true,
       facebook: true
     }
+  },
+
+  turnstile: {
+    siteKey: "1x00000000000000000000AA",
+    verifyEndpoint: "/api/verify-turnstile"
   }
 };

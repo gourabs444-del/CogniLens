@@ -1,6 +1,6 @@
 const EQ_TOTAL_IDS = [
   "EQ1", "EQ2", "EQ3", "EQ4", "EQ5",
-  "EQ6", "EQ8", "EQ9", "EQ10", "EQ11", "EQ12", "EQ13",
+  "EQ6", "EQ7", "EQ8", "EQ9", "EQ10",
   "EQ14", "EQ15", "EQ16", "EQ17", "EQ18", "EQ19", "EQ20"
 ];
 
@@ -120,57 +120,66 @@ function getMoralType(scores) {
 
 function scorePhaseOne(answerMap, state) {
   const q1 = optionIndex(answerMap, "EQ1");
-  if (q1 === 0) addMany(state, [["rumination", 1, 1], ["attachmentIntensity", 1, 0.75], ["closureSeeking", 1, 0.65]], "Reads old messages first");
-  if (q1 === 1) addMany(state, [["attachmentIntensity", 1, 0.9], ["impulseControl", -1, 0.75], ["emotionalRegulation", -1, 0.45]], "Feels like replying immediately");
-  if (q1 === 2) addMany(state, [["emotionalRegulation", 1, 1], ["impulseControl", 1, 0.85], ["avoidance", 1, 0.45], ["resilience", 1, 0.45]], "Puts phone aside before reacting");
+  if (q1 === 0) addMany(state, [["impressionManagement", 1, 0.8], ["boundaryStrength", 1, 0.55], ["selfPreservation", 1, 0.35]], "Sees charm as emotionally dangerous");
+  if (q1 === 1) addMany(state, [["empathy", 1, 0.45], ["logic", -1, 0.35], ["attachmentIntensity", 1, 0.25]], "Feels excessive logic can be emotionally unsafe");
+  if (q1 === 2) addMany(state, [["emotionalRegulation", 1, 0.75], ["boundaryStrength", 1, 0.5], ["avoidance", 1, 0.25]], "Feels emotional intensity can become dangerous");
+  if (q1 === 3) addMany(state, [["closureSeeking", 1, 0.75], ["rumination", 1, 0.6], ["selfPreservation", 1, 0.25]], "Feels quiet people are emotionally hard to read");
 
   const q2 = optionIndex(answerMap, "EQ2");
-  if (q2 === 0) addMany(state, [["closureSeeking", 1, 1], ["rumination", 1, 0.75], ["logic", 1, 0.35]], "Tries to locate where things changed");
-  if (q2 === 1) addMany(state, [["emotionalRegulation", 1, 0.8], ["authenticity", 1, 0.35], ["attachmentIntensity", 1, 0.35]], "Feels emotion while staying composed");
-  if (q2 === 2) addMany(state, [["avoidance", 1, 1], ["emotionalRegulation", -1, 0.35], ["resilience", 1, 0.2]], "Wants distraction from the thought");
+  if (q2 === 0) addMany(state, [["attachmentIntensity", 1, 0.7], ["innerConflict", 1, 0.45], ["resilience", 1, 0.25]], "Drawn to thunderstorm-like emotional intensity");
+  if (q2 === 1) addMany(state, [["selfPreservation", 1, 0.55], ["rumination", 1, 0.45], ["emotionalRegulation", 1, 0.25]], "Drawn to cold, contained emotional weather");
+  if (q2 === 2) addMany(state, [["resilience", 1, 0.85], ["emotionalRegulation", 1, 0.55], ["avoidance", -1, 0.2]], "Drawn to bright and open emotional weather");
+  if (q2 === 3) addMany(state, [["closureSeeking", 1, 0.65], ["rumination", 1, 0.55], ["logic", 1, 0.25]], "Drawn to foggy, ambiguous emotional weather");
 
   const q3 = optionIndex(answerMap, "EQ3");
-  if (q3 === 0) addMany(state, [["directCommunication", 1, 1], ["truthCourage", 1, 0.55], ["closureSeeking", 1, 0.6]], "Asks directly for clarity");
-  if (q3 === 1) addMany(state, [["emotionalRegulation", 1, 1], ["impulseControl", 1, 0.85], ["directCommunication", -1, 0.2]], "Waits until emotions settle");
-  if (q3 === 2) addMany(state, [["directCommunication", 1, 0.55], ["boundaryStrength", 1, 0.45], ["emotionalRegulation", 1, 0.4]], "Sends a short simple message");
+  if (q3 === 0) addMany(state, [["impressionManagement", 1, 0.75], ["validationSeeking", 1, 0.65], ["authenticity", -1, 0.2]], "Being judged feels uncomfortable");
+  if (q3 === 1) addMany(state, [["attachmentIntensity", 1, 0.8], ["validationSeeking", 1, 0.7], ["avoidance", -1, 0.2]], "Being ignored feels uncomfortable");
+  if (q3 === 2) addMany(state, [["boundaryStrength", 1, 0.9], ["selfPreservation", 1, 0.65], ["egoControl", 1, 0.3]], "Being controlled feels uncomfortable");
+  if (q3 === 3) addMany(state, [["authenticity", 1, 0.8], ["closureSeeking", 1, 0.65], ["directCommunication", 1, 0.35]], "Being misunderstood feels uncomfortable");
 
   const q4 = optionIndex(answerMap, "EQ4");
-  if (q4 === 0) addMany(state, [["empathy", 1, 1], ["compassion", 1, 0.65], ["attachmentIntensity", -1, 0.15]], "Tries to understand their perspective");
-  if (q4 === 1) addMany(state, [["authenticity", 1, 0.85], ["directCommunication", 1, 0.65], ["attachmentIntensity", 1, 0.35]], "Expresses feelings honestly");
-  if (q4 === 2) addMany(state, [["selfPreservation", 1, 0.55], ["boundaryStrength", 1, 0.7], ["avoidance", 1, 0.25], ["emotionalRegulation", 1, 0.35]], "Accepts it with a minimal reply");
+  if (q4 === 0) addMany(state, [["rumination", 1, 0.85], ["impressionManagement", 1, 0.55], ["validationSeeking", 1, 0.25]], "Revisits embarrassing memories");
+  if (q4 === 1) addMany(state, [["attachmentIntensity", 1, 0.8], ["empathy", 1, 0.45], ["rumination", 1, 0.35]], "Revisits emotional memories");
+  if (q4 === 2) addMany(state, [["closureSeeking", 1, 0.65], ["envy", 1, 0.35], ["resilience", -1, 0.2]], "Revisits missed opportunities");
+  if (q4 === 3) addMany(state, [["closureSeeking", 1, 1], ["logic", 1, 0.55], ["rumination", 1, 0.65]], "Revisits unsolved situations");
 
   const q5 = optionIndex(answerMap, "EQ5");
-  if (q5 === 0) addMany(state, [["closureSeeking", 1, 0.9], ["logic", 1, 0.45], ["rumination", 1, 0.35]], "What happened stays in mind");
-  if (q5 === 1) addMany(state, [["emotionalRegulation", 1, 0.55], ["attachmentIntensity", 1, 0.45], ["authenticity", 1, 0.35]], "Own emotions stay most present");
-  if (q5 === 2) addMany(state, [["resilience", 1, 1], ["selfPreservation", 1, 0.45], ["avoidance", -1, 0.15]], "Letting go and moving forward stays most present");
+  if (q5 === 0) addMany(state, [["authenticity", 1, 0.75], ["socialAdaptability", -1, 0.25], ["boundaryStrength", 1, 0.3]], "Drained by fake positivity");
+  if (q5 === 1) addMany(state, [["boundaryStrength", 1, 0.8], ["selfPreservation", 1, 0.6], ["attachmentIntensity", -1, 0.25]], "Drained by emotional dependency");
+  if (q5 === 2) addMany(state, [["emotionalRegulation", 1, 0.7], ["selfPreservation", 1, 0.5], ["resilience", -1, 0.2]], "Drained by constant unpredictability");
+  if (q5 === 3) addMany(state, [["closureSeeking", 1, 0.7], ["authenticity", 1, 0.45], ["resilience", -1, 0.2]], "Drained by lack of meaning");
 }
-
 function scorePhaseTwo(answerMap, state) {
-  if (answerText(answerMap, "EQ6") === "yes") addMany(state, [["envy", 1, 1.2], ["egoControl", -1, 0.45], ["rumination", 1, 0.35]], "Admits jealousy when a close friend moves ahead");
-  if (answerText(answerMap, "EQ6") === "no") addMany(state, [["envy", -1, 0.9], ["egoControl", 1, 0.65], ["emotionalRegulation", 1, 0.25]], "Does not report jealousy toward a close friend");
+  const q6 = optionIndex(answerMap, "EQ6");
+  if (q6 === 0) addMany(state, [["validationSeeking", 1, 0.8], ["selfPreservation", 1, 0.35], ["egoControl", -1, 0.25]], "Most affected by being called useless");
+  if (q6 === 1) addMany(state, [["authenticity", 1, 0.85], ["impressionManagement", 1, 0.4], ["truthCourage", 1, 0.25]], "Most affected by being called fake");
+  if (q6 === 2) addMany(state, [["attachmentIntensity", 1, 0.75], ["validationSeeking", 1, 0.45], ["envy", 1, 0.25]], "Most affected by being called replaceable");
+  if (q6 === 3) addMany(state, [["attachment", 1, 0.65], ["validationSeeking", 1, 0.65], ["selfPreservation", -1, 0.15]], "Most affected by being told they do not matter");
 
-  if (answerText(answerMap, "EQ8") === "more honest") addMany(state, [["honesty", 1, 1], ["truthCourage", 1, 0.9], ["authenticity", 1, 0.55]], "Safety increases honesty");
-  if (answerText(answerMap, "EQ8") === "more careful") addMany(state, [["selfPreservation", 1, 0.65], ["socialAdaptability", 1, 0.55], ["impressionManagement", 1, 0.35], ["honesty", -1, 0.35]], "Safety still creates caution");
+  const q7 = optionIndex(answerMap, "EQ7");
+  if (q7 === 0) addMany(state, [["boundaryStrength", 1, 0.7], ["attachmentIntensity", -1, 0.25], ["selfPreservation", 1, 0.35]], "Sees emotional dependency as weakness");
+  if (q7 === 1) addMany(state, [["logic", 1, 0.85], ["egoControl", 1, 0.35], ["validationSeeking", 1, 0.2]], "Sees lack of intelligence as weakness");
+  if (q7 === 2) addMany(state, [["egoControl", 1, 0.75], ["emotionalRegulation", 1, 0.55], ["selfPreservation", 1, 0.25]], "Sees lack of control as weakness");
+  if (q7 === 3) addMany(state, [["validationSeeking", -1, 0.55], ["egoControl", 1, 0.45], ["authenticity", 1, 0.25]], "Sees needing validation as weakness");
 
-  if (answerText(answerMap, "EQ9") === "yes") addMany(state, [["impressionManagement", 1, 1.1], ["validationSeeking", 1, 0.95], ["authenticity", -1, 0.6], ["egoControl", -1, 0.35]], "Tries to appear more perfect");
-  if (answerText(answerMap, "EQ9") === "no") addMany(state, [["authenticity", 1, 0.95], ["egoControl", 1, 0.55], ["impressionManagement", -1, 0.4]], "Does not report perfection performance");
+  const q8 = optionIndex(answerMap, "EQ8");
+  if (q8 === 0) addMany(state, [["egoControl", -1, 0.3], ["validationSeeking", 1, 0.45], ["logic", 1, 0.35]], "Feels excited being the most intelligent in the room");
+  if (q8 === 1) addMany(state, [["logic", 1, 0.55], ["socialAdaptability", -1, 0.3], ["empathy", -1, 0.2]], "Feels bored being the most intelligent in the room");
+  if (q8 === 2) addMany(state, [["rumination", 1, 0.55], ["selfPreservation", 1, 0.45], ["egoControl", 1, 0.2]], "Feels suspicious being the most intelligent in the room");
+  if (q8 === 3) addMany(state, [["empathy", 1, 0.65], ["consequentialThinking", 1, 0.55], ["egoControl", 1, 0.35]], "Feels responsible being the most intelligent in the room");
+
+  const q9 = optionIndex(answerMap, "EQ9");
+  if (q9 === 0) addMany(state, [["boundaryStrength", 1, 0.9], ["selfPreservation", 1, 0.65], ["attachment", -1, 0.35]], "Disconnects instantly after losing trust");
+  if (q9 === 1) addMany(state, [["compassion", 1, 0.65], ["attachment", 1, 0.55], ["boundaryStrength", -1, 0.2]], "Gives one last chance after losing trust");
+  if (q9 === 2) addMany(state, [["emotionalRegulation", 1, 0.75], ["boundaryStrength", 1, 0.55], ["attachmentIntensity", -1, 0.25]], "Quietly reduces attachment after trust loss");
+  if (q9 === 3) addMany(state, [["logic", 1, 0.65], ["rumination", 1, 0.5], ["closureSeeking", 1, 0.45]], "Mentally tests someone after trust loss");
 
   const q10 = optionIndex(answerMap, "EQ10");
-  if (q10 === 0) addMany(state, [["validationSeeking", 1, 0.8], ["lust", 1, 0.7], ["impressionManagement", 1, 0.7], ["authenticity", -1, 0.25]], "Would act cool and confident for a crush");
-  if (q10 === 1) addMany(state, [["validationSeeking", 1, 0.95], ["impressionManagement", 1, 0.85], ["lust", 1, 0.45], ["greed", 1, 0.22], ["egoControl", -1, 0.25]], "Would show strengths or achievements");
-  if (q10 === 2) addMany(state, [["authenticity", 1, 1], ["egoControl", 1, 0.55], ["lust", -1, 0.25], ["validationSeeking", -1, 0.25]], "Would talk normally with a crush");
-  if (q10 === 3) addMany(state, [["empathy", 1, 0.65], ["socialAdaptability", 1, 0.65], ["attachment", 1, 0.35], ["lust", 1, 0.25]], "Would understand their interests and spend time");
-
-  if (answerText(answerMap, "EQ11") === "i am completely real") addMany(state, [["authenticity", 1, 1], ["socialAdaptability", -1, 0.2], ["impressionManagement", -1, 0.25]], "Stays completely real with new people");
-  if (answerText(answerMap, "EQ11") === "i adjust a little depending on the situation") addMany(state, [["socialAdaptability", 1, 1], ["impressionManagement", 1, 0.45], ["authenticity", -1, 0.2]], "Adjusts slightly around new people");
-
-  if (answerText(answerMap, "EQ12") === "yes") addMany(state, [["ideologicalTolerance", 1, 1], ["attachment", 1, 0.4], ["boundaryStrength", -1, 0.2]], "Would stay despite different political views");
-  if (answerText(answerMap, "EQ12") === "no") addMany(state, [["boundaryStrength", 1, 0.75], ["selfPreservation", 1, 0.45], ["ideologicalTolerance", -1, 0.35]], "Would not stay with completely different political views");
-
-  if (answerText(answerMap, "EQ13") === "yes") addMany(state, [["honesty", 1, 1], ["truthCourage", 1, 1], ["authenticity", 1, 0.55], ["attachment", -1, 0.2]], "Would be fully honest even if someone important could leave");
-  if (answerText(answerMap, "EQ13") === "no") addMany(state, [["attachment", 1, 0.75], ["selfPreservation", 1, 0.55], ["honesty", -1, 0.45], ["truthCourage", -1, 0.5]], "May protect connection over full honesty");
+  if (q10 === 0) addMany(state, [["selfPreservation", 1, 0.65], ["avoidance", 1, 0.45], ["attachmentIntensity", -1, 0.35]], "Feels peace if everyone disappears");
+  if (q10 === 1) addMany(state, [["attachmentIntensity", 1, 0.85], ["attachment", 1, 0.55], ["validationSeeking", 1, 0.25]], "Feels empty if everyone disappears");
+  if (q10 === 2) addMany(state, [["logic", 1, 0.6], ["closureSeeking", 1, 0.45], ["emotionalRegulation", 1, 0.25]], "Feels curious if everyone disappears");
+  if (q10 === 3) addMany(state, [["selfPreservation", 1, 0.7], ["boundaryStrength", 1, 0.55], ["avoidance", 1, 0.2]], "Feels free if everyone disappears");
 }
-
 function scorePhaseThree(answerMap, state, moralScores) {
   let contradiction = 0;
 
@@ -327,4 +336,12 @@ function scoreEQ(answers) {
 
 window.scoreCogniLensEQ = function scoreCogniLensEQ(answers) {
   return scoreEQ(answers);
+};
+
+const legacyScoreCogniLensEQ = window.scoreCogniLensEQ;
+window.scoreCogniLensEQ = function scoreCogniLensEQ(answers, questions) {
+  if (window.CogniLensAPI?.submitTest) {
+    return window.CogniLensAPI.submitTest({ testType: "eq", answers, questions });
+  }
+  return legacyScoreCogniLensEQ(answers, questions);
 };

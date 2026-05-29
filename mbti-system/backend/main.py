@@ -4,8 +4,8 @@ import sys
 
 from engine.contradiction_engine import analyze_contradictions
 from engine.behavior_engine import analyze_behavior_traits
+from engine.cognitive_engine import fuse_function_totals
 from engine.decision_engine import build_decision
-from engine.fusion_engine import fuse_dimension_totals
 from engine.mcq_engine import score_answers
 from llm.llm_engine import analyze_custom_answers, generate_insight
 from utils.validator import validate_answers
@@ -35,8 +35,16 @@ else:
 async def analyze(payload):
   answers = validate_answers(payload)
   llm_result = await analyze_custom_answers(answers)
-  scoring = score_answers(answers, llm_result.get("answerScores"))
-  fused_totals = fuse_dimension_totals(scoring, llm_result.get("aggregateScores"))
+  scoring = score_answers(
+    answers,
+    llm_result.get("answerScores"),
+    llm_result.get("answerFunctionScores"),
+  )
+  fused_totals = scoring.get("totals", {})
+  function_totals = fuse_function_totals(
+    scoring.get("mcqFunctionTotals"),
+    scoring.get("apiFunctionTotals"),
+  )
   contradiction = analyze_contradictions(answers, scoring, llm_result)
   behavior = analyze_behavior_traits(answers)
   result = build_decision(
@@ -44,12 +52,27 @@ async def analyze(payload):
     contradiction=contradiction,
     phase_totals=scoring.get("phaseTotals"),
     scoring_meta=scoring.get("reaction"),
+    function_scores=function_totals,
   )
   result["answersUsed"] = len(answers)
   result["phaseTotals"] = scoring.get("phaseTotals")
+  result["phaseFunctionTotals"] = scoring.get("phaseFunctionTotals")
+  result["functionMerge"] = {
+    "rule": "Function scoring is not configured.",
+    "mcqFunctionTotals": scoring.get("mcqFunctionTotals"),
+    "apiFunctionTotals": scoring.get("apiFunctionTotals"),
+  }
   result["reaction"] = scoring.get("reaction")
   result["contradictions"] = contradiction
+  result["contradictionList"] = [item.get("label") for item in contradiction.get("incidents", [])]
+  result["contradictionScore"] = contradiction.get("score")
+  result["emotionalLogicalConflict"] = contradiction.get("emotionalLogicalConflict")
+  result["mask_type"] = result.get("mask", {}).get("selfImageType")
+  result["mask_personality"] = result.get("mask", {}).get("selfImageType")
+  result["real_personality"] = result.get("mask", {}).get("realPatternType")
+  result["shadow_tendencies"] = result.get("shadowTendencies", [])
   result["behavioralTraits"] = behavior
+  result["behavioral_tendencies"] = [item.get("label") for item in behavior.get("strongest", [])]
   if behavior.get("strongest"):
     result["tags"] = [
       *result.get("tags", []),

@@ -197,14 +197,14 @@
 </div>
 
 <script src="../../score-system.js"></script>
-<script src="../../potential-system.js?v=4"></script>
+<script src="../../potential-system.js?v=5"></script>
 <script src="../../script.js"></script>
 <script>
 const fallbackResult = {
-  type: "INTJ",
-  title: "Strategic Systems Thinker",
-  metrics: { I: 76, N: 82, T: 71, J: 78 },
-  confidence: 84
+  type: "UNCL",
+  title: "Scoring Algorithm Pending",
+  metrics: { I: 50, N: 50, T: 50, J: 50 },
+  confidence: 0
 };
 
 function clampMetric(value, fallback) {
@@ -212,12 +212,94 @@ function clampMetric(value, fallback) {
   return Number.isFinite(numeric) ? Math.max(0, Math.min(100, Math.round(numeric))) : fallback;
 }
 
-function buildTypeFromMetrics(metrics) {
-  if (typeof getPersonalityTypeFromMetrics === "function") return getPersonalityTypeFromMetrics(metrics);
-  return `${metrics.I >= 50 ? "I" : "E"}${metrics.N >= 50 ? "N" : "S"}${metrics.T >= 50 ? "T" : "F"}${metrics.J >= 50 ? "J" : "P"}`;
+function normalizeConfidenceValue(value, fallback = 0) {
+  if (value && typeof value === "object") return clampMetric(value.score, fallback);
+  return clampMetric(value, fallback);
 }
 
-function normalizeResult(data) {
+function buildTypeFromMetrics(metrics) {
+  if (typeof getPersonalityTypeFromMetrics === "function") return getPersonalityTypeFromMetrics(metrics);
+  return "UNCL";
+}
+
+function resultAnswerCount(data = {}) {
+  return Number(data.answeredCount || data.answersUsed || data.answers?.length || data.meta?.answersUsed || 0);
+}
+
+function hasScoreObject(source) {
+  return Boolean(source && typeof source === "object" && !Array.isArray(source) && Object.keys(source).length);
+}
+
+function metricsAreNeutral(metrics = {}) {
+  return ["I", "N", "T", "J"].every(function (key) {
+    return Math.round(Number(metrics?.[key]) || 50) === 50;
+  });
+}
+
+function hasResultSignal(data = {}) {
+  return Boolean(
+    data &&
+    data !== fallbackResult &&
+    (
+      (data.type && data.type !== "UNCL") ||
+      resultAnswerCount(data) > 0 ||
+      hasScoreObject(data.mbti) ||
+      hasScoreObject(data.breakdown) ||
+      hasScoreObject(data.traitScores) ||
+      hasScoreObject(data.cognitiveFunctions)
+    )
+  );
+}
+
+function shouldRepairResult(data = {}) {
+  return Boolean(
+    Array.isArray(data.answers) &&
+    data.answers.length &&
+    (
+      !data.type ||
+      data.type === "UNCL" ||
+      metricsAreNeutral(data.metrics) ||
+      !hasScoreObject(data.mbti || data.breakdown) ||
+      normalizeConfidenceValue(data.confidenceScore ?? data.modelConfidence ?? data.confidence, 0) === 0 ||
+      !data.potential
+    )
+  );
+}
+
+async function loadBrowserEngine() {
+  if (window.CogniLensAPI?.submitTest) return window.CogniLensAPI.submitTest;
+  try {
+    await import("../../api/submitTest.js");
+  } catch (error) {
+    console.warn("CogniLens browser engine unavailable:", error);
+  }
+  return window.CogniLensAPI?.submitTest || null;
+}
+
+async function repairResultFromAnswers(data = {}) {
+  if (!shouldRepairResult(data)) return data;
+  const submitTest = await loadBrowserEngine();
+  if (!submitTest) return data;
+
+  try {
+    const repaired = submitTest({ testType: "mbti", answers: data.answers });
+    const merged = {
+      ...data,
+      ...repaired,
+      answers: data.answers,
+      savedAt: data.savedAt || new Date().toISOString(),
+      source: repaired.source || "browser-engine"
+    };
+    if (typeof saveCogniLensResult === "function") saveCogniLensResult(merged);
+    else localStorage.setItem("cognilensResult", JSON.stringify(merged));
+    return merged;
+  } catch (error) {
+    console.warn("CogniLens result repair failed:", error);
+    return data;
+  }
+}
+
+function normalizeResult(data = {}) {
   const rawMetrics = data?.totals && typeof getPersonalityMetrics === "function" ? getPersonalityMetrics(data.totals) : data?.metrics;
   const metrics = {
     I: clampMetric(rawMetrics?.I, fallbackResult.metrics.I),
@@ -226,13 +308,17 @@ function normalizeResult(data) {
     J: clampMetric(rawMetrics?.J, fallbackResult.metrics.J)
   };
   const score = data?.totals && typeof getPersonalityResult === "function" ? getPersonalityResult(data.totals) : null;
-  const type = score?.type || data?.type || buildTypeFromMetrics(metrics);
+  const hasSignal = hasResultSignal(data);
+  const metricType = hasSignal ? buildTypeFromMetrics(metrics) : "UNCL";
+  const type = !hasSignal
+    ? "UNCL"
+    : (data.type && data.type !== "UNCL" ? data.type : (score?.type && score.type !== "UNCL" ? score.type : metricType));
   return {
     ...fallbackResult,
     ...data,
     metrics,
     type,
-    confidence: score?.confidence ?? data?.confidence ?? fallbackResult.confidence,
+    confidence: normalizeConfidenceValue(data.confidenceScore ?? data.modelConfidence ?? data.confidence, score?.confidence ?? fallbackResult.confidence),
     title: typeof getPersonalityTitle === "function" ? getPersonalityTitle(type) : (data?.title || fallbackResult.title)
   };
 }
@@ -254,62 +340,83 @@ function setText(selector, value) {
 function renderList(selector, items, icon) {
   const container = document.querySelector(selector);
   if (!container) return;
-  container.innerHTML = items.map((item) => `
-    <div class="flex items-start gap-2">
-      <span class="material-symbols-outlined !text-[16px] mt-0.5 text-black/35">${icon}</span>
-      <span class="text-[13px] font-semibold leading-relaxed text-black/60">${escapeHtml(item)}</span>
-    </div>
-  `).join("");
+  container.innerHTML = (items || []).map(function (item) {
+    return '<div class="flex items-start gap-2">' +
+      '<span class="material-symbols-outlined !text-[16px] mt-0.5 text-black/35">' + icon + '</span>' +
+      '<span class="text-[13px] font-semibold leading-relaxed text-black/60">' + escapeHtml(item) + '</span>' +
+    '</div>';
+  }).join("");
 }
 
-const rawResult = typeof getCogniLensResult === "function" ? getCogniLensResult() : null;
-const result = normalizeResult(rawResult || fallbackResult);
-const potential = typeof getCogniLensPotential === "function" ? getCogniLensPotential(result) : null;
+let rawResult = typeof getCogniLensResult === "function" ? getCogniLensResult() : null;
+let result = normalizeResult(rawResult || fallbackResult);
+let potential = typeof getCogniLensPotential === "function" ? getCogniLensPotential(result) : null;
 
 function renderPotential() {
-  if (!potential) return;
+  if (!potential) {
+    setText("[data-potential-title]", "Potential map pending");
+    setText("[data-potential-copy]", "Take the test or refresh after a completed result so the API can calculate your potential map.");
+    setText("[data-scope-score]", "0");
+    setText("[data-scope-focus]", "Pending answers");
+    setText("[data-field-count]", "0 fields");
+    document.querySelector("[data-scope-graph]").innerHTML = "";
+    document.querySelector("[data-field-grid]").innerHTML = "";
+    renderList("[data-strength-list]", [], "bolt");
+    renderList("[data-risk-list]", [], "warning");
+    renderList("[data-plan-list]", [], "check_circle");
+    return;
+  }
   const top = potential.topFields[0];
-  setText("[data-potential-title]", `${potential.type} potential map`);
+  setText("[data-potential-title]", result.type + " potential map");
   setText("[data-potential-copy]", potential.connectiveCopy || potential.userLine);
   setText("[data-scope-score]", top.score);
   setText("[data-scope-focus]", top.title);
-  setText("[data-field-count]", `${potential.topFields.length} fields`);
+  setText("[data-field-count]", potential.topFields.length + " fields");
   document.querySelector("[data-scope-ring]")?.style.setProperty("--score", top.score);
   document.querySelector("[data-scope-ring]")?.style.setProperty("--scope-color", top.color);
 
-  document.querySelector("[data-scope-graph]").innerHTML = potential.topFields.map((field) => `
-    <div class="scope-row">
-      <span class="truncate text-[12px] font-extrabold text-black/65">${escapeHtml(field.shortTitle || field.title)}</span>
-      <div class="scope-track"><div class="scope-fill" style="width:${field.score}%;background:${field.color}"></div></div>
-      <span class="text-right text-[12px] font-black text-black/60">${field.score}%</span>
-    </div>
-  `).join("");
+  document.querySelector("[data-scope-graph]").innerHTML = potential.topFields.map(function (field) {
+    return '<div class="scope-row">' +
+      '<span class="truncate text-[12px] font-extrabold text-black/65">' + escapeHtml(field.shortTitle || field.title) + '</span>' +
+      '<div class="scope-track"><div class="scope-fill" style="width:' + field.score + '%;background:' + field.color + '"></div></div>' +
+      '<span class="text-right text-[12px] font-black text-black/60">' + field.score + '%</span>' +
+    '</div>';
+  }).join("");
 
-  document.querySelector("[data-field-grid]").innerHTML = potential.topFields.map((field, index) => `
-    <article class="field-card rounded-[1.6rem] p-5">
-      <div class="flex items-start justify-between gap-4 mb-4">
-        <div class="min-w-0">
-          <span class="text-[10px] font-black uppercase tracking-[0.18em]" style="color:${field.color}">${String(index + 1).padStart(2, "0")}</span>
-          <h3 class="mt-2 text-[16px] font-black leading-tight text-black/90">${escapeHtml(field.title)}</h3>
-        </div>
-        <span class="text-xl font-black text-black/80">${field.score}%</span>
-      </div>
-      <div class="h-2.5 rounded-full bg-black/5 overflow-hidden mb-4">
-        <div class="h-full rounded-full" style="width:${field.score}%;background:${field.color}"></div>
-      </div>
-      <p class="text-[13px] leading-relaxed text-black/50 mb-4">${escapeHtml(field.reason)}</p>
-      <div class="flex flex-wrap gap-2">
-        ${field.roles.map((role) => `<span class="rounded-full bg-black/5 px-2.5 py-1.5 text-[10px] font-bold text-black/45">${escapeHtml(role)}</span>`).join("")}
-      </div>
-    </article>
-  `).join("");
+  document.querySelector("[data-field-grid]").innerHTML = potential.topFields.map(function (field, index) {
+    return '<article class="field-card rounded-[1.6rem] p-5">' +
+      '<div class="flex items-start justify-between gap-4 mb-4">' +
+        '<div class="min-w-0">' +
+          '<span class="text-[10px] font-black uppercase tracking-[0.18em]" style="color:' + field.color + '">' + String(index + 1).padStart(2, "0") + '</span>' +
+          '<h3 class="mt-2 text-[16px] font-black leading-tight text-black/90">' + escapeHtml(field.title) + '</h3>' +
+        '</div>' +
+        '<span class="text-xl font-black text-black/80">' + field.score + '%</span>' +
+      '</div>' +
+      '<div class="h-2.5 rounded-full bg-black/5 overflow-hidden mb-4">' +
+        '<div class="h-full rounded-full" style="width:' + field.score + '%;background:' + field.color + '"></div>' +
+      '</div>' +
+      '<p class="text-[13px] leading-relaxed text-black/50 mb-4">' + escapeHtml(field.reason) + '</p>' +
+      '<div class="flex flex-wrap gap-2">' +
+        (field.roles || []).map(function (role) {
+          return '<span class="rounded-full bg-black/5 px-2.5 py-1.5 text-[10px] font-bold text-black/45">' + escapeHtml(role) + '</span>';
+        }).join("") +
+      '</div>' +
+    '</article>';
+  }).join("");
 
-  renderList("[data-strength-list]", potential.strengths, "bolt");
-  renderList("[data-risk-list]", potential.risks, "warning");
-  renderList("[data-plan-list]", potential.growthPlan, "check_circle");
+  renderList("[data-strength-list]", potential.strengths || [], "bolt");
+  renderList("[data-risk-list]", potential.risks || [], "warning");
+  renderList("[data-plan-list]", potential.growthPlan || [], "check_circle");
 }
 
-renderPotential();
+async function initializePotentialPage() {
+  const repairedRawResult = await repairResultFromAnswers(rawResult || {});
+  result = normalizeResult(repairedRawResult || fallbackResult);
+  potential = typeof getCogniLensPotential === "function" ? getCogniLensPotential(result) : null;
+  renderPotential();
+}
+
+initializePotentialPage();
 </script>
 </body>
 </html>

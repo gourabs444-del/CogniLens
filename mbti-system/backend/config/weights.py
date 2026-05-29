@@ -1,4 +1,5 @@
 DIMENSIONS = ("I", "E", "N", "S", "T", "F", "J", "P")
+COGNITIVE_FUNCTIONS = ("Ni", "Ne", "Ti", "Te", "Fi", "Fe", "Si", "Se")
 
 PAIR_ORDER = (
   ("E", "I"),

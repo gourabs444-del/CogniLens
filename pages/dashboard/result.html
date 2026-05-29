@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -86,6 +86,22 @@
         .settings-shell {
             position: relative;
             z-index: 120;
+            display: inline-flex;
+            align-items: center;
+        }
+        .header-icon-button {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+        }
+        .header-icon-button:hover {
+            background: rgba(0,0,0,0.06);
+            color: #111827;
         }
         .settings-button {
             width: 2rem;
@@ -213,8 +229,76 @@
         }
         .profile-capsule-panel {
             width: min(100%, 22rem);
-            margin-top: 1.5rem;
+            margin-top:  1.25rem;
             text-align: left;
+        }
+        .profile-card {
+            min-height: 38rem;
+        }
+        .profile-avatar-frame {
+            width: 8.75rem;
+            height: 8.75rem;
+        }
+        #result-tags {
+            max-height: 4.15rem;
+            overflow: hidden;
+        }
+        .line-clamp-2,
+        .line-clamp-3,
+        .line-clamp-4 {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-2 { -webkit-line-clamp: 2; }
+        .line-clamp-3 { -webkit-line-clamp: 3; }
+        .line-clamp-4 { -webkit-line-clamp: 4; }
+        .read-more-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.6rem;
+            color: #2563eb;
+            font-size: 0.72rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .read-more-button:hover {
+            color: #1d4ed8;
+        }
+        .equal-result-card {
+            min-height: 10.8rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .equal-result-card > [data-result-potential-strengths],
+        .equal-result-card > [data-result-potential-risks],
+        .equal-result-card > [data-result-potential-plan] {
+            flex: 1;
+        }
+        .text-proof-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1400;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(15,23,42,0.42);
+            backdrop-filter: blur(10px);
+        }
+        .text-proof-modal.is-open {
+            display: flex;
+        }
+        .text-proof-modal__card {
+            width: min(34rem, 100%);
+            max-height: min(78vh, 38rem);
+            overflow: auto;
+            border-radius: 1.75rem;
+            background: #ffffff;
+            border: 1px solid rgba(15,23,42,0.08);
+            box-shadow: 0 32px 90px rgba(15,23,42,0.24);
+            padding: 1.5rem;
         }
         .capsule-chip {
             display: inline-flex;
@@ -389,6 +473,15 @@
         }
         .potential-score-card.profile-scope-card:hover {
             box-shadow: 0 20px 44px rgba(37,99,235,0.2);
+        }
+        .profile-scope-card {
+            min-height: 5.25rem;
+        }
+        #potential-focus {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         .potential-score-ring {
             background: conic-gradient(var(--potential-color, #2563eb) calc(var(--score, 0) * 1%), rgba(255,255,255,0.16) 0);
@@ -611,6 +704,11 @@ body.theme-dark .enhanced-meter .meter-track {
         body.theme-dark .settings-panel h3 {
             color: rgba(255,255,255,0.86) !important;
         }
+        body.theme-dark .text-proof-modal__card {
+            background: #0f172a;
+            border-color: rgba(148,163,184,0.2);
+            color: #f8fafc;
+        }
         ::-webkit-scrollbar {
             width: 5px;
         }
@@ -733,8 +831,8 @@ body.theme-dark .enhanced-meter .meter-track {
 <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-black/30 !text-[16px]">search</span>
 <input class="bg-black/5 border-none rounded-full pl-9 pr-4 py-1 text-[12px] w-40 focus:w-56 transition-all outline-none" placeholder="Search" type="text"/>
 </div>
-<div class="flex gap-4 text-black/40">
-<span class="material-symbols-outlined cursor-pointer hover:text-black">notifications</span>
+<div class="flex items-center gap-4 text-black/40">
+<span class="material-symbols-outlined header-icon-button cursor-pointer hover:text-black">notifications</span>
 <div class="settings-shell">
 <button class="settings-button" data-settings-open type="button" aria-label="Open settings">
 <span class="material-symbols-outlined settings-gear">settings</span>
@@ -818,25 +916,21 @@ Sign out
 </div>
 </div>
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-<div class="lg:col-span-4 glass-card rounded-[2.5rem] p-10 flex flex-col items-center text-center self-start">
-<div class="relative mb-8">
-<div class="w-44 h-44 rounded-full border border-white shadow-xl p-1.5 bg-white/20">
+<div class="lg:col-span-4 glass-card profile-card rounded-[2.5rem] p-8 flex flex-col items-center text-center self-start">
+<div class="relative mb-6">
+<div class="profile-avatar-frame rounded-full border border-white shadow-xl p-1.5 bg-white/20">
 <img alt="Profile" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsdXPfrbTegIMeIXmyFYvNgs8uqX9y7j2XqwOEnKS4yylKJ10YKxdoQzNwUpob33amth1OM96Ji9SpJ_q9MuMJLbuRY0oggYzYHn8EwlxCWlx_ILdKBafbnfB9E6mjIVurhRM5A0H56SSDJpCoIrhqWaxsRkcBKDfilA9vC5bRs29HhUs21pXu2BYyodJV_BspaPbPkB15fBXb9bWGjub93opkJIhqeRnKvTSFHKc59lTdSXjaSkaUm15cgU4YUi6g25q4AOOXalE"/>
 </div>
 <div class="absolute -bottom-1 -right-1 bg-white p-2 rounded-full shadow-lg border border-gray-50">
 <span class="material-symbols-outlined text-blue-500 !text-[20px] fill-current">verified</span>
 </div>
 </div>
-<h2 class="text-5xl font-bold text-black/90 tracking-tighter mb-2" id="result-type">TYPE</h2>
-<h3 class="text-lg font-medium text-black/40" id="result-title">Your profile title appears here</h3>
+<h2 class="text-4xl font-bold text-black/90 tracking-tighter mb-2" id="result-type">TYPE</h2>
+<h3 class="text-base font-medium text-black/40 line-clamp-2 min-h-[2.75rem]" id="result-title">Your profile title appears here</h3>
 <div class="profile-capsule-panel">
 <div class="mb-4">
 <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-black/30 mb-2">Profile Capsule</p>
 <div class="flex gap-2 flex-wrap" id="result-tags"></div>
-</div>
-<div class="rounded-[1.35rem] bg-white/70 border border-white/80 p-4 mb-4">
-<p class="text-[10px] font-bold uppercase tracking-[0.2em] text-black/35 mb-2">Auto Bio</p>
-<p class="text-[13px] text-black/55 leading-relaxed font-medium" id="result-summary">Your profile is loading.</p>
 </div>
 <a id="potential-map" href="potential.html" class="potential-score-card profile-scope-card mb-4 p-3 flex items-center justify-between gap-3 no-underline hover:scale-[1.01] active:scale-[0.99] transition-transform">
 <div class="flex items-center gap-3 min-w-0">
@@ -895,17 +989,20 @@ Sign out
 </div>
 </div>
 <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-<div class="potential-list-card rounded-[1.5rem] p-5">
+<div class="potential-list-card equal-result-card rounded-[1.5rem] p-5">
 <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600 mb-3">Your advantage</p>
 <div class="space-y-2" data-result-potential-strengths></div>
+<button class="read-more-button" type="button" data-read-more="Your Advantage" data-read-more-list="strengths">Read more <span class="material-symbols-outlined !text-[15px]">arrow_forward</span></button>
 </div>
-<div class="potential-list-card rounded-[1.5rem] p-5">
+<div class="potential-list-card equal-result-card rounded-[1.5rem] p-5">
 <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-500 mb-3">Growth risks</p>
 <div class="space-y-2" data-result-potential-risks></div>
+<button class="read-more-button" type="button" data-read-more="Growth Risks" data-read-more-list="risks">Read more <span class="material-symbols-outlined !text-[15px]">arrow_forward</span></button>
 </div>
-<div class="potential-list-card rounded-[1.5rem] p-5">
+<div class="potential-list-card equal-result-card rounded-[1.5rem] p-5">
 <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-500 mb-3">Next 30 days</p>
 <div class="space-y-2" data-result-potential-plan></div>
+<button class="read-more-button" type="button" data-read-more="Next 30 Days" data-read-more-list="plan">Read more <span class="material-symbols-outlined !text-[15px]">arrow_forward</span></button>
 </div>
 </section>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1040,6 +1137,20 @@ Sign out
 </div>
 </main>
 </div>
+<section class="text-proof-modal" data-read-more-modal aria-hidden="true">
+<div class="text-proof-modal__card">
+<div class="flex items-start justify-between gap-4 mb-4">
+<div>
+<p class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-500 mb-1">Full view</p>
+<h3 class="text-xl font-bold text-black/90" data-read-more-title>Details</h3>
+</div>
+<button class="w-9 h-9 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center" type="button" data-read-more-close aria-label="Close details">
+<span class="material-symbols-outlined !text-[18px]">close</span>
+</button>
+</div>
+<div class="space-y-3 text-[14px] leading-relaxed text-black/60" data-read-more-content></div>
+</div>
+</section>
 <section class="story-export" data-story-export aria-hidden="true">
 <div>
 <div style="display:inline-flex;align-items:center;gap:18px;padding:16px 24px;border-radius:999px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);font-size:24px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.78);">CogniLens Result</div>
@@ -1061,38 +1172,24 @@ Sign out
 <script src="https://www.gstatic.com/firebasejs/12.7.0/firebase-auth-compat.js"></script>
 <script src="../../firebase-config.js"></script>
 <script src="../../score-system.js"></script>
-<script src="../../potential-system.js?v=4"></script>
+<script src="../../potential-system.js?v=5"></script>
 <script src="../../script.js"></script>
 <script>
 const fallbackResult = {
-  type: "INTJ",
-  title: "Strategic Systems Thinker",
-  summary: "A concise preference snapshot built from your latest assessment responses.",
-  metrics: { I: 76, N: 82, T: 71, J: 78 },
-  tags: ["Analytical", "Independent", "Story-ready"],
+  type: "UNCL",
+  title: "Scoring Algorithm Pending",
+  summary: "MBTI questions and scoring logic are currently blank.",
+  metrics: { I: 50, N: 50, T: 50, J: 50 },
+  tags: ["Scoring pending"],
   savedAt: new Date().toISOString()
 };
 
-const rawResult = getCogniLensResult() || fallbackResult;
+const savedResult = typeof getCogniLensResult === "function" ? getCogniLensResult() : null;
+const rawResult = savedResult || fallbackResult;
 const user = getCogniLensUser();
 const COGNILENS_PROFILE_LINK_KEY = "cognilensProfileLink";
 const typeTitles = window.COGNILENS_TYPE_TITLES || {
-  ISTJ: "Practical Systems Guardian",
-  ISFJ: "Supportive Detail Keeper",
-  INFJ: "Insightful Purpose Builder",
-  INTJ: "Strategic Systems Thinker",
-  ISTP: "Precise Tactical Solver",
-  ISFP: "Grounded Creative Observer",
-  INFP: "Reflective Values Explorer",
-  INTP: "Analytical Pattern Architect",
-  ESTP: "Action-Oriented Problem Mover",
-  ESFP: "Expressive Experience Driver",
-  ENFP: "Possibility-Focused Connector",
-  ENTP: "Inventive Challenge Solver",
-  ESTJ: "Structured Execution Leader",
-  ESFJ: "Collaborative Support Organizer",
-  ENFJ: "People-Centered Vision Guide",
-  ENTJ: "Decisive Strategy Builder"
+  UNCL: "Scoring Algorithm Pending"
 };
 const metricMeta = {
   I: { axis: "Energy", label: "Introversion", opposite: "E", oppositeLabel: "Extraversion", color: "#2563eb" },
@@ -1101,22 +1198,7 @@ const metricMeta = {
   J: { axis: "Lifestyle", label: "Judging", opposite: "P", oppositeLabel: "Perceiving", color: "#f97316" }
 };
 const typeColorMap = {
-  ISTJ: ["#1e40af", "#0f766e"],
-  ISFJ: ["#0f766e", "#16a34a"],
-  INFJ: ["#7c3aed", "#2563eb"],
-  INTJ: ["#4f46e5", "#7c3aed"],
-  ISTP: ["#0f766e", "#0891b2"],
-  ISFP: ["#059669", "#84cc16"],
-  INFP: ["#9333ea", "#db2777"],
-  INTP: ["#2563eb", "#06b6d4"],
-  ESTP: ["#ea580c", "#ef4444"],
-  ESFP: ["#f97316", "#ec4899"],
-  ENFP: ["#db2777", "#f59e0b"],
-  ENTP: ["#7c3aed", "#06b6d4"],
-  ESTJ: ["#1d4ed8", "#f97316"],
-  ESFJ: ["#16a34a", "#f97316"],
-  ENFJ: ["#2563eb", "#10b981"],
-  ENTJ: ["#111827", "#2563eb"]
+  UNCL: ["#64748b", "#94a3b8"]
 };
 
 function clampMetric(value, fallback) {
@@ -1129,7 +1211,143 @@ function buildTypeFromMetrics(metrics) {
   if (typeof getPersonalityTypeFromMetrics === "function") {
     return getPersonalityTypeFromMetrics(metrics);
   }
-  return `${metrics.I >= 50 ? "I" : "E"}${metrics.N >= 50 ? "N" : "S"}${metrics.T >= 50 ? "T" : "F"}${metrics.J >= 50 ? "J" : "P"}`;
+  return "UNCL";
+}
+
+function normalizeConfidenceValue(value, fallback = 0) {
+  if (value && typeof value === "object") return clampMetric(value.score, fallback);
+  return clampMetric(value, fallback);
+}
+
+function resultAnswerCount(data = {}) {
+  return Number(data.answeredCount || data.answersUsed || data.answers?.length || data.meta?.answersUsed || 0);
+}
+
+function hasScoreObject(source) {
+  return Boolean(source && typeof source === "object" && !Array.isArray(source) && Object.keys(source).length);
+}
+
+function readStoredJson(key, fallback = null) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "null");
+    return value ?? fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function getTopMbtiScore(data = result) {
+  const sources = [data.mbti, data.breakdown, data.finalMbtiScores].filter(hasScoreObject);
+  for (const source of sources) {
+    const direct = Number(source?.[data.type]);
+    if (Number.isFinite(direct) && direct > 0) return clampMetric(direct, data.confidence || 0);
+    const values = Object.values(source).map(Number).filter(Number.isFinite);
+    if (values.length) return clampMetric(Math.max(...values), data.confidence || 0);
+  }
+  return clampMetric(data.confidenceScore ?? data.modelConfidence ?? data.confidence, 0);
+}
+
+function getEqScore(eq) {
+  if (!eq) return null;
+  const value = eq.score ?? eq.modelConfidence ?? eq.consistency ?? eq.topTraits?.[0]?.score ?? eq.moralScores?.empathy;
+  return clampMetric(value, 0);
+}
+
+function getIqScore(iq) {
+  if (!iq) return null;
+  return clampMetric(iq.scorePercent ?? iq.score, 0);
+}
+
+function buildCrossAssessmentOverview() {
+  const iq = readStoredJson("cognilensIqResult");
+  const eq = readStoredJson("cognilensEqResult");
+  const mbtiScore = getTopMbtiScore(result);
+  const eqScore = getEqScore(eq);
+  const iqScore = getIqScore(iq);
+
+  return [
+    {
+      label: "MBTI Score",
+      value: result.type && result.type !== "UNCL" ? `${result.type} ${mbtiScore}%` : "Pending",
+      tone: "text-indigo-600"
+    },
+    {
+      label: "EQ Score",
+      value: eqScore === null ? "Pending" : `${eqScore}%`,
+      tone: "text-rose-600"
+    },
+    {
+      label: "IQ Score",
+      value: iqScore === null ? "Pending" : `${iqScore}%`,
+      tone: "text-sky-600"
+    }
+  ];
+}
+
+function metricsAreNeutral(metrics = {}) {
+  return ["I", "N", "T", "J"].every((key) => Math.round(Number(metrics?.[key]) || 50) === 50);
+}
+
+function hasResultSignal(data = {}) {
+  return Boolean(
+    data &&
+    data !== fallbackResult &&
+    (
+      (data.type && data.type !== "UNCL") ||
+      resultAnswerCount(data) > 0 ||
+      hasScoreObject(data.mbti) ||
+      hasScoreObject(data.breakdown) ||
+      hasScoreObject(data.traitScores) ||
+      hasScoreObject(data.cognitiveFunctions)
+    )
+  );
+}
+
+function shouldRepairResult(data = {}) {
+  return Boolean(
+    Array.isArray(data.answers) &&
+    data.answers.length &&
+    (
+      !data.type ||
+      data.type === "UNCL" ||
+      metricsAreNeutral(data.metrics) ||
+      !hasScoreObject(data.mbti || data.breakdown) ||
+      normalizeConfidenceValue(data.confidenceScore ?? data.modelConfidence ?? data.confidence, 0) === 0
+    )
+  );
+}
+
+async function loadBrowserEngine() {
+  if (window.CogniLensAPI?.submitTest) return window.CogniLensAPI.submitTest;
+  try {
+    await import("../../api/submitTest.js");
+  } catch (error) {
+    console.warn("CogniLens browser engine unavailable:", error);
+  }
+  return window.CogniLensAPI?.submitTest || null;
+}
+
+async function repairResultFromAnswers(data = {}) {
+  if (!shouldRepairResult(data)) return data;
+  const submitTest = await loadBrowserEngine();
+  if (!submitTest) return data;
+
+  try {
+    const repaired = submitTest({ testType: "mbti", answers: data.answers });
+    const merged = {
+      ...data,
+      ...repaired,
+      answers: data.answers,
+      savedAt: data.savedAt || new Date().toISOString(),
+      source: repaired.source || "browser-engine"
+    };
+    if (typeof saveCogniLensResult === "function") saveCogniLensResult(merged);
+    else localStorage.setItem("cognilensResult", JSON.stringify(merged));
+    return merged;
+  } catch (error) {
+    console.warn("CogniLens result repair failed:", error);
+    return data;
+  }
 }
 
 function normalizeResult(data) {
@@ -1145,27 +1363,34 @@ function normalizeResult(data) {
     T: clampMetric(rawMetrics?.T, fallbackResult.metrics.T),
     J: clampMetric(rawMetrics?.J, fallbackResult.metrics.J)
   };
-  const type = data.type || score?.type || buildTypeFromMetrics(metrics);
+  const hasSignal = hasResultSignal(data);
+  const metricType = hasSignal ? buildTypeFromMetrics(metrics) : "UNCL";
+  const type = !hasSignal
+    ? "UNCL"
+    : (data.type && data.type !== "UNCL" ? data.type : (score?.type && score.type !== "UNCL" ? score.type : metricType));
   const generatedTitle = typeof getPersonalityTitle === "function"
     ? getPersonalityTitle(type)
     : (typeTitles[type] || `${type} Personality Profile`);
   const shouldUseGeneratedTitle = !data.title || data.title === "Adaptive Personality Profile" || data.title === fallbackResult.title;
+  const confidenceReport = data.confidence && typeof data.confidence === "object" ? data.confidence : data.confidenceReport;
+  const confidence = normalizeConfidenceValue(data.confidenceScore ?? data.modelConfidence ?? data.confidence, score?.confidence ?? fallbackResult.confidence ?? 0);
 
   return {
     ...fallbackResult,
     ...data,
     metrics,
     type,
-    confidence: data.confidence ?? score?.confidence ?? fallbackResult.confidence,
+    confidence,
+    confidenceReport,
     breakdown: score?.breakdown || data.breakdown || fallbackResult.breakdown,
     warning: score?.warning ?? data.warning ?? fallbackResult.warning,
     title: shouldUseGeneratedTitle ? generatedTitle : data.title,
-    tags: data.tags?.length ? data.tags : ["Self-aware", "Balanced", "Growth-ready"]
+    tags: data.tags || score?.tags || (type === "UNCL" ? ["Scoring pending"] : [type, `${confidence}% confidence`])
   };
 }
 
-const result = normalizeResult(rawResult);
-const potential = typeof getCogniLensPotential === "function"
+let result = normalizeResult(rawResult);
+let potential = typeof getCogniLensPotential === "function"
   ? getCogniLensPotential(result)
   : null;
 
@@ -1219,6 +1444,9 @@ function applyTypeBadgeColor() {
 }
 
 function buildProfileSummary(preferences) {
+  if (result.isInconclusive || result.type === "UNCL") {
+    return result.summary || "Not enough usable answers were found to give a reliable type.";
+  }
   const ranked = [...preferences].sort((a, b) => b.value - a.value);
   const primary = ranked[0];
   const secondary = ranked[1];
@@ -1343,10 +1571,10 @@ function getPotentialModeLabel() {
 function renderPotentialList(target, items, icon) {
   const containers = typeof target === "string" ? document.querySelectorAll(target) : [target].filter(Boolean);
   containers.forEach((container) => {
-    container.innerHTML = items.map((item) => `
+    container.innerHTML = (items || []).slice(0, 2).map((item) => `
     <div class="flex items-start gap-2">
       <span class="material-symbols-outlined !text-[16px] mt-0.5 text-black/35">${icon}</span>
-      <span class="text-[12px] font-semibold leading-relaxed text-black/60">${escapeHtml(item)}</span>
+      <span class="text-[12px] font-semibold leading-relaxed text-black/60 line-clamp-2">${escapeHtml(item)}</span>
     </div>
     `).join("");
   });
@@ -1407,6 +1635,69 @@ function renderPotentialMap() {
   renderPotentialList("[data-result-potential-plan]", potential.growthPlan || [], "check_circle");
 }
 
+function getReadMorePayload(kind) {
+  if (kind === "strengths") return potential?.strengths || [];
+  if (kind === "risks") return potential?.risks || [];
+  if (kind === "plan") return potential?.growthPlan || [];
+  return [];
+}
+
+function openReadMore(title, entries) {
+  const modal = document.querySelector("[data-read-more-modal]");
+  const titleNode = document.querySelector("[data-read-more-title]");
+  const content = document.querySelector("[data-read-more-content]");
+  if (!modal || !titleNode || !content) return;
+  titleNode.textContent = title || "Details";
+  const list = Array.isArray(entries) ? entries.filter(Boolean) : [entries].filter(Boolean);
+  content.innerHTML = list.length
+    ? list.map((entry) => `<p class="rounded-2xl bg-black/5 px-4 py-3">${escapeHtml(entry)}</p>`).join("")
+    : '<p class="rounded-2xl bg-black/5 px-4 py-3">No details available yet.</p>';
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+function closeReadMore() {
+  const modal = document.querySelector("[data-read-more-modal]");
+  if (!modal) return;
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden", "true");
+}
+
+function setupReadMore() {
+  document.querySelectorAll("[data-read-more]").forEach((button) => {
+    if (button.dataset.readMoreReady === "true") return;
+    button.dataset.readMoreReady = "true";
+    button.addEventListener("click", () => {
+      const targetId = button.dataset.readMoreTarget;
+      const listKey = button.dataset.readMoreList;
+      const title = button.dataset.readMore || "Details";
+      if (targetId) {
+        openReadMore(title, document.getElementById(targetId)?.textContent || "");
+        return;
+      }
+      openReadMore(title, getReadMorePayload(listKey));
+    });
+  });
+  const closeButton = document.querySelector("[data-read-more-close]");
+  if (closeButton && closeButton.dataset.readMoreReady !== "true") {
+    closeButton.dataset.readMoreReady = "true";
+    closeButton.addEventListener("click", closeReadMore);
+  }
+  const modal = document.querySelector("[data-read-more-modal]");
+  if (modal && modal.dataset.readMoreReady !== "true") {
+    modal.dataset.readMoreReady = "true";
+    modal.addEventListener("click", (event) => {
+      if (event.target.matches("[data-read-more-modal]")) closeReadMore();
+    });
+  }
+  if (!window.__cogniLensReadMoreKeyBound) {
+    window.__cogniLensReadMoreKeyBound = true;
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeReadMore();
+    });
+  }
+}
+
 function renderResult() {
   const preferences = getPreferences();
   result.summary = buildProfileSummary(preferences);
@@ -1416,7 +1707,6 @@ function renderResult() {
   setText("meter-type-chip", result.type);
   applyTypeBadgeColor();
   setText("result-title", result.title);
-  setText("result-summary", result.summary);
   document.getElementById("result-tags").innerHTML = getProfileCapsules(preferences).map((capsule) =>
     `<span class="capsule-chip ${capsule.primary ? "is-primary" : ""}">${escapeHtml(capsule.text)}</span>`
   ).join("");
@@ -1451,17 +1741,19 @@ function renderResult() {
   const dominant = [...preferences].sort((a, b) => b.value - a.value)[0];
   setText("truth-headline", `${dominant.label} is your strongest preference`);
   setText("truth-copy", "Your answers are converted into balanced preference signals and summarized as a reflection profile. It should support self-review, not label or judge you.");
-  document.getElementById("truth-list").innerHTML = preferences.map((pref) => {
+  const scoreRows = buildCrossAssessmentOverview().map((item) => {
     return `<div class="flex items-center justify-between rounded-2xl bg-white/65 px-4 py-3">
-      <span class="text-[12px] font-semibold text-black/55">${pref.label}</span>
-      <span class="text-[12px] font-bold text-black/75">${pref.value}%</span>
+      <span class="text-[12px] font-semibold text-black/55">${item.label}</span>
+      <span class="text-[12px] font-bold ${item.tone}">${item.value}</span>
     </div>`;
-  }).join("");
+  });
+  document.getElementById("truth-list").innerHTML = scoreRows.join("");
 
   renderStoryExport(preferences);
   renderCognitiveGraph(preferences);
   renderPotentialMap();
   hydrateProfileLink();
+  setupReadMore();
 }
 
 function renderStoryExport(preferences) {
@@ -1527,9 +1819,8 @@ function buildStorySvg(preferences) {
   const name = user.name || "Explorer";
   const colors = getTypeColors(result.type);
   const titleLines = splitText(result.title || "CogniLens Profile", 24).slice(0, 2);
-  const summaryLines = splitText(result.summary || "Your CogniLens result is ready.", 34).slice(0, 5);
   const metricRows = preferences.map((pref, index) => {
-    const y = 1120 + index * 112;
+    const y = 990 + index * 112;
     return `
       <text x="192" y="${y}" font-size="28" font-weight="750" fill="rgba(15,23,42,0.78)">${escapeXml(pref.label)}</text>
       <text x="888" y="${y}" font-size="28" font-weight="850" text-anchor="end" fill="rgba(15,23,42,0.82)">${pref.value}%</text>
@@ -1576,9 +1867,7 @@ function buildStorySvg(preferences) {
       <circle cx="540" cy="530" r="112" fill="${colors[1]}" opacity="0.16"/>
       <text x="540" y="530" font-size="148" font-weight="900" text-anchor="middle" dominant-baseline="middle" letter-spacing="-8" fill="rgba(15,23,42,0.9)">${escapeXml(result.type)}</text>
       ${svgTextLines(titleLines, 192, 764, 52, "rgba(15,23,42,0.9)", 850, 1.12)}
-      <text x="192" y="894" font-size="25" font-weight="800" letter-spacing="5" fill="rgba(15,23,42,0.38)">AUTO BIO</text>
-      ${svgTextLines(summaryLines, 192, 952, 29, "rgba(15,23,42,0.62)", 560, 1.42)}
-      <text x="192" y="1072" font-size="25" font-weight="850" letter-spacing="5" fill="rgba(15,23,42,0.38)">TRAIT BALANCE</text>
+      <text x="192" y="930" font-size="25" font-weight="850" letter-spacing="5" fill="rgba(15,23,42,0.38)">TRAIT BALANCE</text>
       ${metricRows}
       <rect x="192" y="1468" width="696" height="2" fill="rgba(15,23,42,0.08)"/>
       <text x="192" y="1532" font-size="26" font-weight="760" fill="rgba(15,23,42,0.62)">${escapeXml(name)}'s result card</text>
@@ -1888,10 +2177,20 @@ function setupSettings() {
   setupPotentialControls();
 }
 
-renderResult();
-setupSettings();
-setupShare();
-setupProfileLink();
-setupStoryIntent();
+async function initializeResultPage() {
+  const repairedRawResult = await repairResultFromAnswers(rawResult);
+  result = normalizeResult(repairedRawResult);
+  potential = typeof getCogniLensPotential === "function"
+    ? getCogniLensPotential(result)
+    : null;
+  renderResult();
+  setupSettings();
+  setupShare();
+  setupProfileLink();
+  setupStoryIntent();
+}
+
+initializeResultPage();
 </script>
 </body></html>
+

@@ -1,0 +1,14 @@
+{
+  "name": "cognilens",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check:engine": "node --check server.js && node --check middleware/security.js && node --check api/submitTest.js && node --check api/generateReport.js && node --check api/verifyTurnstile.js && node --check api/scoreIq.js && node --check engine/potentialEngine.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

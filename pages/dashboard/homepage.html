@@ -60,19 +60,59 @@
       opacity: 0;
     }
 
-    /* Radar Chart Simulation */
-    .radar-container {
+    .insight-visual {
+      min-height: 7rem;
+      border-radius: 1.25rem;
+      background:
+        linear-gradient(180deg, rgba(248,250,252,0.92), rgba(255,255,255,0.74)),
+        repeating-linear-gradient(0deg, rgba(148,163,184,0.12) 0 1px, transparent 1px 1.55rem),
+        repeating-linear-gradient(90deg, rgba(148,163,184,0.1) 0 1px, transparent 1px 2rem);
+      border: 1px solid rgba(226,232,240,0.72);
+      overflow: hidden;
       position: relative;
-      width: 120px;
-      height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
-    .radar-poly {
-      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-      background: rgba(99, 102, 241, 0.2);
-      border: 1px solid rgba(99, 102, 241, 0.5);
+    .insight-visual::after {
+      content: "";
+      position: absolute;
+      inset: auto 10% -42% 10%;
+      height: 65%;
+      border-radius: 999px;
+      background: rgba(99,102,241,0.12);
+      filter: blur(18px);
+      pointer-events: none;
+    }
+    .radar-chart {
+      width: 100%;
+      height: 7rem;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+    .radar-chart .radar-ring {
+      fill: none;
+      stroke: rgba(99,102,241,0.13);
+      stroke-width: 1.4;
+    }
+    .radar-chart .radar-axis {
+      stroke: rgba(148,163,184,0.24);
+      stroke-width: 1;
+    }
+    .radar-chart .radar-shape {
+      fill: url(#radarShapeGradient);
+      stroke: #6366f1;
+      stroke-width: 2.5;
+      filter: drop-shadow(0 10px 16px rgba(99,102,241,0.2));
+    }
+    .radar-chart .radar-point {
+      fill: #ffffff;
+      stroke: #6366f1;
+      stroke-width: 2.5;
+    }
+    .radar-label {
+      font-size: 8px;
+      font-weight: 800;
+      fill: rgba(71,85,105,0.64);
+      letter-spacing: 0.04em;
     }
 
     main,
@@ -190,8 +230,17 @@
     }
 
     .preview-card [data-preview-slide] {
+      height: 13rem;
+      min-height: 13rem;
       transition: opacity 0.34s ease, transform 0.42s cubic-bezier(.2,.8,.2,1), filter 0.34s ease;
       will-change: opacity, transform;
+    }
+
+    [data-preview-summary] {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .preview-card.is-switching [data-preview-slide] {
@@ -204,13 +253,21 @@
       transition: width 0.7s cubic-bezier(.2,.8,.2,1);
     }
 
+    [data-preview-quote-row] {
+      flex-wrap: wrap;
+    }
+
+    [data-preview-dots] {
+      display: none !important;
+    }
+
     .preview-dots-track {
       --dot-index: 0;
-      --dot-step: 0.95rem;
+      --dot-step: 0.68rem;
       position: relative;
       display: inline-grid;
       grid-auto-flow: column;
-      grid-auto-columns: 0.95rem;
+      grid-auto-columns: 0.68rem;
       gap: 0;
       align-items: center;
       min-height: 0.72rem;
@@ -224,7 +281,7 @@
     .preview-dot {
       position: relative;
       z-index: 2;
-      width: 0.95rem;
+      width: 0.68rem;
       height: 0.5rem;
       border-radius: 999px;
       background: transparent;
@@ -255,7 +312,7 @@
       position: absolute;
       left: 0.12rem;
       top: 50%;
-      width: 0.95rem;
+      width: 0.68rem;
       height: 0.5rem;
       border-radius: 999px;
       background: linear-gradient(135deg, #2563eb, #7c3aed);
@@ -411,9 +468,11 @@
       display: grid;
       place-items: center;
       padding: 1rem;
-      background: rgba(15, 23, 42, 0.42);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background:
+        linear-gradient(135deg, rgba(15, 23, 42, 0.54), rgba(30, 41, 59, 0.38)),
+        rgba(15, 23, 42, 0.36);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.24s ease;
@@ -425,11 +484,12 @@
     }
 
     .test-picker-card {
-      width: min(100%, 42rem);
-      border-radius: 1.8rem;
-      background: rgba(255, 255, 255, 0.96);
+      width: min(100%, 46rem);
+      border-radius: 1.75rem;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.96));
       border: 1px solid rgba(226, 232, 240, 0.92);
-      box-shadow: 0 34px 90px rgba(15, 23, 42, 0.22);
+      box-shadow: 0 34px 90px rgba(15, 23, 42, 0.24);
       transform: translateY(14px) scale(0.96);
       transition: transform 0.34s cubic-bezier(.16,1,.3,1);
     }
@@ -438,23 +498,71 @@
       transform: translateY(0) scale(1);
     }
 
+    .test-picker-close {
+      width: 2.65rem;
+      height: 2.65rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(203, 213, 225, 0.82);
+      background: #ffffff;
+      color: #64748b;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 160ms ease, color 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .test-picker-close:hover {
+      transform: translateY(-1px);
+      color: #0f172a;
+      border-color: rgba(99, 102, 241, 0.28);
+      background: rgba(248, 250, 252, 0.92);
+    }
+
+    .test-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
     .test-choice {
-      border: 1px solid rgba(226, 232, 240, 0.92);
-      background: rgba(248, 250, 252, 0.82);
-      min-height: 9.25rem;
+      position: relative;
+      min-height: 10.75rem;
+      overflow: hidden;
+      border: 1px solid rgba(226, 232, 240, 0.94);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.95), rgba(248,250,252,0.76));
       transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
     }
 
-    .test-choice:hover {
-      transform: translateY(-2px);
-      border-color: rgba(99, 102, 241, 0.32);
-      background: #ffffff;
-      box-shadow: 0 18px 36px rgba(79, 70, 229, 0.1);
+    .test-choice::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-top: 3px solid var(--choice-accent, #6366f1);
+      opacity: 0;
+      transition: opacity 180ms ease;
     }
 
+    .test-choice:hover,
+    .test-choice:focus-visible {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb, var(--choice-accent, #6366f1) 38%, #cbd5e1);
+      background: #ffffff;
+      box-shadow: 0 20px 42px rgba(15, 23, 42, 0.1);
+    }
+
+    .test-choice:hover::before,
+    .test-choice:focus-visible::before {
+      opacity: 1;
+    }
+
+    .test-choice[data-tone="mbti"] { --choice-accent: #6366f1; }
+    .test-choice[data-tone="iq"] { --choice-accent: #06b6d4; }
+    .test-choice[data-tone="eq"] { --choice-accent: #f43f5e; }
+
     .test-choice-icon {
-      width: 2.8rem;
-      height: 2.8rem;
+      width: 3rem;
+      height: 3rem;
       border-radius: 1rem;
       display: inline-flex;
       align-items: center;
@@ -463,11 +571,51 @@
       box-shadow: 0 14px 30px rgba(79, 70, 229, 0.18);
     }
 
+    .test-choice-badge {
+      border-radius: 999px;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      background: rgba(255, 255, 255, 0.78);
+      padding: 0.3rem 0.55rem;
+      font-size: 0.62rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+
+    .test-choice-badge.is-ready {
+      border-color: rgba(16, 185, 129, 0.18);
+      background: rgba(209, 250, 229, 0.7);
+      color: #059669;
+    }
+
+    .test-choice-arrow {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      background: rgba(241, 245, 249, 0.86);
+      transition: transform 180ms ease, color 180ms ease, background 180ms ease;
+    }
+
+    .test-choice:hover .test-choice-arrow,
+    .test-choice:focus-visible .test-choice-arrow {
+      transform: translateX(2px);
+      color: var(--choice-accent, #6366f1);
+      background: rgba(238, 242, 255, 0.94);
+    }
+
     .test-picker-status {
       display: none;
+      align-items: center;
+      gap: 0.6rem;
       border-radius: 1rem;
       border: 1px solid rgba(56, 189, 248, 0.24);
-      background: rgba(240, 249, 255, 0.9);
+      background: rgba(240, 249, 255, 0.92);
       padding: 0.75rem 0.9rem;
       font-size: 0.8rem;
       font-weight: 800;
@@ -475,7 +623,21 @@
     }
 
     .test-picker-status.is-visible {
-      display: block;
+      display: flex;
+    }
+
+    @media (max-width: 640px) {
+      .test-picker-card {
+        border-radius: 1.35rem;
+      }
+
+      .test-choice-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .test-choice {
+        min-height: 8.5rem;
+      }
     }
 
     @media (min-width: 1024px) {
@@ -760,7 +922,7 @@ Sign out
 <p class="text-[11px] text-slate-500 leading-relaxed mb-4">
           Unlock deeper AI insights, advanced reports and personalized recommendations.
         </p>
-<button class="w-full py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-colors">
+<button class="w-full py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition-colors" data-premium-soon type="button">
           Upgrade Now
           <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </button>
@@ -931,7 +1093,7 @@ Sign out
 <p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Your Top Trait</p>
 <h4 class="text-5xl font-black tracking-tight text-indigo-400" data-preview-type>INTJ</h4>
 <p class="text-[11px] text-slate-300 leading-relaxed max-w-[180px]" data-preview-summary>
-                  Systems thinker with long-range clarity and calm decision pressure.
+                  Strategic pattern-reader with long-range focus and structured execution.
                 </p>
 </div>
 <div class="flex-1 space-y-4 relative z-10">
@@ -999,7 +1161,7 @@ Sign out
 <p class="text-[11px] leading-relaxed text-slate-500 font-medium" data-preview-quote>
                   Swipe to preview how different result stories can look after the assessment.
                 </p>
-<div class="flex items-center gap-1.5" data-preview-dots aria-label="Preview slides"></div>
+<div class="flex items-center gap-1.5" data-preview-dots aria-label="Preview slides" hidden></div>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" data-preview-supporting-points>
 <div class="flex items-center gap-2">
@@ -1036,8 +1198,8 @@ Sign out
 </section>
 <!-- END: HeroSection -->
 <!-- BEGIN: ContentArea -->
-<section class="dashboard-grid grid grid-cols-1 2xl:grid-cols-12 gap-6 lg:gap-8 items-start">
-<div class="2xl:col-span-9 space-y-6 min-w-0">
+<section class="dashboard-grid grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8 items-start">
+<div class="xl:col-span-9 space-y-6 min-w-0">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 <div>
 <div class="flex items-center gap-2 text-indigo-600 mb-1">
@@ -1051,7 +1213,7 @@ Sign out
               <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </a>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <!-- Card 1: Behavioral Patterns -->
 <div class="insight-card bg-white p-6 border border-slate-100 shadow-sm flex flex-col min-h-[280px]">
 <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center text-xs font-bold mb-4">1</div>
@@ -1074,43 +1236,45 @@ Sign out
 <div class="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center text-xs font-bold mb-4">2</div>
 <h4 class="text-sm font-bold text-slate-800 mb-1">Trait Balance</h4>
 <p class="text-slate-500 mb-4">Compare introversion, intuition, thinking, and structure with clean visual scoring.</p>
-<!-- Radar Simulation -->
-<div class="flex-1 flex items-center justify-center">
-<div class="radar-container">
-<div class="absolute inset-0 border border-slate-100 radar-poly opacity-20 scale-100"></div>
-<div class="absolute inset-0 border border-slate-100 radar-poly opacity-20 scale-75"></div>
-<div class="absolute inset-0 border border-indigo-400 radar-poly scale-90 bg-indigo-500/10"></div>
-</div>
+<div class="insight-visual mb-4">
+<svg class="radar-chart" viewbox="0 0 260 112" role="img" aria-label="Trait balance radar">
+<defs>
+<linearGradient id="radarShapeGradient" x1="86" y1="18" x2="168" y2="96" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#818cf8" stop-opacity="0.38"></stop>
+<stop offset="1" stop-color="#6366f1" stop-opacity="0.13"></stop>
+</linearGradient>
+</defs>
+<g transform="translate(130 58)">
+<polygon class="radar-ring" points="0,-44 42,-14 26,38 -26,38 -42,-14"></polygon>
+<polygon class="radar-ring" points="0,-32 30,-10 19,28 -19,28 -30,-10"></polygon>
+<polygon class="radar-ring" points="0,-20 19,-6 12,18 -12,18 -19,-6"></polygon>
+<line class="radar-axis" x1="0" y1="0" x2="0" y2="-44"></line>
+<line class="radar-axis" x1="0" y1="0" x2="42" y2="-14"></line>
+<line class="radar-axis" x1="0" y1="0" x2="26" y2="38"></line>
+<line class="radar-axis" x1="0" y1="0" x2="-26" y2="38"></line>
+<line class="radar-axis" x1="0" y1="0" x2="-42" y2="-14"></line>
+<polygon class="radar-shape" points="0,-37 34,-11 20,30 -22,32 -36,-12"></polygon>
+<circle class="radar-point" cx="0" cy="-37" r="3.2"></circle>
+<circle class="radar-point" cx="34" cy="-11" r="3.2"></circle>
+<circle class="radar-point" cx="20" cy="30" r="3.2"></circle>
+<circle class="radar-point" cx="-22" cy="32" r="3.2"></circle>
+<circle class="radar-point" cx="-36" cy="-12" r="3.2"></circle>
+</g>
+<text class="radar-label" x="130" y="9" text-anchor="middle">I</text>
+<text class="radar-label" x="179" y="45" text-anchor="middle">N</text>
+<text class="radar-label" x="162" y="105" text-anchor="middle">T</text>
+<text class="radar-label" x="98" y="105" text-anchor="middle">J</text>
+<text class="radar-label" x="81" y="45" text-anchor="middle">EQ</text>
+</svg>
 </div>
 <div class="flex items-center justify-between border-t border-slate-50 pt-4 mt-auto">
 <span class="metric-label text-slate-500 font-medium">Balance Score</span>
 <span class="text-lg font-bold text-indigo-600">78%</span>
 </div>
 </div>
-<!-- Card 3: Result Dashboard -->
-<div class="insight-card bg-white p-6 border border-slate-100 shadow-sm flex flex-col min-h-[280px]">
-<div class="w-8 h-8 bg-orange-50 text-orange-500 rounded-lg flex items-center justify-center text-xs font-bold mb-4">3</div>
-<h4 class="text-sm font-bold text-slate-800 mb-1">Result Dashboard</h4>
-<p class="text-slate-500 mb-4">Finish with a polished result page, profile summary, graph, and social share tools.</p>
-<div class="flex-1 flex items-center justify-center">
-<div class="score-ring relative w-20 h-20">
-<svg class="w-full h-full" viewbox="0 0 36 36">
-<path class="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
-<path class="text-orange-400" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="92, 100" stroke-linecap="round" stroke-width="3"></path>
-</svg>
-<span class="score-ring__value">92%</span>
 </div>
 </div>
-<div class="flex items-center justify-between border-t border-slate-50 pt-4 mt-auto">
-<span class="metric-label text-slate-500 font-medium">Shareable Report</span>
-<button class="p-1.5 bg-slate-50 rounded-lg text-slate-500 hover:text-indigo-600">
-<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-</button>
-</div>
-</div>
-</div>
-</div>
-<div class="2xl:col-span-3 min-w-0">
+<div class="xl:col-span-3 min-w-0">
 <!-- BEGIN: ProgressTracker -->
 <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
 <h3 class="text-sm font-bold text-slate-800 mb-6">Your Progress</h3>
@@ -1173,35 +1337,68 @@ Sign out
 </main>
 <!-- END: MainContent -->
 <div id="test-picker-modal" class="test-picker-overlay" aria-hidden="true">
-  <section class="test-picker-card p-5 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="test-picker-title">
+  <section class="test-picker-card p-5 sm:p-7" role="dialog" aria-modal="true" aria-labelledby="test-picker-title">
     <div class="flex items-start justify-between gap-4">
-      <div>
-        <p class="text-[10px] font-black uppercase tracking-[0.22em] text-indigo-600">Choose Assessment</p>
-        <h2 id="test-picker-title" class="mt-1 text-2xl font-black tracking-tight text-slate-950">Start your CogniLens test</h2>
+      <div class="min-w-0">
+        <p class="text-[10px] font-black uppercase tracking-[0.24em] text-indigo-600">Choose Assessment</p>
+        <h2 id="test-picker-title" class="mt-1 text-2xl sm:text-3xl font-black tracking-tight text-slate-950">Start your CogniLens test</h2>
       </div>
-      <button class="rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-500 hover:bg-slate-50 hover:text-slate-900" data-test-picker-close type="button" aria-label="Close test picker">
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <button class="test-picker-close shrink-0" data-test-picker-close type="button" aria-label="Close test picker">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       </button>
     </div>
-    <p class="test-picker-status mt-4" data-test-picker-status>IQ Test coming soon.</p>
-    <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-      <button class="test-choice flex flex-col items-start justify-center rounded-3xl p-4 text-left" data-test-choice="../Assets/question.html" type="button">
-        <span class="test-choice-icon bg-gradient-to-br from-indigo-500 to-blue-600">
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path></svg>
+    <p class="test-picker-status mt-4" data-test-picker-status>
+      <span class="inline-flex h-2 w-2 rounded-full bg-sky-500"></span>
+      <span>IQ puzzle set is ready.</span>
+    </p>
+    <div class="test-choice-grid mt-6">
+      <button class="test-choice flex flex-col items-start rounded-3xl p-4 text-left" data-tone="mbti" data-test-choice="../Assets/question.html" type="button">
+        <span class="flex w-full items-start justify-between gap-3">
+          <span class="test-choice-icon bg-gradient-to-br from-indigo-500 to-blue-600">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .98 4.96 2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.96-.46V4.5Z"></path><path d="M12 4.5a2.5 2.5 0 0 1 4.96-.46 2.5 2.5 0 0 1 1.98 3 2.5 2.5 0 0 1-.98 4.96 2.5 2.5 0 0 1 0 5 2.5 2.5 0 0 1-1.98 3 2.5 2.5 0 0 1-4.96-.46V4.5Z"></path></svg>
+          </span>
+          <span class="test-choice-badge is-ready">Ready</span>
         </span>
         <span class="mt-4 block text-base font-black text-slate-950">MBTI Test</span>
+        <span class="mt-1 block text-xs font-semibold leading-relaxed text-slate-500">Personality type and cognitive balance</span>
+        <span class="mt-auto flex w-full items-center justify-between pt-4 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+          Start
+          <span class="test-choice-arrow">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </span>
+        </span>
       </button>
-      <button class="test-choice flex flex-col items-start justify-center rounded-3xl p-4 text-left" data-test-choice="coming-soon" data-coming-soon="IQ Test coming soon." type="button">
-        <span class="test-choice-icon bg-gradient-to-br from-sky-500 to-cyan-500">
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <button class="test-choice flex flex-col items-start rounded-3xl p-4 text-left" data-tone="iq" data-test-choice="../Assets/iq.html" type="button">
+        <span class="flex w-full items-start justify-between gap-3">
+          <span class="test-choice-icon bg-gradient-to-br from-sky-500 to-cyan-500">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </span>
+          <span class="test-choice-badge is-ready">Ready</span>
         </span>
         <span class="mt-4 block text-base font-black text-slate-950">IQ Test</span>
+        <span class="mt-1 block text-xs font-semibold leading-relaxed text-slate-500">Reasoning and problem-solving set</span>
+        <span class="mt-auto flex w-full items-center justify-between pt-4 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+          Start
+          <span class="test-choice-arrow">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </span>
+        </span>
       </button>
-      <button class="test-choice flex flex-col items-start justify-center rounded-3xl p-4 text-left" data-test-choice="../Assets/eq.html" type="button">
-        <span class="test-choice-icon bg-gradient-to-br from-rose-500 to-orange-500">
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <button class="test-choice flex flex-col items-start rounded-3xl p-4 text-left" data-tone="eq" data-test-choice="../Assets/eq.html" type="button">
+        <span class="flex w-full items-start justify-between gap-3">
+          <span class="test-choice-icon bg-gradient-to-br from-rose-500 to-orange-500">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </span>
+          <span class="test-choice-badge is-ready">Ready</span>
         </span>
         <span class="mt-4 block text-base font-black text-slate-950">EQ Test</span>
+        <span class="mt-1 block text-xs font-semibold leading-relaxed text-slate-500">Emotion patterns and relationship signals</span>
+        <span class="mt-auto flex w-full items-center justify-between pt-4 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+          Start
+          <span class="test-choice-arrow">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </span>
+        </span>
       </button>
     </div>
   </section>
@@ -1239,14 +1436,17 @@ const testPickerModal = document.getElementById("test-picker-modal");
 const testPickerClose = document.querySelector("[data-test-picker-close]");
 const testPickerStatus = document.querySelector("[data-test-picker-status]");
 let user = getCogniLensUser();
-const savedDashboardResult = getCogniLensResult();
-const hasCompletedAssessment = Boolean(savedDashboardResult);
+const savedDashboardResult = typeof getCogniLensResult === "function" ? getCogniLensResult() : null;
+const hasCompletedAssessment = Boolean(savedDashboardResult && (
+  (savedDashboardResult.type && savedDashboardResult.type !== "UNCL") ||
+  Number(savedDashboardResult.answeredCount || savedDashboardResult.answers?.length || savedDashboardResult.meta?.answersUsed || 0) > 0
+));
 let progressShareSelected = hasCompletedAssessment && localStorage.getItem("cognilensShareReady") === "true";
 const dashboardResult = savedDashboardResult || {
-  type: "INTJ",
-  title: "Strategic Systems Thinker",
-  summary: "Systems thinker with long-range clarity and calm decision pressure.",
-  metrics: { I: 76, N: 82, T: 71, J: 78 }
+  type: "UNCL",
+  title: "Scoring Algorithm Pending",
+  summary: "MBTI questions and scoring logic are currently blank.",
+  metrics: { I: 50, N: 50, T: 50, J: 50 }
 };
 const previewMetricMeta = {
   I: { label: "Introversion", opposite: "E", oppositeLabel: "Extraversion" },
@@ -1257,24 +1457,115 @@ const previewMetricMeta = {
 const previewSamples = [
   {
     type: "INTJ",
-    title: "Strategic Systems Thinker",
-    summary: "A focused sample profile with strong planning, analytical depth, and calm decision pressure.",
-    quote: "Sample story: structured thinkers use the dashboard to explain their decision style clearly.",
-    metrics: { I: 94, N: 68, T: 100, J: 61 }
+    title: "Strategic Visionary",
+    summary: "Strategic pattern-reader with long-range focus and structured execution.",
+    quote: "Looks for the hidden system first, then builds a plan around it.",
+    metrics: { I: 80, N: 85, T: 75, J: 80 }
+  },
+  {
+    type: "INTP",
+    title: "Analytical Architect",
+    summary: "Independent thinker who tests ideas through logic and internal consistency.",
+    quote: "Naturally pulls problems apart until the clean principle appears.",
+    metrics: { I: 78, N: 80, T: 82, J: 28 }
+  },
+  {
+    type: "ENTJ",
+    title: "Commanding Strategist",
+    summary: "Outcome-focused organizer with high execution pressure and strategic drive.",
+    quote: "Turns messy goals into direction, structure, and measurable progress.",
+    metrics: { I: 35, N: 72, T: 80, J: 83 }
+  },
+  {
+    type: "ENTP",
+    title: "Inventive Challenger",
+    summary: "Fast idea-generator who explores angles, debates models, and adapts quickly.",
+    quote: "Finds energy in possibility, challenge, and clever reframing.",
+    metrics: { I: 32, N: 82, T: 74, J: 25 }
+  },
+  {
+    type: "INFJ",
+    title: "Insightful Advocate",
+    summary: "Meaning-focused observer with people insight and long-range emotional patterning.",
+    quote: "Reads what people mean, not just what they say.",
+    metrics: { I: 76, N: 84, T: 28, J: 70 }
+  },
+  {
+    type: "INFP",
+    title: "Inner-Values Idealist",
+    summary: "Identity-led thinker who protects meaning, values, and inner authenticity.",
+    quote: "Needs life to feel personally true, not just externally successful.",
+    metrics: { I: 80, N: 82, T: 24, J: 30 }
+  },
+  {
+    type: "ENFJ",
+    title: "People-Centered Guide",
+    summary: "Emotionally tuned leader who organizes people around shared direction.",
+    quote: "Notices group energy quickly and tries to move it somewhere better.",
+    metrics: { I: 30, N: 76, T: 25, J: 70 }
   },
   {
     type: "ENFP",
-    title: "Adaptive Idea Connector",
-    summary: "A sample profile that highlights social energy, creative intuition, and flexible problem framing.",
-    quote: "Sample story: idea-driven users can present their pattern without making it feel like a label.",
-    metrics: { I: 28, N: 86, T: 42, J: 36 }
+    title: "Possibility Catalyst",
+    summary: "Expressive explorer who follows meaning, people energy, and new openings.",
+    quote: "Chases the idea that feels alive and makes others feel it too.",
+    metrics: { I: 28, N: 84, T: 26, J: 25 }
+  },
+  {
+    type: "ISTJ",
+    title: "Structured Realist",
+    summary: "Reliable executor who trusts tested methods, facts, and steady discipline.",
+    quote: "Builds confidence through consistency, memory, and responsibility.",
+    metrics: { I: 78, N: 25, T: 72, J: 85 }
+  },
+  {
+    type: "ISFJ",
+    title: "Steady Protector",
+    summary: "Careful supporter who values stability, loyalty, and practical care.",
+    quote: "Protects people through reliability more than performance.",
+    metrics: { I: 80, N: 24, T: 28, J: 80 }
+  },
+  {
+    type: "ESTJ",
+    title: "Practical Organizer",
+    summary: "Direct operator who values order, responsibility, and concrete progress.",
+    quote: "Turns expectations into standards and standards into action.",
+    metrics: { I: 25, N: 24, T: 75, J: 84 }
+  },
+  {
+    type: "ESFJ",
+    title: "Supportive Harmonizer",
+    summary: "Socially aware stabilizer who keeps people, duties, and harmony aligned.",
+    quote: "Reads what the group needs and steps in before things drift.",
+    metrics: { I: 28, N: 22, T: 25, J: 80 }
   },
   {
     type: "ISTP",
-    title: "Practical Tactical Solver",
-    summary: "A sample profile built around quiet observation, hands-on logic, and fast situational decisions.",
-    quote: "Sample story: practical users get a clean trait balance that is easy to share and review.",
-    metrics: { I: 72, N: 38, T: 84, J: 44 }
+    title: "Tactical Problem Solver",
+    summary: "Calm troubleshooter who trusts direct analysis, tools, and immediate reality.",
+    quote: "Solves best when the problem is real, close, and practical.",
+    metrics: { I: 74, N: 28, T: 78, J: 22 }
+  },
+  {
+    type: "ISFP",
+    title: "Sensitive Individualist",
+    summary: "Quietly values-led responder with strong personal taste and present-moment awareness.",
+    quote: "Protects authenticity through action more than explanation.",
+    metrics: { I: 76, N: 25, T: 24, J: 24 }
+  },
+  {
+    type: "ESTP",
+    title: "Adaptive Operator",
+    summary: "Fast responder who reads the environment and moves before overthinking.",
+    quote: "Learns by entering the situation and testing what works.",
+    metrics: { I: 24, N: 25, T: 74, J: 22 }
+  },
+  {
+    type: "ESFP",
+    title: "Expressive Experiencer",
+    summary: "Warm real-time engager who notices people, energy, and immediate opportunity.",
+    quote: "Brings situations alive through presence, action, and emotional signal.",
+    metrics: { I: 22, N: 24, T: 25, J: 24 }
   }
 ];
 let previewSlides = previewSamples;
@@ -1594,7 +1885,7 @@ function buildPreviewType(metrics) {
       J: metrics.J
     });
   }
-  return `${metrics.I >= 50 ? "I" : "E"}${metrics.N >= 50 ? "N" : "S"}${metrics.T >= 50 ? "T" : "F"}${metrics.J >= 50 ? "J" : "P"}`;
+  return "UNCL";
 }
 
 function getPreviewPreference(key, metrics) {
@@ -1608,6 +1899,13 @@ function getPreviewPreference(key, metrics) {
     letter: leftWins ? key : meta.opposite,
     value: leftWins ? leftValue : rightValue
   };
+}
+
+function buildCompactPreviewSummary(type, title, metrics) {
+  const preferences = ["I", "N", "T", "J"].map((key) => getPreviewPreference(key, metrics));
+  const strongest = [...preferences].sort((a, b) => b.value - a.value)[0];
+  const titleText = title || "profile";
+  return `${type} shows a ${String(titleText).toLowerCase()} pattern with strongest lean toward ${strongest.label.toLowerCase()} at ${strongest.value}%.`;
 }
 
 function buildUserPreviewSlide() {
@@ -1625,7 +1923,7 @@ function buildUserPreviewSlide() {
   return {
     type,
     title: savedDashboardResult.title || "Your Cognitive Profile",
-    summary: savedDashboardResult.summary || `${type} profile built from your latest assessment balance.`,
+    summary: buildCompactPreviewSummary(type, savedDashboardResult.title, metrics),
     quote: "Your completed assessment is ready as a shareable story card.",
     metrics
   };
@@ -1681,7 +1979,7 @@ function hydrateDashboardPreview(index = previewSlideIndex) {
     previewSummary.textContent = slide.summary || `${type} profile built from a sample assessment balance.`;
   }
   if (previewQuote) previewQuote.textContent = slide.quote || "Swipe to preview another result story.";
-  if (previewStatus) previewStatus.textContent = hasCompletedAssessment && index === 0 ? "Your Result" : "Sample";
+  if (previewStatus) previewStatus.textContent = hasCompletedAssessment && index === 0 ? "Your Result" : "Persona";
 
   preferences.forEach((pref) => {
     const row = document.querySelector(`[data-preview-metric="${pref.key}"]`);
@@ -1928,5 +2226,6 @@ if (new URLSearchParams(window.location.search).get("settings") === "open") {
   setSettingsPanel(true, true);
 }
 </script>
+<script src="premium-coming-soon.js"></script>
 </body>
 </html>

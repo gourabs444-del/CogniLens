@@ -1,47 +1,47 @@
 /*
- * CogniLens scoring engine
- * Input: raw MBTI dimension scores
- * Output: type, confidence, and dimension breakdown
+ * CogniLens scoring placeholder
+ * The previous MBTI scoring logic has been intentionally cleared.
+ * Plug the new scoring algorithm into these public functions.
  */
 
-const COGNILENS_TYPE_TITLES = {
-  UNCL: "Not Enough Clear Signal",
-  ISTJ: "Practical Systems Guardian",
-  ISFJ: "Supportive Detail Keeper",
-  INFJ: "Insightful Purpose Builder",
-  INTJ: "Strategic Systems Thinker",
-  ISTP: "Precise Tactical Solver",
-  ISFP: "Grounded Creative Observer",
-  INFP: "Reflective Values Explorer",
-  INTP: "Analytical Pattern Architect",
-  ESTP: "Action-Oriented Problem Mover",
-  ESFP: "Expressive Experience Driver",
-  ENFP: "Possibility-Focused Connector",
-  ENTP: "Inventive Challenge Solver",
-  ESTJ: "Structured Execution Leader",
-  ESFJ: "Collaborative Support Organizer",
-  ENFJ: "People-Centered Vision Guide",
-  ENTJ: "Decisive Strategy Builder"
+const COGNILENS_TYPE_TITLES = window.CogniLensData?.typeTitles || {
+  INTJ: "Strategic Visionary",
+  INTP: "Analytical Architect",
+  ENTJ: "Commanding Strategist",
+  ENTP: "Inventive Challenger",
+  INFJ: "Insightful Advocate",
+  INFP: "Inner-Values Idealist",
+  ENFJ: "People-Centered Guide",
+  ENFP: "Possibility Catalyst",
+  ISTJ: "Structured Realist",
+  ISFJ: "Steady Protector",
+  ESTJ: "Practical Organizer",
+  ESFJ: "Supportive Harmonizer",
+  ISTP: "Tactical Problem Solver",
+  ISFP: "Sensitive Individualist",
+  ESTP: "Adaptive Operator",
+  ESFP: "Expressive Experiencer",
+  UNCL: "Inconclusive Profile"
 };
 
 const COGNILENS_ASSESSMENT_TYPES = {
   mbti: {
     id: "mbti",
     name: "MBTI Test",
-    status: "ready",
+    status: "draft",
     resultKey: "personality",
     path: "pages/Assets/question.html",
-    scoring: "mbti-dimensions",
+    scoring: "pending-algorithm",
     description: ""
   },
   iq: {
     id: "iq",
     name: "IQ Test",
-    status: "coming-soon",
+    status: "ready",
     resultKey: "iq",
     path: "pages/Assets/iq.html",
-    scoring: "pending-question-set",
-    description: ""
+    scoring: "api-reviewed-answer-check",
+    description: "Logic, numeric, sequence, and riddle answers with final API review."
   },
   eq: {
     id: "eq",
@@ -54,111 +54,45 @@ const COGNILENS_ASSESSMENT_TYPES = {
   }
 };
 
-function normalizeScoreValue(value) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? Math.max(0, numeric) : 0;
+function normalizePersonalityScores() {
+  return { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
 }
 
-function normalizePersonalityScores(scores = {}) {
-  return {
-    E: normalizeScoreValue(scores.E),
-    I: normalizeScoreValue(scores.I),
-    S: normalizeScoreValue(scores.S),
-    N: normalizeScoreValue(scores.N),
-    T: normalizeScoreValue(scores.T),
-    F: normalizeScoreValue(scores.F),
-    J: normalizeScoreValue(scores.J),
-    P: normalizeScoreValue(scores.P)
-  };
-}
-
-function getPersonalityResult(scores = {}) {
-  const cleanScores = normalizePersonalityScores(scores);
-  const axisTotals = {
-    EI: cleanScores.E + cleanScores.I,
-    SN: cleanScores.S + cleanScores.N,
-    TF: cleanScores.T + cleanScores.F,
-    JP: cleanScores.J + cleanScores.P
-  };
-  const totalSignal = Object.values(cleanScores).reduce((sum, value) => sum + value, 0);
-  const coveredAxes = Object.values(axisTotals).filter((value) => value > 0).length;
-  const enoughSignal = totalSignal >= 18 && coveredAxes >= 4;
-
-  if (!enoughSignal) {
-    return {
-      type: "UNCL",
-      confidence: Math.max(0, Math.min(28, Math.round(totalSignal))),
-      breakdown: {
-        EI: { E: cleanScores.E, I: cleanScores.I },
-        SN: { S: cleanScores.S, N: cleanScores.N },
-        TF: { T: cleanScores.T, F: cleanScores.F },
-        JP: { J: cleanScores.J, P: cleanScores.P }
-      },
-      warning: "Not enough usable answers for a reliable type."
-    };
-  }
-  const safe = (a, b) => cleanScores[a] - cleanScores[b];
-
-  const EI = safe("E", "I") > 0 ? "E" : "I";
-  const SN = safe("S", "N") > 0 ? "S" : "N";
-  const TF = safe("T", "F") > 0 ? "T" : "F";
-  const JP = safe("J", "P") > 0 ? "J" : "P";
-
-  const type = EI + SN + TF + JP;
-
-  const diffEI = Math.abs(cleanScores.E - cleanScores.I);
-  const diffSN = Math.abs(cleanScores.S - cleanScores.N);
-  const diffTF = Math.abs(cleanScores.T - cleanScores.F);
-  const diffJP = Math.abs(cleanScores.J - cleanScores.P);
-  const totalDiff = diffEI + diffSN + diffTF + diffJP;
-  const confidence = Math.min(95, Math.round(totalDiff * 2));
-
-  const warning = diffEI < 3 || diffSN < 3 || diffTF < 3 || diffJP < 3
-    ? "Low clarity in one or more personality dimensions"
-    : null;
-
+function getPersonalityResult(totals = {}) {
+  const metrics = getPersonalityMetrics(totals);
+  const type = getPersonalityTypeFromMetrics(metrics);
   return {
     type,
-    confidence,
-    breakdown: {
-      EI: { E: cleanScores.E, I: cleanScores.I },
-      SN: { S: cleanScores.S, N: cleanScores.N },
-      TF: { T: cleanScores.T, F: cleanScores.F },
-      JP: { J: cleanScores.J, P: cleanScores.P }
-    },
-    warning
+    confidence: Number(totals.confidence || totals.modelConfidence || 0),
+    breakdown: totals.probabilities || totals.breakdown || {},
+    warning: type === "UNCL" ? "Not enough scoring data." : ""
   };
 }
 
-function getPersonalityMetrics(scores = {}) {
-  const cleanScores = normalizePersonalityScores(scores);
-  const percentage = (left, right) => {
-    const total = cleanScores[left] + cleanScores[right];
-    if (!total) return 50;
-    return Math.round((cleanScores[left] / total) * 100);
+function getPersonalityMetrics(totals = {}) {
+  if (totals.metrics) return totals.metrics;
+  const pair = (left, right) => {
+    const l = Math.max(0, Number(left) || 0);
+    const r = Math.max(0, Number(right) || 0);
+    return l + r ? Math.round((l / (l + r)) * 100) : 50;
   };
-
   return {
-    I: percentage("I", "E"),
-    N: percentage("N", "S"),
-    T: percentage("T", "F"),
-    J: percentage("J", "P")
+    I: Number.isFinite(Number(totals.I)) ? pair(totals.I, totals.E) : 50,
+    N: Number.isFinite(Number(totals.N)) ? pair(totals.N, totals.S) : 50,
+    T: Number.isFinite(Number(totals.T)) ? pair(totals.T, totals.F) : 50,
+    J: Number.isFinite(Number(totals.J)) ? pair(totals.J, totals.P) : 50
   };
 }
 
 function getPersonalityTypeFromMetrics(metrics = {}) {
-  const value = (key) => {
-    const numeric = Number(metrics[key]);
-    return Number.isFinite(numeric) ? Math.max(0, Math.min(100, numeric)) : 50;
-  };
-
-  const values = ["I", "N", "T", "J"].map(value);
-  if (values.every((item) => item === 50)) return "UNCL";
-  return `${value("I") >= 50 ? "I" : "E"}${value("N") >= 50 ? "N" : "S"}${value("T") >= 50 ? "T" : "F"}${value("J") >= 50 ? "J" : "P"}`;
+  if (!metrics || Object.keys(metrics).length === 0) return "UNCL";
+  const values = ["I", "N", "T", "J"].map((key) => Math.round(Number(metrics[key]) || 50));
+  if (values.every((value) => value === 50)) return "UNCL";
+  return `${Number(metrics.I) >= 50 ? "I" : "E"}${Number(metrics.N) >= 50 ? "N" : "S"}${Number(metrics.T) >= 50 ? "T" : "F"}${Number(metrics.J) >= 50 ? "J" : "P"}`;
 }
 
 function getPersonalityTitle(type) {
-  return COGNILENS_TYPE_TITLES[type] || `${type || "Adaptive"} Personality Profile`;
+  return COGNILENS_TYPE_TITLES[type] || COGNILENS_TYPE_TITLES.UNCL;
 }
 
 function getCogniLensAssessmentType(type = "mbti") {
@@ -167,6 +101,7 @@ function getCogniLensAssessmentType(type = "mbti") {
 
 window.COGNILENS_TYPE_TITLES = COGNILENS_TYPE_TITLES;
 window.COGNILENS_ASSESSMENT_TYPES = COGNILENS_ASSESSMENT_TYPES;
+window.normalizePersonalityScores = normalizePersonalityScores;
 window.getPersonalityResult = getPersonalityResult;
 window.getPersonalityMetrics = getPersonalityMetrics;
 window.getPersonalityTypeFromMetrics = getPersonalityTypeFromMetrics;
