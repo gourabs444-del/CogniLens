@@ -99,7 +99,7 @@ export function securityHeaders() {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+    res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
     res.setHeader("X-DNS-Prefetch-Control", "off");
     res.setHeader(
       "Permissions-Policy",
@@ -112,13 +112,13 @@ export function securityHeaders() {
         "base-uri 'self'",
         "object-src 'none'",
         "frame-ancestors 'none'",
-        "form-action 'self'",
-        "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://challenges.cloudflare.com",
+        "form-action 'self' https://accounts.google.com",
+        "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://apis.google.com https://challenges.cloudflare.com",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com",
         "font-src 'self' https://fonts.gstatic.com data:",
         "img-src 'self' data: blob: https://lh3.googleusercontent.com https://*.googleusercontent.com",
         "connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://*.googleapis.com https://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com",
-        "frame-src 'self' https://*.firebaseapp.com https://challenges.cloudflare.com",
+        "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://challenges.cloudflare.com",
         "worker-src 'self' blob:"
       ].join("; ")
     );
