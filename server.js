@@ -1,4 +1,5 @@
 import express from "express";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createSubmitHandler, submitTest } from "./api/submitTest.js";
@@ -19,6 +20,7 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = Number(process.env.PORT || 8000);
+const firebaseConfigPath = path.join(__dirname, "firebase-config.js");
 
 export const app = express();
 
@@ -100,6 +102,23 @@ function sendStaticFile(res, fileName, next) {
     if (error && typeof next === "function") next(error);
   });
 }
+
+function buildFirebaseConfigScript() {
+  const script = fs.readFileSync(firebaseConfigPath, "utf8");
+  const siteKey = process.env.TURNSTILE_SITE_KEY || process.env.CLOUDFLARE_TURNSTILE_SITE_KEY;
+  if (!siteKey) return script;
+  return script.replace(/siteKey:\s*"[^"]*"/, `siteKey: ${JSON.stringify(siteKey)}`);
+}
+
+app.get("/firebase-config.js", (req, res, next) => {
+  try {
+    res.type("application/javascript");
+    res.setHeader("Cache-Control", "no-store");
+    res.send(buildFirebaseConfigScript());
+  } catch (error) {
+    next(error);
+  }
+});
 
 app.get("/", (req, res, next) => {
   sendStaticFile(res, "index.html", next);
