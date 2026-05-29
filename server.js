@@ -123,6 +123,8 @@ app.use((error, req, res, next) => {
   });
 });
 
+export default app;
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const server = app.listen(PORT, () => {
     console.log(`CogniLens engine running at http://localhost:${PORT}`);
