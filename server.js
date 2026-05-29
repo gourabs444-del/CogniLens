@@ -95,6 +95,20 @@ app.post("/api/potential/analyze", (req, res, next) => {
   }
 });
 
+function sendStaticFile(res, fileName, next) {
+  res.sendFile(path.join(__dirname, fileName), (error) => {
+    if (error && typeof next === "function") next(error);
+  });
+}
+
+app.get("/", (req, res, next) => {
+  sendStaticFile(res, "index.html", next);
+});
+
+app.get(["/favicon.ico", "/favicon.png"], (req, res) => {
+  res.status(204).end();
+});
+
 app.use(express.static(__dirname, {
   dotfiles: "ignore",
   etag: true,
@@ -105,6 +119,21 @@ app.use(express.static(__dirname, {
     }
   }
 }));
+
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/")) {
+    next();
+    return;
+  }
+
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    next();
+    return;
+  }
+
+  res.status(404);
+  sendStaticFile(res, "404.html", next);
+});
 
 app.use((error, req, res, next) => {
   if (res.headersSent) {

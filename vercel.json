@@ -3,13 +3,32 @@
   "builds": [
     {
       "src": "server.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "index.html",
+          "404.html",
+          "auth/**",
+          "pages/**",
+          "mbti-system/**",
+          "api/**",
+          "data/**",
+          "engine/**",
+          "middleware/**",
+          "utils/**",
+          "*.css",
+          "firebase-config.js",
+          "script.js",
+          "potential-system.js",
+          "score-system.js"
+        ]
+      }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "server.js"
+      "dest": "/server.js"
     }
   ]
 }
