@@ -797,7 +797,7 @@
       </div>
 
       <div class="turnstile-panel" data-turnstile-panel>
-        <div id="turnstile-widget" class="turnstile-widget" data-turnstile-widget></div>
+        <div id="turnstile-widget" class="turnstile-widget cf-turnstile" data-turnstile-widget></div>
         <p class="turnstile-status" data-turnstile-status>Complete the security check before continuing.</p>
       </div>
       <div class="bot-trap" aria-hidden="true">
@@ -841,8 +841,42 @@
 <!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="../firebase-config.js?v=turnstile-live-2"></script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onCogniLensTurnstileLoad" defer></script>
+<script src="../firebase-config.js?v=turnstile-live-3"></script>
+<script>
+window.CogniLensTurnstile = {
+  token: "",
+  sync: null
+};
+
+window.onCogniLensTurnstileSuccess = function(token) {
+  window.CogniLensTurnstile.token = token || "";
+  window.CogniLensTurnstile.sync?.("Security check complete.", true);
+};
+
+window.onCogniLensTurnstileExpired = function() {
+  window.CogniLensTurnstile.token = "";
+  window.CogniLensTurnstile.sync?.("Security check expired. Please verify again.", false);
+};
+
+window.onCogniLensTurnstileError = function(errorCode) {
+  window.CogniLensTurnstile.token = "";
+  console.warn("Turnstile error:", errorCode || "unknown");
+  window.CogniLensTurnstile.sync?.("Security check failed to load. Refresh and try again.", false);
+};
+
+(function configureTurnstileWidget() {
+  const sitekey = String(window.COGNILENS_APP_CONFIG?.turnstile?.siteKey || "").trim();
+  const widget = document.getElementById("turnstile-widget");
+  if (!widget || !sitekey) return;
+  widget.dataset.sitekey = sitekey;
+  widget.dataset.theme = "light";
+  widget.dataset.size = "normal";
+  widget.dataset.callback = "onCogniLensTurnstileSuccess";
+  widget.dataset["expiredCallback"] = "onCogniLensTurnstileExpired";
+  widget.dataset["errorCallback"] = "onCogniLensTurnstileError";
+})();
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <!-- Firebase Init -->
 <script>
@@ -936,43 +970,28 @@ function getTurnstileVerifyEndpoint() {
 
 function resetTurnstile() {
   turnstileToken = "";
+  window.CogniLensTurnstile.token = "";
   setTurnstileStatus("Complete the security check before continuing.", false);
-  if (window.turnstile && turnstileWidgetId !== null) {
-    window.turnstile.reset(turnstileWidgetId);
+  if (window.turnstile) {
+    window.turnstile.reset();
   }
 }
 
 function renderTurnstile() {
-  if (!turnstileWidget || !window.turnstile || turnstileWidgetId !== null) return;
   const sitekey = getTurnstileSiteKey();
   if (!sitekey) {
     setTurnstileStatus("Turnstile site key is missing.");
-    return;
   }
-
-  turnstileWidgetId = window.turnstile.render("#turnstile-widget", {
-    sitekey,
-    theme: "light",
-    size: "flexible",
-    callback(token) {
-      turnstileToken = token;
-      setTurnstileStatus("Security check complete.", true);
-    },
-    "expired-callback"() {
-      turnstileToken = "";
-      setTurnstileStatus("Security check expired. Please verify again.", false);
-    },
-    "error-callback"() {
-      turnstileToken = "";
-      setTurnstileStatus("Security check failed to load. Please retry.", false);
-    }
-  });
 }
 
-window.onCogniLensTurnstileLoad = renderTurnstile;
+window.CogniLensTurnstile.sync = function(message, verified) {
+  turnstileToken = window.CogniLensTurnstile.token || "";
+  setTurnstileStatus(message, verified);
+};
 window.addEventListener("DOMContentLoaded", renderTurnstile);
 
 async function verifyTurnstileToken() {
+  turnstileToken = window.CogniLensTurnstile?.token || turnstileToken;
   if (!turnstileToken) {
     showAuthMessage("Please complete the real Cloudflare security check before continuing.");
     return false;

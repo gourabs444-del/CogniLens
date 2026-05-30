@@ -117,8 +117,8 @@ export function securityHeaders() {
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com",
         "font-src 'self' https://fonts.gstatic.com data:",
         "img-src 'self' data: blob: https://lh3.googleusercontent.com https://*.googleusercontent.com",
-        "connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://*.googleapis.com https://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://challenges.cloudflare.com",
-        "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://challenges.cloudflare.com",
+        "connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://*.googleapis.com https://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://challenges.cloudflare.com https://*.challenges.cloudflare.com",
+        "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://challenges.cloudflare.com https://*.challenges.cloudflare.com",
         "worker-src 'self' blob:"
       ].join("; ")
     );
