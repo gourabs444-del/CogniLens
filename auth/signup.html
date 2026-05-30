@@ -273,72 +273,43 @@
   .turnstile-panel {
     width: 100%;
     margin: 2px 0 12px;
-    padding: 12px;
-    border-radius: 14px;
-    border: 1.5px solid #e3e6f4;
-    background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,252,0.92));
-    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
   }
 
   .turnstile-panel:hover,
-  .turnstile-panel:focus-within {
-    border-color: rgba(108,92,231,0.42);
-    box-shadow: 0 12px 26px rgba(108,92,231,0.11);
-    transform: translateY(-1px);
-  }
-
+  .turnstile-panel:focus-within,
   .turnstile-panel.is-verified {
-    border-color: rgba(16,185,129,0.36);
-    background: linear-gradient(180deg, rgba(236,253,245,0.88), rgba(255,255,255,0.94));
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
   }
 
-  .turnstile-copy {
+  .turnstile-widget {
+    width: 100%;
+    min-height: 70px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 10px;
+    justify-content: center;
+    overflow: visible;
   }
 
-  .turnstile-title {
-    display: block;
-    font-size: 13px;
-    font-weight: 900;
-    color: #242236;
-    line-height: 1.15;
+  .turnstile-widget iframe {
+    max-width: 100%;
   }
 
-  .turnstile-subtitle,
   .turnstile-status {
     display: block;
+    margin-top: 6px;
     font-size: 10.5px;
     font-weight: 700;
     line-height: 1.35;
     color: #8d8aa3;
-  }
-
-  .turnstile-provider {
-    flex: 0 0 auto;
-    border-radius: 999px;
-    background: #eef2ff;
-    color: #6c5ce7;
-    padding: 5px 8px;
-    font-size: 9px;
-    font-weight: 900;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-  }
-
-  .turnstile-widget {
-    min-height: 65px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  .turnstile-status {
-    margin-top: 8px;
   }
 
   .bot-trap {
@@ -826,13 +797,6 @@
       </div>
 
       <div class="turnstile-panel" data-turnstile-panel>
-        <div class="turnstile-copy">
-          <span>
-            <span class="turnstile-title">I'm not a robot</span>
-            <span class="turnstile-subtitle">Real Cloudflare Turnstile verification.</span>
-          </span>
-          <span class="turnstile-provider">Protected</span>
-        </div>
         <div id="turnstile-widget" class="turnstile-widget" data-turnstile-widget></div>
         <p class="turnstile-status" data-turnstile-status>Complete the security check before continuing.</p>
       </div>
@@ -989,7 +953,7 @@ function renderTurnstile() {
   turnstileWidgetId = window.turnstile.render("#turnstile-widget", {
     sitekey,
     theme: "light",
-    size: "normal",
+    size: "flexible",
     callback(token) {
       turnstileToken = token;
       setTurnstileStatus("Security check complete.", true);
